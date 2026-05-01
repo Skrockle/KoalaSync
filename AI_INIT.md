@@ -23,7 +23,7 @@ KoalaSync is a specialized tool for **synchronized video playback** across multi
 - `docker-compose.yml`: Root-level orchestration for the relay server.
 
 > [!IMPORTANT]
-> **Single Source of Truth**: `shared/constants.js` and `shared/blacklist.js` are the master files. They must be synchronized to the `extension/shared/` directory using `.\scripts\sync-constants.bat` or `./scripts/sync-constants.sh`. 
+> **Single Source of Truth**: `shared/constants.js` and `shared/blacklist.js` are the master files. They must be synchronized to the `extension/shared/` directory using `node scripts/build-extension.js`. 
 > - **Extension Modules** (`background.js`, `popup.js`) import directly from `./shared/constants.js`.
 > - **Content Scripts** (`content.js`) use a **manual synchronous mirror** to prevent race conditions during page load. Always verify parity after sync.
 
@@ -56,6 +56,7 @@ The popup UI follows a strict design system. Do not modify these variables or th
 ## 5. Non-Negotiables (Core Logic)
 The following features are critical and must not be removed or fundamentally altered:
 - **Two-Phase Force Sync**: The `Prepare` → `ACK` → `Execute` flow ensures all peers are buffered before playback resumes.
+- **Episode Auto-Sync**: Ensures series binges stay perfectly synced. A lobby initiates during title transitions, freezing peers until everyone is ready.
 - **Dual Heartbeat**: 
     - **Background Heartbeat (30s)**: Ensures session persistence even without a video element.
     - **Content Heartbeat (15s)**: Transmits current video metadata (time, title).
@@ -84,7 +85,7 @@ The following features are critical and must not be removed or fundamentally alt
 
 ### Adding a Protocol Event
 1. Add the event name to `shared/constants.js`.
-2. Run the sync script (`.\scripts\sync-constants.bat` or `./scripts/sync-constants.sh`).
+2. Run the build script (`node scripts/build-extension.js`).
 3. Implement the handler in `server/index.js` and `background.js`.
 
 ### Testing Locally

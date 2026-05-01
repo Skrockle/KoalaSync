@@ -542,6 +542,10 @@ function handleServerEvent(event, data) {
                         currentRoom.peers.push(createPeerData(data));
                         if (storageInitialized) chrome.storage.session.set({ currentRoom });
                         chrome.runtime.sendMessage({ type: 'PEER_UPDATE', peers: currentRoom.peers }).catch(() => {});
+
+                        if (episodeLobby && episodeLobby.initiatorPeerId === peerId) {
+                            emit(EVENTS.EPISODE_LOBBY, { peerId, expectedTitle: episodeLobby.expectedTitle });
+                        }
                     }
                 } else if (data.status === 'left') {
                     currentRoom.peers = currentRoom.peers.filter(p => (p.peerId || p) !== data.peerId);
@@ -551,6 +555,13 @@ function handleServerEvent(event, data) {
                     // Episode Lobby: Handle peer departure
                     if (episodeLobby) {
                         checkEpisodeLobbyPeerDeparture();
+                    }
+
+                    if (isForceSyncInitiator) {
+                        const peerCount = currentRoom.peers ? currentRoom.peers.length : 1;
+                        if (forceSyncAcks.size >= peerCount) {
+                            executeForceSync();
+                        }
                     }
                 } else {
                     // Heartbeat/Update: Update tabTitle for matching
@@ -691,7 +702,7 @@ function executeEpisodeLobby() {
     // Trigger a standard Force Sync at targetTime 0.0
     isForceSyncInitiator = true;
     forceSyncAcks.clear();
-    const deadline = Date.now() + 5000;
+    const deadline = Date.now() + 8500;
     chrome.storage.session.set({ 
         isForceSyncInitiator: true, 
         forceSyncAcks: [], 
@@ -707,7 +718,7 @@ function executeEpisodeLobby() {
             addLog('Force Sync (Episode): Timeout waiting for ACKs, executing anyway...', 'warn');
             executeForceSync();
         }
-    }, 5000);
+    }, 8500);
 }
 
 function checkEpisodeLobbyCompletion() {
@@ -943,7 +954,7 @@ async function handleAsyncMessage(message, sender, sendResponse) {
             if (message.action === EVENTS.FORCE_SYNC_PREPARE) {
                 isForceSyncInitiator = true;
                 forceSyncAcks.clear();
-                const deadline = Date.now() + 5000;
+                const deadline = Date.now() + 8500;
                 chrome.storage.session.set({ 
                     isForceSyncInitiator: true, 
                     forceSyncAcks: [], 
@@ -958,7 +969,7 @@ async function handleAsyncMessage(message, sender, sendResponse) {
                         addLog('Force Sync: Timeout waiting for ACKs, executing anyway...', 'warn');
                         executeForceSync();
                     }
-                }, 5000);
+                }, 8500);
             }
             addToHistory(message.action, 'You');
             emit(message.action, { ...message.payload, peerId });

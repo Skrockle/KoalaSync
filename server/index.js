@@ -370,6 +370,7 @@ io.on('connection', (socket) => {
     });
 
         socket.on(EVENTS.EVENT_ACK, (data) => {
+            if (!data || typeof data !== 'object') return;
             if (!data.targetId) return;
             
             const senderMapping = socketToRoom.get(socket.id);
