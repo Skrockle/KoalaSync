@@ -2,7 +2,7 @@
 
 KoalaSync is a premium, lightweight Chrome Extension and Relay Server for synchronized video playback across any website (YouTube, Twitch, Netflix, and custom HTML5 players).
 
-**Latest Version**: `v1.2.0` (Episode Auto-Sync)
+**Latest Release**: [GitHub Releases](https://github.com/Shik3i/KoalaSync/releases)
 
 > [!TIP]
 > **New Developers & AI Agents**: Please read [AI_INIT.md](AI_INIT.md) before starting work.
