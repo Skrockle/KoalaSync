@@ -26,9 +26,10 @@ const sharedFiles = ['constants.js', 'blacklist.js'];
 for (const file of sharedFiles) {
   const src = path.join(masterSharedDir, file);
   const dest = path.join(extSharedDir, file);
-  if (fs.existsSync(src)) {
-    fs.copyFileSync(src, dest);
+  if (!fs.existsSync(src)) {
+    throw new Error(`CRITICAL: Source shared file missing: ${src}. Aborting build to prevent broken artifacts.`);
   }
+  fs.copyFileSync(src, dest);
 }
 console.log('✓ constants.js and blacklist.js synced to extension/shared/');
 
