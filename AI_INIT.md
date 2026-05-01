@@ -83,6 +83,11 @@ The following features are critical and must not be removed or fundamentally alt
 
 ## 8. Common Workflows
 
+### Releasing a New Version
+1. Ensure all code is committed to the `main` branch.
+2. Create and push a new tag. **MANDATORY**: Tags MUST start with a `v` (e.g., `v1.3.1`). The GitHub Actions release workflow is strictly configured to ignore any tags without the `v` prefix.
+3. Verify the release builds on GitHub Actions.
+
 ### Adding a Protocol Event
 1. Add the event name to `shared/constants.js`.
 2. Run the build script (`node scripts/build-extension.js`).
