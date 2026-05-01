@@ -83,10 +83,15 @@ The following features are critical and must not be removed or fundamentally alt
 
 ## 8. Common Workflows
 
-### Releasing a New Version
-1. Ensure all code is committed to the `main` branch.
-2. Create and push a new tag. **MANDATORY**: Tags MUST start with a `v` (e.g., `v1.3.1`). The GitHub Actions release workflow is strictly configured to ignore any tags without the `v` prefix.
-3. Verify the release builds on GitHub Actions.
+### Releasing a New Version (CRITICAL WORKFLOW FOR AI AGENTS)
+> [!CAUTION]
+> **AI AGENTS MUST FOLLOW THIS EXACT SEQUENCE WHEN RELEASING A NEW VERSION OR TAGGING.**
+> The extension version is read from the `manifest.json` and `constants.js`, NOT the Git tag. If you skip steps 1-3, the release will contain the old version numbers.
+1. **Update `version`** in `extension/manifest.json`.
+2. **Update `APP_VERSION`** in `shared/constants.js`.
+3. Commit these changes with message `chore: bump version to X.X.X` and push to `main`.
+4. Create and push a new tag. **MANDATORY**: Tags MUST start with a `v` (e.g., `v1.3.1`). The GitHub Actions release workflow is strictly configured to ignore any tags without the `v` prefix.
+5. Verify the release builds on GitHub Actions.
 
 ### Adding a Protocol Event
 1. Add the event name to `shared/constants.js`.
