@@ -1,6 +1,9 @@
 # KoalaSync
 
-KoalaSync is a premium, lightweight Chrome Extension and Relay Server for synchronized video playback across any website (YouTube, Twitch, Netflix, and custom HTML5 players).
+[![Release](https://github.com/Shik3i/KoalaSync/actions/workflows/release.yml/badge.svg)](https://github.com/Shik3i/KoalaSync/actions/workflows/release.yml)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/Shik3i/KoalaSync)](https://github.com/Shik3i/KoalaSync/releases)
+
+KoalaSync is a premium, lightweight Browser Extension and Relay Server for synchronized video playback across any website (YouTube, Twitch, Netflix, and custom HTML5 players).
 
 **Latest Release**: [GitHub Releases](https://github.com/Shik3i/KoalaSync/releases)
 
@@ -29,7 +32,23 @@ KoalaSync is a premium, lightweight Chrome Extension and Relay Server for synchr
 - **Seamless Invitations**: Smart invitation links that automatically configure the server and room credentials for your friends.
 
 
-## Setup Instructions
+## Installation (For Users)
+
+### Browser Extension
+The easiest way to install KoalaSync is to download the pre-compiled version from the Releases page.
+
+1. Download the latest `koalasync-chrome.zip` or `koalasync-firefox.zip` from the [Releases](https://github.com/Shik3i/KoalaSync/releases) page.
+2. Extract the `.zip` file to a permanent folder on your computer.
+3. **For Chrome / Edge / Brave:**
+   - Go to `chrome://extensions/`
+   - Enable **Developer mode** (top right)
+   - Click **Load unpacked** and select the extracted folder.
+4. **For Firefox:**
+   - Go to `about:debugging#/runtime/this-firefox`
+   - Click **Load Temporary Add-on**
+   - Select the `manifest.json` file inside the extracted folder.
+
+## Development (For Contributors)
 
 ### 1. Relay Server (Docker)
 The server runs on Node.js using Socket.IO, containerized for easy deployment.
@@ -40,15 +59,15 @@ docker-compose up -d --build
 ```
 The server will be available at `ws://localhost:3000`.
 
-### 2. Chrome Extension
-1. **Synchronize Protocol**: From the root directory, run the build script to copy the master constants and prepare the extension:
+### 2. Building the Extension
+If you are developing or modifying the codebase, you must compile the extension locally to ensure protocol constants are synchronized.
+
+1. Install dependencies and build the artifacts:
    ```bash
+   npm install
    node scripts/build-extension.js
    ```
-2. Open Chrome and go to `chrome://extensions/`.
-3. Enable **Developer mode** (top right).
-4. Click **Load unpacked**.
-5. Select the `extension/` folder.
+2. The compiled, ready-to-load extensions will be available in the `dist/chrome/` and `dist/firefox/` directories. Load these folders into your browser using the developer steps above.
 
 ## Usage
 1. Open the extension and go to the **Settings** tab to set your **Username**.
