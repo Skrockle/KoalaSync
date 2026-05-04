@@ -1,27 +1,30 @@
 # Privacy Policy
 
-KoalaSync is built with a **Privacy-First** architecture. We believe that your browsing habits and watch history are your business, not ours.
+KoalaSync is designed with a **Security-First & Volatile** architecture. This means we prioritize keeping your data out of persistent storage, though certain technical data must be processed temporarily to ensure service stability and security.
 
-## 1. Zero External Requests
-The KoalaSync extension and its official marketing website are designed to be completely self-contained.
-- **No CDNs**: We do not load scripts or styles from external Content Delivery Networks.
-- **No Google Fonts**: We use a modern system font stack to avoid tracking by third-party font services.
-- **No Analytics**: There are no tracking pixels, telemetry, or analytics scripts (like Google Analytics or Mixpanel) in the codebase.
+## 1. Data Processing (In-Memory Only)
+KoalaSync does not use a database. All active session data exists only in the server's RAM and is purged immediately when no longer needed.
+- **Session Data**: To synchronize playback, the server must temporarily hold your `peerId`, `username`, and the `title` of the video you are watching. This is deleted as soon as you leave the room.
+- **Room Passwords**: If you set a room password, it is stored only as a secure **bcrypt hash** in RAM. The server never sees or stores your plaintext password.
 
-## 2. Data Sovereignty
-- **Self-Hostable**: You can host your own relay server using our Docker image, giving you 100% control over your data.
-- **Memory-Only State**: The relay server stores all room data in RAM. Nothing is written to a database or disk. When a room is empty, it is purged immediately.
-- **No Logs**: The official relay server (`sync.shik3i.net`) does not log user IP addresses or room activity.
+## 2. Security & Rate Limiting
+To prevent abuse and brute-force attacks, the following data is processed:
+- **Brute-Force Protection**: If multiple failed password attempts are detected, the server stores the `IP address` and `Room ID` in a temporary RAM-based lockout list for a maximum of 15 minutes.
+- **Connection Rate Limiting**: IP addresses are tracked for 60 seconds to prevent connection-flooding (DoS) attacks.
+- **Console Logging**: The official relay server (`sync.shik3i.net`) outputs connection events (including IP addresses) to the server console for real-time monitoring. These logs are ephemeral and are not archived, sold, or linked to any persistent user identity.
 
 ## 3. Extension Permissions
-KoalaSync requires the following permissions to function:
-- `storage`: To remember your username and server preferences locally.
-- `tabs` & `scripting`: To detect video elements on pages you visit so they can be synchronized.
-- `<all_urls>`: Necessary because KoalaSync works on any website with a `<video>` tag.
+The browser extension requires the following permissions:
+- `storage`: To remember your local preferences.
+- `tabs` & `scripting`: To detect and control video elements on the pages you choose to sync.
+- **No History Access**: We do not read, store, or transmit your browsing history. We only interact with the specific tab you have actively selected for synchronization.
 
-## 4. Zero Data Collection
-We do not collect, store, or sell any personal information. Your `peerId` and `username` are stored only on your local device and transmitted only to the relay server you choose to connect to.
+## 4. Zero Third-Party Requests
+KoalaSync is completely self-contained:
+- **No CDNs or CDNs**: All scripts and styles are self-hosted.
+- **No Analytics**: We do not use Google Analytics, tracking pixels, or any third-party telemetry.
+- **No External Fonts**: We use system font stacks to prevent tracking via font services.
 
 ---
 
-**KoalaSync is and always will be Open Source.** You are encouraged to audit the code yourself on [GitHub](https://github.com/Shik3i/KoalaSync).
+**Auditable & Open Source**: Because KoalaSync is open source, you can verify these claims by reviewing the [Server Source Code](https://github.com/Shik3i/KoalaSync/blob/main/server/index.js) and the [Extension Logic](https://github.com/Shik3i/KoalaSync/blob/main/extension/content.js).

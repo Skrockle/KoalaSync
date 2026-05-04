@@ -4,7 +4,6 @@
   <a href="https://github.com/Shik3i/KoalaSync/actions/workflows/release.yml"><img src="https://github.com/Shik3i/KoalaSync/actions/workflows/release.yml/badge.svg" alt="Release Status"></a>
   <a href="https://github.com/Shik3i/KoalaSync/releases"><img src="https://img.shields.io/github/v/release/Shik3i/KoalaSync" alt="GitHub release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/Shik3i/KoalaSync?color=blue" alt="License"></a>
-  <img src="https://img.shields.io/badge/Extension-Pure%20Vanilla%20JS-success" alt="Pure Vanilla JS">
   <img src="https://img.shields.io/badge/Browser-Chrome%20|%20Firefox-blueviolet" alt="Cross Browser">
 </p>
 
@@ -12,10 +11,10 @@ KoalaSync is a premium, lightweight Browser Extension and Relay Server for synch
 
 ### 🌟 Why KoalaSync?
 
+*   **🛡️ Security-First**: Volatile RAM-based relay with built-in brute-force protection and zero-persistence architecture.
 *   **📡 Direct Logic**: Custom wire protocol implementation for frame-perfect synchronization.
-*   **🛠️ Clean Build**: Pure Vanilla JS extension runtime with no library overhead.
+*   **🛠️ Clean Build**: Dependency-free extension runtime with no library overhead.
 *   **🌐 Universal**: Works on any website with a `<video>` tag.
-*   **🏠 Self-Hostable**: Full Docker support for private relay servers.
 
 ---
 
