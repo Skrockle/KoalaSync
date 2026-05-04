@@ -69,7 +69,7 @@ The server will be available at `ws://localhost:3000`. See [docker-compose.examp
 
 To connect your extension to a self-hosted server, open the popup → **Room** tab → select **Custom Server** → enter your server's WebSocket URL (e.g., `ws://localhost:3000`).
 
-> **⚠️ Note**: `ws://` only works for `localhost`. If you deploy to a real domain, you **must** use `wss://` (e.g., `wss://sync.yourdomain.com`). This requires a TLS-terminating reverse proxy (e.g., Caddy, Nginx, or Traefik) in front of the relay server.
+> **⚠️ Note**: `ws://` only works for `localhost`. If you deploy to a real domain, you **must** use `wss://` (e.g., `wss://sync.yourdomain.com`). This requires a TLS-terminating reverse proxy (e.g., Caddy, Nginx, or Traefik) in front of the relay server. See [Caddyfile.example](Caddyfile.example) for a production-ready template.
 
 ---
 
@@ -80,6 +80,7 @@ To connect your extension to a self-hosted server, open the popup → **Room** t
 - **[HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md)**: Step-by-step walkthrough of the complete user flow.
 - **[ARCHITECTURE.md](docs/ARCHITECTURE.md)**: Deep-dive into the two-phase sync and heartbeat logic.
 - **[SECURITY.md](SECURITY.md)**: Disclosure policy and security practices.
+- **[Caddyfile.example](Caddyfile.example)**: Production Caddy configuration for website and relay.
 
 ---
 

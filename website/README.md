@@ -1,31 +1,39 @@
-# KoalaSync Landing Page
+# KoalaSync Website & Invitation Bridge
 
-This directory contains the static marketing website for KoalaSync. It is built using vanilla HTML, CSS, and JavaScript to ensure maximum performance, zero tracking, and easy hosting.
+This directory contains the KoalaSync website. It serves a dual purpose: it is both the **marketing landing page** and the **technical bridge** for joining synchronized rooms.
 
-## Features
-- **Privacy First**: No external fonts, scripts, or trackers.
-- **Modern Tech Aesthetic**: Pure CSS animated gradients and glassmorphism.
-- **Smart Join**: Integrated bridge for communication with the KoalaSync browser extension.
+## Core Roles
+
+### 1. Marketing & Onboarding
+Provides a premium, bilingual (EN/DE) overview of features, setup instructions, and direct links to the extension stores.
+
+### 2. The Invitation Bridge (`join.html`)
+The website handles incoming invitation links. When a user clicks a link like `koalasync.shik3i.net/join.html#join:roomID:pass`, the website:
+- **Detects the Extension**: Verifies if KoalaSync is installed via the `bridge.js` content script.
+- **Privacy-First Handshake**: The room credentials (ID/Password) are stored in the **URL Hash (#)**. This ensures the sensitive credentials **never reach the web server** and are processed entirely within the user's browser.
+- **Auto-Join**: If the extension is detected, it automatically triggers the join flow without requiring user input.
+
+## Architecture
+
+The website is 100% **Static HTML, CSS, and JS**. 
+- **Zero Backend**: No Node.js, PHP, or databases are required to host the website.
+- **Zero Tracking**: All assets (fonts, icons) are self-hosted to prevent third-party tracking.
+- **Responsive**: Fully optimized for mobile with a native-feel hamburger menu.
 
 ## Hosting with Caddy
 
-Caddy is the recommended web server for KoalaSync due to its automatic HTTPS and simple configuration.
+Caddy is the recommended web server. It provides automatic HTTPS and high-performance static file serving.
 
-### Example Caddyfile
+### Recommended Caddyfile
 
-To host the website on `koalasync.shik3i.net`, you can use the following configuration:
+For a more comprehensive configuration that includes the Relay Server reverse proxy, see the root [Caddyfile.example](../Caddyfile.example).
 
 ```caddy
 koalasync.shik3i.net {
-    # Path to the website directory
     root * /var/www/koalasync/website
-    
-    # Enable static file serving
     file_server
-    
-    # Enable Gzip/Zstd compression
     encode zstd gzip
-    
+
     # Security Headers
     header {
         # Prevent FLoC tracking
@@ -36,16 +44,10 @@ koalasync.shik3i.net {
         X-Frame-Options DENY
         Referrer-Policy no-referrer-when-downgrade
     }
-    
-    # Custom 404 page
-    handle_errors {
-        rewrite * /{err.status_code}.html
-        file_server
-    }
 }
 ```
 
-### Deployment Steps
-1. Copy the contents of this folder to `/var/www/koalasync/website` on your server.
-2. Update the path in your `Caddyfile`.
-3. Reload Caddy: `caddy reload`.
+## Local Development
+
+1. Open `index.html` directly in any browser.
+2. To test the invitation flow locally, use a local server (e.g., `npx serve .`) and navigate to `http://localhost:5000/join.html#join:test-room:test-pass`.

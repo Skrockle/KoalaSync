@@ -1,0 +1,37 @@
+# KoalaSync - Production Caddy Configuration Example
+# Replace domains and paths with your actual setup.
+
+# 1. Marketing Website & Invitation Bridge
+koalasync.shik3i.net {
+    root * /var/www/koalasync/website
+    file_server
+    encode zstd gzip
+
+    # Security Headers
+    header {
+        # Prevent FLoC tracking
+        Permissions-Policy interest-cohort=()
+        # Security best practices
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Referrer-Policy no-referrer-when-downgrade
+    }
+}
+
+# 2. Relay Server (Socket.IO / WebSocket)
+sync.shik3i.net {
+    reverse_proxy localhost:3000 {
+        # Ensure WebSocket support is explicitly handled if needed
+        # (Caddy usually handles this automatically)
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+    }
+
+    # Security Headers for the relay
+    header {
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Referrer-Policy no-referrer
+    }
+}
