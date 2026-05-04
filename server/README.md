@@ -13,8 +13,8 @@ A high-performance Node.js relay server for synchronized video playback.
 Copy `.env.example` to `.env` and configure your settings.
 ```bash
 PORT=3000
-MAX_ROOMS=100
-MAX_PEERS_PER_ROOM=20
+MAX_ROOMS=1000
+MAX_PEERS_PER_ROOM=50
 MIN_VERSION=1.0.0
 ```
 

@@ -67,12 +67,15 @@ docker-compose up -d
 ```
 The server will be available at `ws://localhost:3000`. See [docker-compose.example.yml](docker-compose.example.yml) for advanced configuration.
 
+To connect your extension to a self-hosted server, open the popup → **Room** tab → select **Custom Server** → enter your server's WebSocket URL (e.g., `ws://localhost:3000`).
+
 ---
 
 ### 📖 Documentation & Links
 
 - **[PRIVACY.md](PRIVACY.md)**: Data Handling and Privacy Policy.
 - **[CONTRIBUTING.md](CONTRIBUTING.md)**: How to help make KoalaSync better.
+- **[HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md)**: Step-by-step walkthrough of the complete user flow.
 - **[ARCHITECTURE.md](docs/ARCHITECTURE.md)**: Deep-dive into the two-phase sync and heartbeat logic.
 - **[SECURITY.md](SECURITY.md)**: Disclosure policy and security practices.
 

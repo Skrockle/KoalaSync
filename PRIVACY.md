@@ -1,5 +1,7 @@
 # Privacy Policy
 
+**KoalaSync does not collect, store, or sell any personal data.**
+
 KoalaSync is designed with a **Security-First & Volatile** architecture. This means we prioritize keeping your data out of persistent storage, though certain technical data must be processed temporarily to ensure service stability and security.
 
 ## 1. Data Processing (In-Memory Only)
@@ -7,6 +9,16 @@ KoalaSync does not use a database. All active session data exists only in the se
 - **Session Data**: To synchronize playback, the server must temporarily hold your `peerId`, `username`, and the `title` of the video you are watching. Additionally, playback metadata (`mediaTitle`, `playbackState`, `currentTime`, `volume`, `muted`) is held per peer for the duration of the session. All of this is deleted as soon as you leave the room.
 - **Room Passwords**: If you set a room password, it is stored only as a secure **bcrypt hash** in RAM. The server never sees or stores your plaintext password.
 - **Routing Maps**: The server maintains ephemeral lookup tables (`socketToRoom`, `peerToSocket`) to route messages between peers. These contain only transport identifiers and are purged on disconnect.
+
+### Data Retention
+| Data Type | Maximum Retention | Trigger for Deletion |
+|:----------|:------------------|:---------------------|
+| Session data (peerId, username, video metadata) | Duration of session | User leaves room or disconnects |
+| Room state | 2 hours max | Last peer leaves, or inactivity timeout |
+| Failed auth lockout records | 15 minutes | Automatic expiry |
+| Auth failure records | 1 hour | Periodic cleanup |
+| Connection rate-limit counters | 60 seconds | Automatic expiry |
+| Event rate-limit counters | 10 seconds | Automatic expiry + periodic cleanup |
 
 ## 2. Security & Rate Limiting
 To prevent abuse and brute-force attacks, the following data is processed:
@@ -17,8 +29,11 @@ To prevent abuse and brute-force attacks, the following data is processed:
 
 ## 3. Extension Permissions
 The browser extension requires the following permissions:
-- `storage`: To remember your local preferences.
+- `storage`: To remember your local preferences (username, server URL, room settings).
 - `tabs` & `scripting`: To detect and control video elements on the pages you choose to sync.
+- `<all_urls>` (host permission): Required to detect `<video>` elements on any website the user chooses to synchronize. The extension only activates on the specific tab the user has actively selected — it does not scan, monitor, or interact with any other tabs or pages.
+- `alarms`: To keep the background service worker alive during active sync sessions.
+- `notifications`: To display sync status updates (e.g., "Peer joined", "Force Sync initiated").
 - **No History Access**: We do not read, store, or transmit your browsing history. We only interact with the specific tab you have actively selected for synchronization.
 
 ## 4. Zero Third-Party Requests
@@ -26,6 +41,9 @@ KoalaSync is completely self-contained:
 - **No CDNs or External Libraries**: All scripts and styles are self-hosted.
 - **No Analytics**: We do not use Google Analytics, tracking pixels, or any third-party telemetry.
 - **No External Fonts**: We use system font stacks to prevent tracking via font services.
+
+## 5. Self-Hosted Instances
+This privacy policy applies to the **official KoalaSync relay server** at `sync.shik3i.net`. If you choose to self-host a relay server using our open-source Docker image, the data handling practices of that instance are the responsibility of the server operator.
 
 ---
 

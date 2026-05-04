@@ -7,7 +7,5 @@ extension/
 website/
 scripts/
 *.md
-*.bat
-*.sh
 .env
 server/.env

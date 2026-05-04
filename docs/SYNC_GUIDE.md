@@ -1,7 +1,7 @@
 # KoalaSync Protocol Synchronization Guide
 
 ## Why do we need to sync?
-KoalaSync uses a "Single Source of Truth" for its communication protocol constants located in the root `shared/` directory. However, Chrome Extensions (Manifest V3) are strictly sandboxed and **cannot load or import files from outside their root directory**.
+KoalaSync uses a "Single Source of Truth" for its communication protocol constants located in the root `shared/` directory. However, Browser Extensions (Manifest V3) are strictly sandboxed and **cannot load or import files from outside their root directory**.
 
 To ensure that the extension and the relay server are always using the exact same event names and protocol versions, we maintain a mirrored copy of the shared files within the `extension/shared/` folder.
 
@@ -22,12 +22,13 @@ node scripts/build-extension.js
 
 ## What does it do?
 The build script performs the following actions:
-1. Synchronizes protocol constants by copying `shared/constants.js` and `shared/blacklist.js` into `extension/shared/`.
-2. Compiles browser-specific manifest files.
-3. Packages the final ready-to-publish extension artifacts for Chrome and Firefox into the `dist/` directory.
+1. Synchronizes protocol constants by copying `shared/constants.js`, `shared/blacklist.js`, and `shared/README.md` into `extension/shared/`.
+2. Injects `EVENTS` and `HEARTBEAT_INTERVAL` into `content.js` via marker-based replacement.
+3. Compiles browser-specific manifest files.
+4. Packages the final ready-to-publish extension artifacts for Chrome and Firefox into the `dist/` directory.
 
 ## Protocol Versioning
-As of v1.0.0-RC5, the system enforces a strict `protocolVersion` check during the `JOIN_ROOM` handshake. 
+The system enforces a strict `protocolVersion` check during the `JOIN_ROOM` handshake. 
 - The version is defined in `shared/constants.js`.
 - If the extension and server versions mismatch, the server will reject the connection with an `Incompatible protocol version` error.
 - **Always run the build script** after bumping the version number to ensure both components are updated.
