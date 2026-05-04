@@ -1,34 +1,21 @@
 # KoalaSync
 
-<div align="center">
-  <img src="assets/SOCIAL_PREVIEW.png" alt="KoalaSync Banner" width="800">
-
-  <p align="center">
-    <b>Privacy-First, Zero-Dependency Synchronized Video Playback for Modern Browsers.</b>
-  </p>
-
-  <p align="center">
-    <a href="https://github.com/Shik3i/KoalaSync/actions/workflows/release.yml"><img src="https://github.com/Shik3i/KoalaSync/actions/workflows/release.yml/badge.svg" alt="Release Status"></a>
-    <a href="https://github.com/Shik3i/KoalaSync/releases"><img src="https://img.shields.io/github/v/release/Shik3i/KoalaSync" alt="GitHub release"></a>
-    <a href="LICENSE"><img src="https://img.shields.io/github/license/Shik3i/KoalaSync?color=blue" alt="License"></a>
-    <br>
-    <img src="https://img.shields.io/badge/Extension_Deps-0-success" alt="Zero Dependencies">
-    <img src="https://img.shields.io/badge/Privacy-Focused-indigo" alt="Privacy Focused">
-    <img src="https://img.shields.io/badge/Manifest-V3-orange" alt="Manifest V3">
-    <img src="https://img.shields.io/badge/Cross--Browser-Chrome%20|%20Firefox-blueviolet" alt="Cross Browser">
-  </p>
-</div>
-
----
+<p align="center">
+  <a href="https://github.com/Shik3i/KoalaSync/actions/workflows/release.yml"><img src="https://github.com/Shik3i/KoalaSync/actions/workflows/release.yml/badge.svg" alt="Release Status"></a>
+  <a href="https://github.com/Shik3i/KoalaSync/releases"><img src="https://img.shields.io/github/v/release/Shik3i/KoalaSync" alt="GitHub release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/Shik3i/KoalaSync?color=blue" alt="License"></a>
+  <img src="https://img.shields.io/badge/Extension-Pure%20Vanilla%20JS-success" alt="Pure Vanilla JS">
+  <img src="https://img.shields.io/badge/Browser-Chrome%20|%20Firefox-blueviolet" alt="Cross Browser">
+</p>
 
 KoalaSync is a premium, lightweight Browser Extension and Relay Server for synchronized video playback across any website—YouTube, Twitch, Netflix, and custom HTML5 players. Built with a focus on **Data Sovereignty** and **Extreme Performance**.
 
 ### 🌟 Why KoalaSync?
 
-*   **🛡️ Privacy First**: Zero external requests. No Google Fonts, no CDNs, and absolutely no telemetry or data collection.
-*   **⚡ Zero-Latency**: Native implementation of the Socket.IO v4 wire protocol for frame-perfect synchronization.
-*   **📦 Zero Dependencies**: The extension is built with pure Vanilla JS. No heavy frameworks or third-party libraries.
-*   **🏠 Self-Hostable**: Own your data. Deploy your own relay server in seconds using Docker.
+*   **📡 Direct Logic**: Custom wire protocol implementation for frame-perfect synchronization.
+*   **🛠️ Clean Build**: Pure Vanilla JS extension runtime with no library overhead.
+*   **🌐 Universal**: Works on any website with a `<video>` tag.
+*   **🏠 Self-Hostable**: Full Docker support for private relay servers.
 
 ---
 
@@ -45,7 +32,7 @@ KoalaSync is a premium, lightweight Browser Extension and Relay Server for synch
 
 ### 📂 Repository Structure
 
-- `extension/`: Chrome & Firefox Extension (Manifest V3, Vanilla JS).
+- `extension/`: Browser Extension (Chrome & Firefox).
 - `server/`: Node.js + Socket.IO Relay Server (Containerized).
 - `website/`: Marketing landing page & Invitation Bridge.
 - `shared/`: **Single Source of Truth** for protocol constants.
@@ -80,7 +67,7 @@ The server will be available at `ws://localhost:3000`.
 
 ### 📖 Documentation & Links
 
-- **[PRIVACY.md](PRIVACY.md)**: Our commitment to your data sovereignty.
+- **[PRIVACY.md](PRIVACY.md)**: Data Handling and Privacy Policy.
 - **[CONTRIBUTING.md](CONTRIBUTING.md)**: How to help make KoalaSync better.
 - **[ARCHITECTURE.md](docs/ARCHITECTURE.md)**: Deep-dive into the two-phase sync and heartbeat logic.
 - **[SECURITY.md](SECURITY.md)**: Disclosure policy and security practices.
