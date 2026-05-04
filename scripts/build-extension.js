@@ -45,12 +45,19 @@ function copyExtensionFiles(targetDir) {
   const masterConstantsPath = path.join(rootDir, 'shared', 'constants.js');
   const constantsContent = fs.readFileSync(masterConstantsPath, 'utf8');
   
-  // Extract the EVENTS object using regex
-  const eventsMatch = constantsContent.match(/export const EVENTS = ({[\s\S]+?});/);
+  // Robust Extraction using flexible regex
+  const eventsMatch = constantsContent.match(/export const EVENTS\s*=\s*({[\s\S]+?});/);
+  const heartbeatMatch = constantsContent.match(/export const HEARTBEAT_INTERVAL\s*=\s*(\d+);/);
+
   if (!eventsMatch) {
     throw new Error('CRITICAL: Could not find EVENTS object in shared/constants.js');
   }
+  if (!heartbeatMatch) {
+    throw new Error('CRITICAL: Could not find HEARTBEAT_INTERVAL in shared/constants.js');
+  }
+
   const eventsObject = eventsMatch[1];
+  const heartbeatVal = heartbeatMatch[1];
   
   const items = fs.readdirSync(extDir);
   for (const item of items) {
@@ -65,20 +72,33 @@ function copyExtensionFiles(targetDir) {
       if (item === 'content.js') {
         // Perform injection
         let content = fs.readFileSync(srcPath, 'utf8');
-        const startMarker = '// --- SHARED_EVENTS_INJECT_START ---';
-        const endMarker = '// --- SHARED_EVENTS_INJECT_END ---';
         
-        const pattern = new RegExp(`${startMarker}[\\s\\S]+?${endMarker}`);
-        const replacement = `${startMarker}\n    // This block is automatically updated by /scripts/build-extension.js\n    const EVENTS = ${eventsObject};\n    ${endMarker}`;
+        // 1. Inject Events
+        const eStart = '// --- SHARED_EVENTS_INJECT_START ---';
+        const eEnd = '// --- SHARED_EVENTS_INJECT_END ---';
+        const ePattern = new RegExp(`${eStart}[\\s\\S]+?${eEnd}`);
+        const eRep = `${eStart}\n    // This block is automatically updated by /scripts/build-extension.js\n    const EVENTS = ${eventsObject};\n    ${eEnd}`;
         
-        if (pattern.test(content)) {
-          content = content.replace(pattern, replacement);
-          fs.writeFileSync(destPath, content);
-          console.log('✓ Injected shared events into content.js');
+        if (ePattern.test(content)) {
+          content = content.replace(ePattern, eRep);
         } else {
-          console.warn('⚠️ WARNING: Markers not found in content.js, skipping injection.');
-          fs.copyFileSync(srcPath, destPath);
+          console.warn('⚠️ WARNING: Event markers not found in content.js');
         }
+
+        // 2. Inject Heartbeat
+        const hStart = '// --- SHARED_HEARTBEAT_INJECT_START ---';
+        const hEnd = '// --- SHARED_HEARTBEAT_INJECT_END ---';
+        const hPattern = new RegExp(`${hStart}[\\s\\S]+?${hEnd}`);
+        const hRep = `${hStart}\n    const HEARTBEAT_INTERVAL_VAL = ${heartbeatVal};\n    ${hEnd}`;
+        
+        if (hPattern.test(content)) {
+          content = content.replace(hPattern, hRep);
+        } else {
+          console.warn('⚠️ WARNING: Heartbeat markers not found in content.js');
+        }
+
+        fs.writeFileSync(destPath, content);
+        console.log('✓ Injected shared constants into content.js');
       } else {
         fs.copyFileSync(srcPath, destPath);
       }

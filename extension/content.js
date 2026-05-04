@@ -506,6 +506,10 @@
     });
     observer.observe(document.body, { childList: true, subtree: true });
 
+    // --- SHARED_HEARTBEAT_INJECT_START ---
+    const HEARTBEAT_INTERVAL_VAL = 15000;
+    // --- SHARED_HEARTBEAT_INJECT_END ---
+
     // Heartbeat
     let heartbeatErrorCount = 0;
     const heartbeatInterval = setInterval(() => {
@@ -532,7 +536,7 @@
                 }
             });
         }
-    }, 15000);
+    }, HEARTBEAT_INTERVAL_VAL);
 
     // Initial Setup
     setupListeners();

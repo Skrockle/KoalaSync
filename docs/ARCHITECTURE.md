@@ -62,6 +62,6 @@ KoalaSync uses a megaphone routing approach to minimize server logic:
 ## 8. Constant Synchronization & Consistency
 To maintain a "Single Source of Truth" across the server and extension without using a bundler:
 - **Relay Server & Extension Modules**: `background.js` and `popup.js` import constants directly from `shared/constants.js`.
-- **Content Scripts**: To ensure zero-latency execution, `content.js` uses a manual mirror of `EVENTS`. 
-- **Synchronization**: The `node scripts/build-extension.js` script ensures that the `shared/` folder within the `extension/` directory is kept up-to-date with the root `shared/` source while packaging artifacts.
-- **Verification**: Any protocol change requires a manual verification sweep across all three constant locations (Shared, Server, and Content Script Mirror).
+- **Content Scripts**: To ensure zero-latency execution, `content.js` uses a synchronized copy of `EVENTS` and constants.
+- **Automation**: The `node scripts/build-extension.js` script automatically injects these constants into `content.js` during the build process, eliminating the risk of manual mirror mismatch.
+- **Verification**: Any protocol change is automatically propagated across the stack by running the build script.
