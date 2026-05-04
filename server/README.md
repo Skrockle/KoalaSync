@@ -19,11 +19,15 @@ MIN_VERSION=1.0.0
 ```
 
 ### Docker (Recommended)
-The server is designed to run in a Docker container.
+The server is available as a pre-built image on GHCR.
 ```bash
-# Build from the repository root
+# Pull from GHCR
+docker pull ghcr.io/shik3i/koalasync:latest
+
+# Or build from the repository root
 docker build -t koala-sync-server -f server/Dockerfile .
 ```
+See [docker-compose.example.yml](../docker-compose.example.yml) in the root directory for a ready-to-use configuration.
 
 ### Manual Setup
 ```bash

@@ -56,11 +56,16 @@ node scripts/build-extension.js
 The compiled artifacts will be available in the `dist/` directory.
 
 #### For Self-Hosting (Docker)
-Deploy your own private relay server:
+Deploy your own private relay server using our official image:
 ```bash
-docker-compose up -d --build
+# Pull the latest image
+docker pull ghcr.io/shik3i/koalasync:latest
+
+# Or use our example compose file
+cp docker-compose.example.yml docker-compose.yml
+docker-compose up -d
 ```
-The server will be available at `ws://localhost:3000`.
+The server will be available at `ws://localhost:3000`. See [docker-compose.example.yml](docker-compose.example.yml) for advanced configuration.
 
 ---
 
