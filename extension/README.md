@@ -20,14 +20,20 @@ KoalaSync requires `<all_urls>` permission to detect and interact with video ele
 - **No Browsing History**: We do not track or store your browsing history.
 - **State Management**: Sensitive data (Room Passwords) is stored locally using `chrome.storage`.
 - **Zero Telemetry**: No analytics or external tracking scripts.
+- **Zero Runtime Dependencies**: The extension is built with pure Vanilla JS and contains no external libraries or tracking scripts, ensuring maximum performance and privacy.
 
 ## Installation
-1. **Sync Protocol**: Run `./scripts/sync-constants.sh` (macOS/Linux) or `scripts\sync-constants.bat` (Windows) from the root.
+1. **Prepare Extension**: From the repository root, run:
+   ```bash
+   node scripts/build-extension.js
+   ```
 2. Open Chrome and go to `chrome://extensions/`.
 3. Enable **Developer mode** (top right).
-4. Click **Load unpacked** and select the `extension` folder.
+4. Click **Load unpacked** and select the `dist/chrome` folder.
 
 ## Development
-If you modify `shared/constants.js`, you must synchronize the changes across the extension and server:
-- **Windows**: Run `scripts\sync-constants.bat`
-- **Linux/macOS**: Run `scripts/sync-constants.sh`
+If you modify `shared/constants.js`, you must synchronize the changes by running the build script from the root:
+```bash
+node scripts/build-extension.js
+```
+This ensures that the `extension/shared` folder is updated with the latest protocol constants.

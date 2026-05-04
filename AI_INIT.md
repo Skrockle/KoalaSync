@@ -19,7 +19,7 @@ KoalaSync is a specialized tool for **synchronized video playback** across multi
 - `server/`: Node.js Relay Server using Socket.IO (WebSocket-only).
 - `website/`: **Landing Page** & Invitation Bridge (Marketing, Tutorials, and Downloads).
 - `shared/`: **Single Source of Truth** for protocol constants and event names.
-- `scripts/`: Utility scripts (e.g., `sync-constants.sh`).
+- `scripts/`: Development utilities (e.g., `build-extension.js`).
 - `docker-compose.yml`: Root-level orchestration for the relay server.
 
 > [!IMPORTANT]
@@ -37,7 +37,7 @@ Before touching any code, you MUST read the following documents in order:
 To avoid boot-time race conditions in Manifest V3 without a bundler, the following architectural trade-off is enforced:
 - **Synchronous Execution**: `content.js` MUST execute synchronously to catch early media events. 
 - **Manual Mirroring**: `content.js` maintains a manual mirror of the `EVENTS` constants from `shared/constants.js`.
-- **Maintenance**: Developers must ensure that any changes to `shared/constants.js` are manually reflected in `content.js` after running the sync scripts.
+- **Maintenance**: Developers must ensure that any changes to `shared/constants.js` are manually reflected in `content.js` after running the build script.
 
 ## 5. Design Guidelines
 The popup UI follows a strict design system. Do not modify these variables or the layout structure without explicit approval.
