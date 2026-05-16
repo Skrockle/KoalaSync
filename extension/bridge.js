@@ -1,6 +1,6 @@
 /**
  * KoalaSync Bridge Script
- * Injected into koalasync.shik3i.net to facilitate communication between 
+ * Injected into sync.koalastuff.net to facilitate communication between 
  * the landing page and the extension.
  */
 

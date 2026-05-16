@@ -8,7 +8,7 @@ This directory contains the KoalaSync website. It serves a dual purpose: it is b
 Provides a premium, bilingual (EN/DE) overview of features, setup instructions, and direct links to the extension stores.
 
 ### 2. The Invitation Bridge (`join.html`)
-The website handles incoming invitation links. When a user clicks a link like `koalasync.shik3i.net/join.html#join:roomID:pass`, the website:
+The website handles incoming invitation links. When a user clicks a link like `sync.koalastuff.net/join.html#join:roomID:pass`, the website:
 - **Detects the Extension**: Verifies if KoalaSync is installed via the `bridge.js` content script.
 - **Privacy-First Handshake**: The room credentials (ID/Password) are stored in the **URL Hash (#)**. This ensures the sensitive credentials **never reach the web server** and are processed entirely within the user's browser.
 - **Auto-Join**: If the extension is detected, it automatically triggers the join flow without requiring user input.
@@ -29,7 +29,7 @@ Caddy is the recommended web server. It provides automatic HTTPS and high-perfor
 For a more comprehensive configuration that includes the Relay Server reverse proxy, see the root [Caddyfile.example](../Caddyfile.example).
 
 ```caddy
-koalasync.shik3i.net {
+sync.koalastuff.net {
     root * /var/www/koalasync/website
     file_server
     encode zstd gzip

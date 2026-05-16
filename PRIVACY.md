@@ -25,7 +25,7 @@ To prevent abuse and brute-force attacks, the following data is processed:
 - **Brute-Force Protection**: If multiple failed password attempts are detected, the server stores the `IP address` and `Room ID` in a temporary RAM-based lockout list for a maximum of 15 minutes.
 - **Connection Rate Limiting**: IP addresses are tracked for 60 seconds to prevent connection-flooding (DoS) attacks.
 - **Event Rate Limiting**: Per-socket event counters are tracked for 10-second windows to prevent event-spamming. These are keyed by ephemeral socket IDs and cleaned up periodically.
-- **Console Logging**: The official relay server (`sync.shik3i.net`) outputs connection events (including IP addresses) to the server console for real-time monitoring. These logs are ephemeral and are not archived, sold, or linked to any persistent user identity.
+- **Console Logging**: The official relay server (`syncserver.koalastuff.net`) outputs connection events (including IP addresses) to the server console for real-time monitoring. These logs are ephemeral and are not archived, sold, or linked to any persistent user identity.
 
 ## 3. Extension Permissions
 The browser extension requires the following permissions:
@@ -43,7 +43,7 @@ KoalaSync is completely self-contained:
 - **No External Fonts**: We use system font stacks to prevent tracking via font services.
 
 ## 5. Self-Hosted Instances
-This privacy policy applies to the **official KoalaSync relay server** at `sync.shik3i.net`. If you choose to self-host a relay server using our open-source Docker image, the data handling practices of that instance are the responsibility of the server operator.
+This privacy policy applies to the **official KoalaSync relay server** at `syncserver.koalastuff.net`. If you choose to self-host a relay server using our open-source Docker image, the data handling practices of that instance are the responsibility of the server operator.
 
 ---
 

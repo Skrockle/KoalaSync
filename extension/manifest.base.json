@@ -24,7 +24,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://koalasync.shik3i.net/*"],
+      "matches": ["https://sync.koalastuff.net/*"],
       "js": ["bridge.js"],
       "run_at": "document_start"
     }

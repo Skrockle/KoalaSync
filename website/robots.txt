@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://koalasync.shik3i.net/sitemap.xml
+Sitemap: https://sync.koalastuff.net/sitemap.xml

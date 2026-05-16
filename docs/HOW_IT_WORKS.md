@@ -18,7 +18,7 @@ This guide walks through the complete user flow of KoalaSync, from creating a ro
 
 When you open the extension popup, the background service worker connects to the relay server:
 
-1. **WebSocket Handshake**: `background.js` opens a WebSocket to `wss://sync.shik3i.net/socket.io/?EIO=4&transport=websocket`.
+1. **WebSocket Handshake**: `background.js` opens a WebSocket to `wss://syncserver.koalastuff.net/socket.io/?EIO=4&transport=websocket`.
 2. **Security Checks** (server-side):
    - The server checks the client's **IP rate limit** (max 10 connections per 60 seconds).
    - The server validates the **authentication token** (hardcoded in `shared/constants.js`) to verify this is a legitimate KoalaSync client.
@@ -65,7 +65,7 @@ Click the **📋 Copy** button next to the invite link:
 
 1. The extension constructs a URL in this format:
    ```
-   https://koalasync.shik3i.net/join.html#join:<roomId>:<password>:<serverFlag>:<encodedServerUrl>
+   https://sync.koalastuff.net/join.html#join:<roomId>:<password>:<serverFlag>:<encodedServerUrl>
    ```
    - `serverFlag`: `0` for official server, `1` for custom server.
    - `encodedServerUrl`: Only populated if using a custom server.
@@ -80,9 +80,9 @@ Click the **📋 Copy** button next to the invite link:
 
 When your friend opens the link in their browser:
 
-1. **`join.html` loads** on `koalasync.shik3i.net`. The page displays "INVITATION DETECTED" with the Room ID.
+1. **`join.html` loads** on `sync.koalastuff.net`. The page displays "INVITATION DETECTED" with the Room ID.
 
-2. **Extension detection**: The page checks for `document.documentElement.dataset.koalasyncInstalled`, which is set by `bridge.js` (a content script injected only on `koalasync.shik3i.net`).
+2. **Extension detection**: The page checks for `document.documentElement.dataset.koalasyncInstalled`, which is set by `bridge.js` (a content script injected only on `sync.koalastuff.net`).
 
 3. **If the extension IS installed**:
    - The page shows "Joining room automatically..."

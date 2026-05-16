@@ -2,7 +2,7 @@
 # Replace domains and paths with your actual setup.
 
 # 1. Marketing Website & Invitation Bridge
-koalasync.shik3i.net {
+sync.koalastuff.net {
     root * /var/www/koalasync/website
     file_server
     encode zstd gzip
@@ -20,7 +20,7 @@ koalasync.shik3i.net {
 }
 
 # 2. Relay Server (Socket.IO / WebSocket)
-sync.shik3i.net {
+syncserver.koalastuff.net {
     reverse_proxy localhost:3000 {
         # Ensure WebSocket support is explicitly handled if needed
         # (Caddy usually handles this automatically)

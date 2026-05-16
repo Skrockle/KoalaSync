@@ -161,7 +161,7 @@ async function run() {
       };
       manifest.browser_specific_settings = {
         gecko: {
-          id: "koalasync@shik3i.net"
+          id: "koalasync@koalastuff.net"
         }
       };
       return manifest;

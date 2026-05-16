@@ -78,7 +78,7 @@ export const BLACKLIST_DOMAINS = [
     'myanimelist.net',
 
     // Development & Utilities
-    'timer.shik3i.net',
+    'timer.koalastuff.net',
     'localhost',
     'zoom.us',
     'teams.microsoft.com',

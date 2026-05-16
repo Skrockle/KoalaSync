@@ -124,7 +124,7 @@ function updateUI(roomId, password, useCustomServer = false, serverUrl = '') {
         if (elements.activeRoomId) elements.activeRoomId.textContent = roomId;
         if (elements.activeServer) {
             elements.activeServer.textContent = useCustomServer ? (serverUrl || 'Custom Server') : 'Official Server';
-            elements.activeServer.title = useCustomServer ? (serverUrl || '') : 'sync.shik3i.net';
+            elements.activeServer.title = useCustomServer ? (serverUrl || '') : 'syncserver.koalastuff.net';
         }
     } else {
         updatePeerList([]);
