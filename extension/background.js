@@ -105,6 +105,8 @@ ensureState();
 let reconnectTimer = null;
 let reconnectStartTime = null; // New: track when reconnection started
 let reconnectFailed = false; // New: true if we hit the 5-min cap
+let slowReconnectTimer = null; // Infinite slow background reconnect timer
+let isSlowReconnectAttempt = false; // True during slow background reconnect execution
 
 // Force Sync Coordination
 let isForceSyncInitiator = false;
@@ -233,8 +235,9 @@ async function connect() {
             return;
         }
 
-        if (reconnectFailed) {
+        if (reconnectFailed && !isSlowReconnectAttempt) {
             isConnecting = false;
+            scheduleSlowReconnect(); // Keep checking in the background
             return;
         }
 
@@ -283,6 +286,12 @@ async function connect() {
             addLog('WebSocket Connection Opened', 'success');
             reconnectStartTime = null;
             reconnectFailed = false;
+            isSlowReconnectAttempt = false;
+            if (slowReconnectTimer) {
+                clearTimeout(slowReconnectTimer);
+                slowReconnectTimer = null;
+            }
+            chrome.storage.session.set({ reconnectFailed: false });
             isNamespaceJoined = false;
             socket.send('40');
         };
@@ -412,7 +421,14 @@ function showNotification(senderName, action) {
 }
 
 function scheduleReconnect() {
-    if (reconnectTimer || reconnectFailed) return;
+    if (reconnectTimer) return;
+    
+    isSlowReconnectAttempt = false;
+
+    if (reconnectFailed) {
+        scheduleSlowReconnect();
+        return;
+    }
     
     if (!reconnectStartTime) reconnectStartTime = Date.now();
 
@@ -420,8 +436,9 @@ function scheduleReconnect() {
     if (Date.now() - reconnectStartTime > 300000) {
         reconnectFailed = true;
         chrome.storage.session.set({ reconnectFailed: true });
-        addLog('Reconnection failed after 5 minutes. Please try again manually.', 'error');
+        addLog('Reconnection failed after 5 minutes. Entering slow background retry mode.', 'error');
         broadcastConnectionStatus('reconnect_failed');
+        scheduleSlowReconnect();
         return;
     }
     
@@ -430,6 +447,20 @@ function scheduleReconnect() {
         reconnectDelay = Math.min(reconnectDelay * 2, MAX_RECONNECT_DELAY);
         connect();
     }, reconnectDelay);
+}
+
+function scheduleSlowReconnect() {
+    if (slowReconnectTimer || socket || isConnecting) return;
+    
+    slowReconnectTimer = setTimeout(async () => {
+        slowReconnectTimer = null;
+        await ensureState();
+        if (reconnectFailed && !socket && !isConnecting) {
+            addLog('Performing background reconnection attempt...', 'info');
+            isSlowReconnectAttempt = true;
+            connect();
+        }
+    }, 300000); // 5 minutes (300,000ms)
 }
 
 function emit(event, data) {
@@ -930,6 +961,12 @@ async function handleAsyncMessage(message, sender, sendResponse) {
     if (message.type === 'CONNECT') {
         reconnectFailed = false;
         reconnectStartTime = null;
+        isSlowReconnectAttempt = false;
+        if (slowReconnectTimer) {
+            clearTimeout(slowReconnectTimer);
+            slowReconnectTimer = null;
+        }
+        chrome.storage.session.set({ reconnectFailed: false });
         const settings = await getSettings();
         if (settings.roomId) {
             leaveOldRoomIfSwitching(settings.roomId);
@@ -954,6 +991,12 @@ async function handleAsyncMessage(message, sender, sendResponse) {
         reconnectFailed = false;
         reconnectStartTime = null;
         reconnectDelay = 1000;
+        isSlowReconnectAttempt = false;
+        if (slowReconnectTimer) {
+            clearTimeout(slowReconnectTimer);
+            slowReconnectTimer = null;
+        }
+        chrome.storage.session.set({ reconnectFailed: false });
         connect();
         sendResponse({ status: 'ok' });
     } else if (message.type === 'GET_STATUS') {
