@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "KoalaSync",
-  "version": "1.3.1",
+  "version": "1.4.4",
   "description": "Watch party extension to synchronize video playback on YouTube, Twitch, Netflix, and HTML5 sites in real-time with friends.",
   "permissions": [
     "storage",
@@ -24,8 +24,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://sync.koalastuff.net/*"],
-      "js": ["bridge.js"],
+      "matches": [
+        "https://sync.koalastuff.net/*"
+      ],
+      "js": [
+        "bridge.js"
+      ],
       "run_at": "document_start"
     }
   ],
