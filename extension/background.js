@@ -560,6 +560,18 @@ function handleServerEvent(event, data) {
                     playbackState: 'playing'
                 });
             }
+
+            // Reset reactive update locks for all peers so the next playing heartbeat is accepted immediately
+            if (currentRoom && Array.isArray(currentRoom.peers)) {
+                currentRoom.peers.forEach(peer => {
+                    if (peer && typeof peer === 'object') {
+                        peer.lastReactiveUpdate = 0;
+                    }
+                });
+                if (storageInitialized) chrome.storage.session.set({ currentRoom });
+                chrome.runtime.sendMessage({ type: 'PEER_UPDATE', peers: currentRoom.peers }).catch(() => {});
+            }
+
             routeToContent(event, data);
             break;
         case EVENTS.EVENT_ACK:
@@ -702,6 +714,18 @@ function executeForceSync() {
         forceSyncAcks: [], 
         forceSyncDeadline: null 
     });
+
+    // Reset reactive update locks for all peers so the next playing heartbeat is accepted immediately
+    if (currentRoom && Array.isArray(currentRoom.peers)) {
+        currentRoom.peers.forEach(peer => {
+            if (peer && typeof peer === 'object') {
+                peer.lastReactiveUpdate = 0;
+            }
+        });
+        if (storageInitialized) chrome.storage.session.set({ currentRoom });
+        chrome.runtime.sendMessage({ type: 'PEER_UPDATE', peers: currentRoom.peers }).catch(() => {});
+    }
+
     emit(EVENTS.FORCE_SYNC_EXECUTE, {});
     routeToContent(EVENTS.FORCE_SYNC_EXECUTE, {});
     addLog('Force Sync Executed', 'success');
