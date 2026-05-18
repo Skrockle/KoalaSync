@@ -74,8 +74,14 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const isFirefox = navigator.userAgent.includes('Firefox');
                                 if (isFirefox) {
                                     actions.innerHTML = `
-                                        <a href="https://addons.mozilla.org/de/firefox/addon/koalasync/" class="primary btn-firefox" style="text-align:center; text-decoration:none; display:block; padding: 1.2rem; border-radius: 12px; font-weight: 700;">GET IT ON MOZILLA ADD-ONS</a>
-                                        <a href="https://github.com/shik3i/KoalaSync" style="text-align:center; color:#e66000; text-decoration:underline; font-size:0.85rem; margin-top:0.8rem; display:block; font-weight: 600;">Download via GitHub</a>
+                                        <a href="https://addons.mozilla.org/de/firefox/addon/koalasync/" class="primary btn-firefox" style="text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap: 8px; padding: 1.2rem; border-radius: 12px; font-weight: 700;">
+                                            <span>🦊</span>
+                                            <span lang="en">GET IT ON MOZILLA ADD-ONS</span><span lang="de">IM FIREFOX ADD-ON STORE HERUNTERLADEN</span>
+                                        </a>
+                                        <a href="https://github.com/shik3i/KoalaSync" style="text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap: 8px; padding: 0.8rem; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--glass-border); color: #e66000; border-radius: 12px; font-weight: 700; font-size: 0.85rem; margin-top: 0.5rem; transition: background 0.2s;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" style="display: block;"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                                            <span lang="en">Download via GitHub</span><span lang="de">Über GitHub herunterladen</span>
+                                        </a>
                                         <p style="text-align:center; font-size:0.8rem; opacity:0.7; margin-top: 1.2rem; color: var(--text-muted);">
                                             <span lang="en">The extension is required to join and sync videos.</span>
                                             <span lang="de">Die Erweiterung ist erforderlich, um beizutreten und Videos zu synchronisieren.</span>
@@ -83,8 +89,14 @@ document.addEventListener('DOMContentLoaded', () => {
                                     `;
                                 } else {
                                     actions.innerHTML = `
-                                        <a href="#" class="primary" style="text-align:center; text-decoration:none; display:block; padding: 1.2rem; background: var(--accent); color: white; border-radius: 12px; font-weight: 700;">GET IT ON CHROME WEBSTORE</a>
-                                        <a href="https://github.com/shik3i/KoalaSync" style="text-align:center; color:var(--accent); text-decoration:underline; font-size:0.85rem; margin-top:0.8rem; display:block; font-weight: 600;">Download via GitHub</a>
+                                        <a href="#" class="primary" style="text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap: 8px; padding: 1.2rem; background: var(--accent); color: white; border-radius: 12px; font-weight: 700;">
+                                            <img src="assets/chrome.svg" width="20" style="display: block;">
+                                            <span lang="en">GET IT ON CHROME WEBSTORE</span><span lang="de">IM CHROME WEB STORE HERUNTERLADEN</span>
+                                        </a>
+                                        <a href="https://github.com/shik3i/KoalaSync" style="text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap: 8px; padding: 0.8rem; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--glass-border); color: var(--accent); border-radius: 12px; font-weight: 700; font-size: 0.85rem; margin-top: 0.5rem; transition: background 0.2s;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" style="display: block;"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                                            <span lang="en">Download via GitHub</span><span lang="de">Über GitHub herunterladen</span>
+                                        </a>
                                         <p style="text-align:center; font-size:0.8rem; opacity:0.7; margin-top: 1.2rem; color: var(--text-muted);">
                                             <span lang="en">The extension is required to join and sync videos.</span>
                                             <span lang="de">Die Erweiterung ist erforderlich, um beizutreten und Videos zu synchronisieren.</span>
@@ -95,8 +107,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                 actions.innerHTML = `
                                     <div class="joining-spinner" style="text-align:center; padding: 1rem;">
                                         <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">🚀</div>
-                                        <div style="font-weight: 600; color: var(--accent);">Joining room automatically...</div>
-                                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Your extension is taking care of it.</p>
+                                        <div style="font-weight: 600; color: var(--accent);">
+                                            <span lang="en">Joining room automatically...</span><span lang="de">Raum wird automatisch betreten...</span>
+                                        </div>
+                                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+                                            <span lang="en">Your extension is taking care of it.</span><span lang="de">Deine Erweiterung kümmert sich darum.</span>
+                                        </p>
                                     </div>
                                 `;
                                 
@@ -269,6 +285,70 @@ document.addEventListener('DOMContentLoaded', () => {
             console.warn('Failed to fetch dynamic version info:', e);
         }
     };
+
+    // Extension Mockup Tab Switcher
+    const mockTabs = document.querySelectorAll('.mock-tab');
+    const mockScreens = document.querySelectorAll('.mock-screen');
+    
+    mockTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            mockTabs.forEach(t => t.classList.remove('active'));
+            mockScreens.forEach(s => s.classList.remove('active'));
+            
+            tab.classList.add('active');
+            const targetId = tab.getAttribute('data-target');
+            const targetScreen = document.getElementById(targetId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+            }
+        });
+    });
+
+    // Terminal Tab Switcher
+    const termTabBtns = document.querySelectorAll('.terminal-tab-btn');
+    const termPanes = document.querySelectorAll('.terminal-pane');
+    
+    termTabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            termTabBtns.forEach(b => b.classList.remove('active'));
+            termPanes.forEach(p => p.classList.remove('active'));
+            
+            btn.classList.add('active');
+            const targetPaneId = btn.getAttribute('data-tab');
+            const targetPane = document.getElementById(targetPaneId);
+            if (targetPane) {
+                targetPane.classList.add('active');
+            }
+        });
+    });
+
+    // Terminal Clipboard Copy
+    const copyBtn = document.querySelector('.terminal-copy-btn');
+    if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+            const activePane = document.querySelector('.terminal-pane.active');
+            if (!activePane) return;
+            const codeElement = activePane.querySelector('code');
+            if (!codeElement) return;
+            
+            const textToCopy = codeElement.innerText || codeElement.textContent;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const isDE = document.documentElement.classList.contains('lang-de');
+                const originalHTML = copyBtn.innerHTML;
+                
+                copyBtn.innerHTML = isDE ? '✅ Kopiert!' : '✅ Copied!';
+                copyBtn.disabled = true;
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalHTML;
+                    copyBtn.disabled = false;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        });
+    }
 
     checkInvite();
     updateDynamicVersion();
