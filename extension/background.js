@@ -137,6 +137,28 @@ function createPeerData(raw) {
     };
 }
 
+/**
+ * Updates properties of a peer in the room and instantly broadcasts the changes to the popup UI.
+ * Also tracks lastReactiveUpdate to guard against older heartbeats in transit overwriting state.
+ */
+function updateLocalPeerState(targetPeerId, updates) {
+    if (!currentRoom || !Array.isArray(currentRoom.peers)) return;
+    const peer = currentRoom.peers.find(p => (p.peerId || p) === targetPeerId);
+    if (peer && typeof peer === 'object') {
+        Object.keys(updates).forEach(key => {
+            if (updates[key] !== undefined && updates[key] !== null) {
+                peer[key] = updates[key];
+            }
+        });
+        peer.lastReactiveUpdate = Date.now(); // Race condition guard lock
+        if (updates.currentTime !== undefined && updates.currentTime !== null) {
+            peer.lastHeartbeat = Date.now(); // reset time interpolation baseline
+        }
+        if (storageInitialized) chrome.storage.session.set({ currentRoom });
+        chrome.runtime.sendMessage({ type: 'PEER_UPDATE', peers: currentRoom.peers }).catch(() => {});
+    }
+}
+
 async function getPeerId() {
     const data = await chrome.storage.local.get(['peerId']);
     if (data.peerId) return data.peerId;
@@ -488,6 +510,14 @@ function handleServerEvent(event, data) {
                 addToHistory(event, data.senderId);
                 showNotification(data.senderId, event);
                 updateLastAction(event, data.senderId);
+                lastActionState.targetTime = data.targetTime !== undefined ? data.targetTime : data.currentTime;
+                if (storageInitialized) chrome.storage.session.set({ lastActionState });
+
+                // Remote Reactive Update
+                updateLocalPeerState(data.senderId, {
+                    playbackState: event === EVENTS.PLAY ? 'playing' : (event === EVENTS.PAUSE ? 'paused' : undefined),
+                    currentTime: data.currentTime !== undefined ? data.currentTime : (data.targetTime !== undefined ? data.targetTime : undefined)
+                });
             }
             routeToContent(event, data);
             break;
@@ -505,6 +535,12 @@ function handleServerEvent(event, data) {
                         if (storageInitialized) chrome.storage.session.set({ lastActionState });
                         chrome.runtime.sendMessage({ type: 'ACTION_UPDATE', state: lastActionState }).catch(() => {});
                     }
+
+                    // Force Sync ACK Reactive Update
+                    updateLocalPeerState(data.senderId, {
+                        playbackState: 'paused', // Preparing for force sync always pauses the player
+                        currentTime: lastActionState.targetTime
+                    });
                 }
 
                 // Check if all peers responded
@@ -518,6 +554,11 @@ function handleServerEvent(event, data) {
             if (data.senderId) {
                 addToHistory(event, data.senderId);
                 showNotification(data.senderId, event);
+
+                // Force Sync Execute Remote Reactive Update
+                updateLocalPeerState(data.senderId, {
+                    playbackState: 'playing'
+                });
             }
             routeToContent(event, data);
             break;
@@ -530,6 +571,12 @@ function handleServerEvent(event, data) {
                         lastActionState.acks.push(data.senderId);
                         if (storageInitialized) chrome.storage.session.set({ lastActionState });
                         chrome.runtime.sendMessage({ type: 'ACTION_UPDATE', state: lastActionState }).catch(() => {});
+
+                        // ACK Reactive Update
+                        updateLocalPeerState(data.senderId, {
+                            playbackState: lastActionState.action === EVENTS.PLAY ? 'playing' : (lastActionState.action === EVENTS.PAUSE ? 'paused' : undefined),
+                            currentTime: (lastActionState.action === EVENTS.SEEK || lastActionState.action === EVENTS.FORCE_SYNC_PREPARE) ? lastActionState.targetTime : undefined
+                        });
                     }
                 }
             }
@@ -571,11 +618,19 @@ function handleServerEvent(event, data) {
                             peer.tabTitle = data.tabTitle;
                             peer.username = data.username;
                             peer.mediaTitle = data.mediaTitle !== undefined ? data.mediaTitle : peer.mediaTitle;
-                            peer.playbackState = data.playbackState !== undefined ? data.playbackState : peer.playbackState;
-                            peer.currentTime = data.currentTime !== undefined ? data.currentTime : peer.currentTime;
                             peer.volume = data.volume !== undefined ? data.volume : peer.volume;
                             peer.muted = data.muted !== undefined ? data.muted : peer.muted;
-                            peer.lastHeartbeat = Date.now();
+
+                            // Race condition guard: ignore heartbeat playbackState/currentTime 
+                            // if we applied a reactive user action in the last 1.5 seconds.
+                            const timeSinceReactive = peer.lastReactiveUpdate ? (Date.now() - peer.lastReactiveUpdate) : Infinity;
+                            const ignoreStatus = timeSinceReactive < 1500;
+
+                            if (!ignoreStatus) {
+                                peer.playbackState = data.playbackState !== undefined ? data.playbackState : peer.playbackState;
+                                peer.currentTime = data.currentTime !== undefined ? data.currentTime : peer.currentTime;
+                                peer.lastHeartbeat = Date.now();
+                            }
                         } else {
                             // Migration: replace string peer with normalized object
                             const idx = currentRoom.peers.indexOf(peer);
@@ -811,9 +866,31 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
             });
         }
     }
-});
+function leaveOldRoomIfSwitching(newRoomId) {
+    if (currentRoom && currentRoom.roomId !== newRoomId) {
+        addLog(`Switching rooms: leaving ${currentRoom.roomId} to join ${newRoomId}`, 'info');
+        if (socket && socket.readyState === WebSocket.OPEN && isNamespaceJoined) {
+            try {
+                socket.send(`42${JSON.stringify([EVENTS.LEAVE_ROOM, { peerId }])}`);
+            } catch (e) {
+                addLog('Failed to send leave room packet during transition', 'error');
+            }
+        }
+        currentRoom = null;
+        if (storageInitialized) chrome.storage.session.set({ currentRoom: null });
+        chrome.runtime.sendMessage({ type: 'PEER_UPDATE', peers: [] }).catch(() => {});
 
-
+        // Reset force sync states
+        isForceSyncInitiator = false;
+        forceSyncAcks.clear();
+        if (forceSyncTimeout) clearTimeout(forceSyncTimeout);
+        chrome.storage.session.set({ 
+            isForceSyncInitiator: false, 
+            forceSyncAcks: [], 
+            forceSyncDeadline: null 
+        });
+    }
+}
 
 // --- Extension Message Listeners ---
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -827,9 +904,12 @@ async function handleAsyncMessage(message, sender, sendResponse) {
     if (message.type === 'CONNECT') {
         reconnectFailed = false;
         reconnectStartTime = null;
+        const settings = await getSettings();
+        if (settings.roomId) {
+            leaveOldRoomIfSwitching(settings.roomId);
+        }
         if (socket && socket.readyState === WebSocket.OPEN && isNamespaceJoined) {
             // Already connected, but maybe room changed or we need to refresh room state
-            const settings = await getSettings();
             if (settings.roomId) {
                 emit(EVENTS.JOIN_ROOM, { 
                     roomId: settings.roomId, 
@@ -907,6 +987,7 @@ async function handleAsyncMessage(message, sender, sendResponse) {
             serverUrl: serverUrl || ''
         }, async () => {
             broadcastConnectionStatus('connecting');
+            leaveOldRoomIfSwitching(roomId);
             if (socket && socket.readyState === WebSocket.OPEN && isNamespaceJoined) {
                 // FORCE TRANSITION: Emit Join Room directly if already connected
                 const settings = await getSettings();
@@ -949,8 +1030,16 @@ async function handleAsyncMessage(message, sender, sendResponse) {
         const processEvent = () => {
             const timestamp = Date.now();
             updateLastAction(message.action, 'You', timestamp);
+            lastActionState.targetTime = message.payload.targetTime !== undefined ? message.payload.targetTime : message.payload.currentTime;
+            if (storageInitialized) chrome.storage.session.set({ lastActionState });
             message.payload.actionTimestamp = timestamp;
             
+            // Local Reactive Update
+            updateLocalPeerState(peerId, {
+                playbackState: message.action === EVENTS.PLAY ? 'playing' : (message.action === EVENTS.PAUSE ? 'paused' : undefined),
+                currentTime: message.payload.currentTime !== undefined ? message.payload.currentTime : (message.payload.targetTime !== undefined ? message.payload.targetTime : undefined)
+            });
+
             if (message.action === EVENTS.FORCE_SYNC_PREPARE) {
                 isForceSyncInitiator = true;
                 forceSyncAcks.clear();
@@ -997,6 +1086,15 @@ async function handleAsyncMessage(message, sender, sendResponse) {
             forceSyncAcks.add(peerId);
             chrome.storage.session.set({ forceSyncAcks: Array.from(forceSyncAcks) });
             addLog(`Local ACK received (${forceSyncAcks.size})`, 'info');
+
+            // Local Force Sync ACK Reactive Update
+            if (lastActionState && lastActionState.action === EVENTS.FORCE_SYNC_PREPARE) {
+                updateLocalPeerState(peerId, {
+                    playbackState: 'paused',
+                    currentTime: lastActionState.targetTime
+                });
+            }
+
             const peerCount = currentRoom ? currentRoom.peers.length : 1;
             if (forceSyncAcks.size >= peerCount) {
                 executeForceSync();

@@ -265,16 +265,20 @@
 
         if (message.type === 'SERVER_COMMAND') {
             const { action, payload } = message;
+            let actionCompleted = false;
             
             if (action === EVENTS.PLAY) {
                 tryMediaAction(EVENTS.PLAY);
                 chrome.runtime.sendMessage({ type: 'CMD_ACK', actionTimestamp: message.actionTimestamp });
+                actionCompleted = true;
             } else if (action === EVENTS.PAUSE) {
                 tryMediaAction(EVENTS.PAUSE);
                 chrome.runtime.sendMessage({ type: 'CMD_ACK', actionTimestamp: message.actionTimestamp });
+                actionCompleted = true;
             } else if (action === EVENTS.SEEK) {
                 tryMediaAction(EVENTS.SEEK, payload);
                 chrome.runtime.sendMessage({ type: 'CMD_ACK', actionTimestamp: message.actionTimestamp });
+                actionCompleted = true;
             } else if (action === EVENTS.FORCE_SYNC_PREPARE) {
                 if (!payload || payload.targetTime === undefined) return;
                 const video = findVideo();
@@ -288,13 +292,21 @@
                     video.pause();
                     video.currentTime = payload.targetTime;
                     pollSeekReady(payload.targetTime).then((ready) => {
-                        if (ready) chrome.runtime.sendMessage({ type: 'FORCE_SYNC_ACK' });
+                        if (ready) {
+                            chrome.runtime.sendMessage({ type: 'FORCE_SYNC_ACK' });
+                            scheduleProactiveHeartbeat();
+                        }
                     });
                 }
             } else if (action === EVENTS.FORCE_SYNC_EXECUTE) {
                 stopLobbyPoll(); // Clear any pending lobby on force sync
                 tryMediaAction(EVENTS.PLAY);
                 chrome.runtime.sendMessage({ type: 'CMD_ACK', actionTimestamp: message.actionTimestamp });
+                actionCompleted = true;
+            }
+
+            if (actionCompleted) {
+                scheduleProactiveHeartbeat();
             }
         }
 
@@ -399,6 +411,9 @@
                 timestamp: Date.now()
             }
         });
+
+        // Trigger proactive heartbeat to push stabilized state
+        scheduleProactiveHeartbeat();
     }
 
     const handlePlay = () => reportEvent(EVENTS.PLAY);
@@ -510,36 +525,57 @@
     const HEARTBEAT_INTERVAL_VAL = 15000;
     // --- SHARED_HEARTBEAT_INJECT_END ---
 
-    // Heartbeat
+    // Heartbeat Refactoring (Self-scheduling setTimeout with proactive heartbeat scheduling)
+    let heartbeatTimeout = null;
+    let proactiveHeartbeatTimeout = null;
     let heartbeatErrorCount = 0;
-    const heartbeatInterval = setInterval(() => {
+
+    function sendHeartbeat() {
         const video = findVideo();
-        if (video) {
-            const mediaTitle = (navigator.mediaSession && navigator.mediaSession.metadata) ? navigator.mediaSession.metadata.title : null;
-            chrome.runtime.sendMessage({
-                type: 'HEARTBEAT',
-                payload: {
-                    playbackState: video.paused ? 'paused' : 'playing',
-                    currentTime: video.currentTime,
-                    mediaTitle: mediaTitle,
-                    volume: video.volume,
-                    muted: video.muted
+        if (!video) return;
+
+        const mediaTitle = (navigator.mediaSession && navigator.mediaSession.metadata) ? navigator.mediaSession.metadata.title : null;
+        chrome.runtime.sendMessage({
+            type: 'HEARTBEAT',
+            payload: {
+                playbackState: video.paused ? 'paused' : 'playing',
+                currentTime: video.currentTime,
+                mediaTitle: mediaTitle,
+                volume: video.volume,
+                muted: video.muted
+            }
+        }).catch(err => {
+            if (err.message.includes('Extension context invalidated')) {
+                heartbeatErrorCount++;
+                if (heartbeatErrorCount === 1) {
+                    reportLog('Extension reloaded. Please refresh the page if sync stops working.', 'warn');
                 }
-            }).catch(err => {
-                if (err.message.includes('Extension context invalidated')) {
-                    heartbeatErrorCount++;
-                    if (heartbeatErrorCount === 1) {
-                        reportLog('Extension reloaded. Please refresh the page if sync stops working.', 'warn');
-                    }
-                    clearInterval(heartbeatInterval);
-                    observer.disconnect();
-                }
-            });
-        }
-    }, HEARTBEAT_INTERVAL_VAL);
+                if (heartbeatTimeout) clearTimeout(heartbeatTimeout);
+                if (proactiveHeartbeatTimeout) clearTimeout(proactiveHeartbeatTimeout);
+                observer.disconnect();
+            }
+        });
+    }
+
+    function schedulePeriodicHeartbeat() {
+        if (heartbeatTimeout) clearTimeout(heartbeatTimeout);
+        heartbeatTimeout = setTimeout(() => {
+            sendHeartbeat();
+            schedulePeriodicHeartbeat();
+        }, HEARTBEAT_INTERVAL_VAL);
+    }
+
+    function scheduleProactiveHeartbeat() {
+        if (proactiveHeartbeatTimeout) clearTimeout(proactiveHeartbeatTimeout);
+        proactiveHeartbeatTimeout = setTimeout(() => {
+            sendHeartbeat();
+            schedulePeriodicHeartbeat(); // Reschedules the next periodic check to be exactly 15s from now
+        }, 500); // 500ms stabilization delay
+    }
 
     // Initial Setup
     setupListeners();
+    schedulePeriodicHeartbeat();
 
     // Episode Auto-Sync: Boot recovery — check if background has an active lobby
     chrome.runtime.sendMessage({ type: 'CONTENT_BOOT' }, (res) => {
