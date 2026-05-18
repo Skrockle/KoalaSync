@@ -350,6 +350,61 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Mobile Hamburger Menu Toggle
+    const hamburger = document.querySelector('.hamburger');
+    const navLinks = document.querySelector('.nav-links');
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('open');
+        });
+    }
+
+    // Language Selection Umschalter
+    const toggleLanguage = (e) => {
+        if (e) e.preventDefault();
+        const html = document.documentElement;
+        const currentIsEnglish = html.classList.contains('lang-en');
+        const newLang = currentIsEnglish ? 'de' : 'en';
+        html.classList.remove('lang-en', 'lang-de');
+        html.classList.add('lang-' + newLang);
+        html.lang = newLang;
+        localStorage.setItem('koala_lang', newLang);
+        
+        // Update titles dynamically based on page
+        var path = window.location.pathname;
+        var isIndex = path === '/' || path.endsWith('index.html') || path.split('/').pop() === '';
+        var isJoin = path.endsWith('join.html');
+        
+        if (isIndex) {
+            const titles = { 
+                en: 'KoalaSync | Real-time Video Synchronization for Friends', 
+                de: 'KoalaSync | Echtzeit-Video-Synchronisation für Freunde' 
+            };
+            document.title = titles[newLang] || titles.en;
+        } else if (isJoin) {
+            const titles = { 
+                en: 'Join Room | KoalaSync', 
+                de: 'Raum beitreten | KoalaSync' 
+            };
+            document.title = titles[newLang] || titles.en;
+        }
+    };
+
+    document.querySelectorAll('.lang-toggle').forEach(btn => {
+        btn.addEventListener('click', toggleLanguage);
+    });
+
+    // Impressum Email Obfuscation Click Reveal
+    document.querySelectorAll('.email-reveal').forEach(el => {
+        el.addEventListener('click', function() {
+            const user = this.getAttribute('data-user');
+            const domain = this.getAttribute('data-domain');
+            if (user && domain) {
+                this.innerHTML = `${user}@${domain}`;
+            }
+        });
+    });
+
     checkInvite();
     updateDynamicVersion();
 });

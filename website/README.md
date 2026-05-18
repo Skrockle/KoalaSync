@@ -44,7 +44,7 @@ sync.koalastuff.net {
     # Security Headers & Content Security Policy (CSP)
     header {
         # Strict Content Security Policy (restricts scripts and connections to self, forbids frames)
-        Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; frame-ancestors 'none';"
+        Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; frame-ancestors 'none';"
         # Prevent FLoC tracking
         Permissions-Policy interest-cohort=()
         # Security best practices
