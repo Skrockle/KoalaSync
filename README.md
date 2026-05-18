@@ -1,4 +1,4 @@
-# KoalaSync
+# <img src="extension/icons/icon128.png" width="32" valign="middle"> KoalaSync
 
 <p align="center">
   <a href="https://github.com/Shik3i/KoalaSync/actions/workflows/release.yml"><img src="https://github.com/Shik3i/KoalaSync/actions/workflows/release.yml/badge.svg" alt="Release Status"></a>
