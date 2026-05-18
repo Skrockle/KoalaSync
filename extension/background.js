@@ -866,6 +866,8 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
             });
         }
     }
+});
+
 function leaveOldRoomIfSwitching(newRoomId) {
     if (currentRoom && currentRoom.roomId !== newRoomId) {
         addLog(`Switching rooms: leaving ${currentRoom.roomId} to join ${newRoomId}`, 'info');
