@@ -209,5 +209,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    const updateDynamicVersion = async () => {
+        try {
+            const response = await fetch('version.json');
+            if (!response.ok) return;
+            const data = await response.json();
+            const { version, date } = data;
+            if (!version || !date) return;
+
+            const releaseDate = new Date(date);
+            const now = new Date();
+            const diffMs = now - releaseDate;
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffMins = Math.floor(diffMs / (1000 * 60));
+
+            let relativeTimeEn = '';
+            let relativeTimeDe = '';
+
+            if (diffDays > 0) {
+                relativeTimeEn = `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
+                relativeTimeDe = `vor ${diffDays} ${diffDays === 1 ? 'Tag' : 'Tagen'}`;
+            } else if (diffHours > 0) {
+                relativeTimeEn = `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
+                relativeTimeDe = `vor ${diffHours} ${diffHours === 1 ? 'Stunde' : 'Stunden'}`;
+            } else if (diffMins > 0) {
+                relativeTimeEn = `${diffMins} ${diffMins === 1 ? 'minute' : 'minutes'} ago`;
+                relativeTimeDe = `vor ${diffMins} ${diffMins === 1 ? 'Minute' : 'Minuten'}`;
+            } else {
+                relativeTimeEn = 'just now';
+                relativeTimeDe = 'gerade eben';
+            }
+
+            const badgeEn = document.querySelector('.version-text-en');
+            const badgeDe = document.querySelector('.version-text-de');
+
+            if (badgeEn) {
+                badgeEn.textContent = `v${version} OUT NOW • ${relativeTimeEn}`;
+            }
+            if (badgeDe) {
+                badgeDe.textContent = `v${version} JETZT VERFÜGBAR • ${relativeTimeDe}`;
+            }
+        } catch (e) {
+            console.warn('Failed to fetch dynamic version info:', e);
+        }
+    };
+
     checkInvite();
+    updateDynamicVersion();
 });
