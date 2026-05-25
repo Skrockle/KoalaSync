@@ -52,6 +52,7 @@ const elements = {
 let localPeerId = null;
 let lastPeersJson = null;
 let lastKnownPeers = [];
+let isDevTabVisible = false;
 
 // --- Initialization ---
 async function init() {
@@ -117,6 +118,11 @@ async function init() {
 
     // Debug Info Refresh
     setInterval(refreshDebugInfo, 2000);
+
+    // Show onboarding on first visit
+    chrome.storage.sync.get(['onboardingComplete'], (data) => {
+        if (!data.onboardingComplete) showOnboarding();
+    });
 }
 
 // --- UI Logic ---
@@ -761,6 +767,8 @@ elements.tabs.forEach(btn => {
         elements.contents.forEach(c => c.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById(btn.dataset.tab).classList.add('active');
+        isDevTabVisible = btn.dataset.tab === 'tab-dev';
+        if (isDevTabVisible) refreshLogs();
         if (btn.dataset.tab === 'tab-sync') refreshHistory();
     });
 });
@@ -1149,7 +1157,9 @@ function refreshDebugInfo() {
 }
 
 init();
-setInterval(refreshLogs, 5000);
+setInterval(() => {
+    if (isDevTabVisible) refreshLogs();
+}, 5000);
 
 window.addEventListener('unload', () => {
     stopInterpolation();
@@ -1194,3 +1204,61 @@ function updateLobbyUI(lobby, peers) {
         elements.lobbyPeerStatus.textContent += ` (${elapsed}s)`;
     }
 }
+
+// --- Onboarding Tour ---
+const onboardingSteps = [
+    { icon: '\u{1F3E0}', title: 'Room Tab', text: 'Create or join a room to sync with friends. Share the invite link!' },
+    { icon: '\u{1F3AC}', title: 'Sync Tab', text: 'Select your video tab and control playback. Force Sync fixes drift.' },
+    { icon: '\u2699\uFE0F', title: 'Settings', text: 'Customize your username, filter noise tabs, and toggle auto-sync.' },
+    { icon: '\u{1F527}', title: 'Dev Tab', text: 'Debug connection status, video state, and view action history.' }
+];
+
+let onboardingStep = 0;
+
+function showOnboarding() {
+    const overlay = document.getElementById('onboarding-overlay');
+    if (!overlay) return;
+    overlay.style.display = 'flex';
+    renderOnboardingStep();
+}
+
+function renderOnboardingStep() {
+    const step = onboardingSteps[onboardingStep];
+    const icon = document.getElementById('onboarding-icon');
+    const title = document.getElementById('onboarding-title');
+    const text = document.getElementById('onboarding-text');
+    const nextBtn = document.getElementById('onboarding-next');
+    const dots = document.getElementById('onboarding-dots');
+    if (!icon || !title || !text || !nextBtn || !dots) return;
+
+    icon.textContent = step.icon;
+    title.textContent = step.title;
+    text.textContent = step.text;
+
+    dots.innerHTML = onboardingSteps.map((_, i) =>
+        `<div style="width:8px; height:8px; border-radius:50%; background:${i === onboardingStep ? 'var(--accent)' : '#475569'};"></div>`
+    ).join('');
+
+    nextBtn.textContent = onboardingStep === onboardingSteps.length - 1 ? 'Done!' : 'Next';
+}
+
+function completeOnboarding() {
+    const overlay = document.getElementById('onboarding-overlay');
+    if (overlay) overlay.style.display = 'none';
+    chrome.storage.sync.set({ onboardingComplete: true });
+}
+
+document.getElementById('onboarding-next')?.addEventListener('click', () => {
+    onboardingStep++;
+    if (onboardingStep >= onboardingSteps.length) {
+        completeOnboarding();
+    } else {
+        renderOnboardingStep();
+    }
+});
+
+document.getElementById('onboarding-skip')?.addEventListener('click', completeOnboarding);
+
+document.getElementById('onboarding-overlay')?.addEventListener('click', (e) => {
+    if (e.target.id === 'onboarding-overlay') completeOnboarding();
+});

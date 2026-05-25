@@ -9,9 +9,6 @@ This document tracks planned features, improvements, and their implementation de
 ### 1. Graceful Shutdown
 **Korrektur:** Der Server hat bereits Graceful Shutdown implementiert (`server/index.js:481-499`). Bei SIGTERM/SIGINT wird allen Clients eine Neustart-Nachricht gesendet, der HTTP-Server geschlossen und nach 5s erzwungen beendet. **Kein Handlungsbedarf.**
 
-### 3. `setInterval(refreshLogs, 5000)` Last
-5 Sekunden ist technisch wenig Last (~0.2 IPC calls/sec). Aber es ist **architektonisch unsauber** — der Interval läuft auch wenn der Dev-Tab nicht sichtbar ist. Besser: Nur pollen wenn Dev-Tab aktiv, oder auf `chrome.runtime.onMessage` umstellen (Push statt Poll).
-
 ### 6. Service Worker Fallback bei Room-State Verlust
 Manifest V3 suspendiert den Service Worker nach ~30s Inaktivität. `chrome.alarms` weckt ihn auf, aber:
 - **Problem:** Wenn der SW neu startet, sind alle Variablen (`currentRoom`, `socket`, `isNamespaceJoined`) weg
@@ -33,9 +30,6 @@ Diese Features wurden evaluiert aber sind nicht Teil der nächsten Release:
 
 | Feature | Aufwand | Nutzen | Status |
 |---------|---------|--------|--------|
-| Verbesserte Empty States | ~40 LOC | 7/10 | Backlog |
-| Onboarding Tour | ~120 LOC | 8/10 | Backlog |
-| Dev-Tab Logs nur bei Sichtbarkeit pollen | ~10 LOC | 5/10 | Backlog |
 | Chat im Room | ~400 LOC | 9/10 | Geplant v1.6 |
 | Playback Speed Sync | ~150 LOC | 8/10 | Geplant v1.5 |
 | Room Host/Owner | ~350 LOC | 8/10 | Geplant v1.6 |
