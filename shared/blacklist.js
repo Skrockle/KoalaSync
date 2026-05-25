@@ -85,6 +85,47 @@ export const BLACKLIST_DOMAINS = [
     'meet.google.com',
     'chrome.google.com',
 
+    // Music Streaming
+    'music.youtube.com',
+    'open.spotify.com',
+    'soundcloud.com',
+    'deezer.com',
+    'tidal.com',
+
+    // Knowledge & Blogs
+    'wikipedia.org',
+    'medium.com',
+    'dev.to',
+    'news.ycombinator.com',
+
+    // Design & Creative Tools
+    'figma.com',
+    'canva.com',
+    'miro.com',
+
+    // Online IDEs & Hosting
+    'vscode.dev',
+    'replit.com',
+    'codesandbox.io',
+    'vercel.com',
+    'netlify.com',
+
+    // Social & Image Sharing
+    'pinterest.com',
+    'tumblr.com',
+
+    // Language Learning
+    'duolingo.com',
+    'hellotalk.com',
+
+    // Google Utilities
+    'calendar.google.com',
+    'keep.google.com',
+
+    // Finance & Payments
+    'paypal.com',
+    'stripe.com',
+
     // Games & Idle Sites
     'milkywayidle.com',
     'melvoridle.com',
