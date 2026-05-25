@@ -47,7 +47,8 @@ const elements = {
     lobbyTitle: document.getElementById('lobbyTitle'),
     lobbyPeerStatus: document.getElementById('lobbyPeerStatus'),
     browserNotifications: document.getElementById('browserNotifications'),
-    autoCopyInvite: document.getElementById('autoCopyInvite')
+    autoCopyInvite: document.getElementById('autoCopyInvite'),
+    syncTabCopyInvite: document.getElementById('syncTabCopyInvite')
 };
 
 let localPeerId = null;
@@ -608,7 +609,7 @@ async function populateTabs(providedPeers = null, providedTargetTabId = null) {
         }
         
         if (tab.audible) {
-            label = `[🔊] ${label}`;
+            label = `[🎬] ${label}`;
         }
         
         option.textContent = label;
@@ -1067,13 +1068,15 @@ elements.forceSyncBtn.addEventListener('click', async () => {
     elements.forceSyncBtn.disabled = true;
     elements.forceSyncBtn.textContent = mode === 'jump-to-others' ? `Syncing to group (${formatTime(targetTime)})...` : 'Syncing...';
     forceSyncDone = false;
+    const peerCount = (status.peers || []).filter(p => (typeof p === 'object' ? p.peerId : p) !== localPeerId).length;
+    const syncTimeoutMs = peerCount === 0 ? 3000 : 12000;
     const forceSyncReset = () => {
         if (!forceSyncDone) {
             elements.forceSyncBtn.disabled = false;
             elements.forceSyncBtn.textContent = originalText;
         }
     };
-    forceSyncResetTimer = setTimeout(forceSyncReset, 12000);
+    forceSyncResetTimer = setTimeout(forceSyncReset, syncTimeoutMs);
     const tabId = parseInt(status.targetTabId);
 
     const sendForceSync = (time) => {
@@ -1119,13 +1122,20 @@ elements.playBtn.addEventListener('click', () => {
         showToast('Please select a video first!', 'warning');
         return;
     }
-    elements.playBtn.textContent = 'Playing...';
+    elements.playBtn.textContent = '▶ Playing...';
     elements.playBtn.disabled = true;
     chrome.runtime.sendMessage({
         type: 'CONTENT_EVENT',
         action: EVENTS.PLAY,
         payload: {}
     });
+    // Safety reset: restore button after 2.5s in case no peers respond
+    setTimeout(() => {
+        if (elements.playBtn.disabled) {
+            elements.playBtn.textContent = '▶ Play';
+            elements.playBtn.disabled = false;
+        }
+    }, 2500);
 });
 
 elements.pauseBtn.addEventListener('click', () => {
@@ -1133,13 +1143,20 @@ elements.pauseBtn.addEventListener('click', () => {
         showToast('Please select a video first!', 'warning');
         return;
     }
-    elements.pauseBtn.textContent = 'Pausing...';
+    elements.pauseBtn.textContent = '⏸ Pausing...';
     elements.pauseBtn.disabled = true;
     chrome.runtime.sendMessage({
         type: 'CONTENT_EVENT',
         action: EVENTS.PAUSE,
         payload: {}
     });
+    // Safety reset: restore button after 2.5s in case no peers respond
+    setTimeout(() => {
+        if (elements.pauseBtn.disabled) {
+            elements.pauseBtn.textContent = '⏸ Pause';
+            elements.pauseBtn.disabled = false;
+        }
+    }, 2500);
 });
 
 elements.clearLogs.addEventListener('click', () => {
