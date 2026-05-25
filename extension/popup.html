@@ -199,9 +199,48 @@
         }
         .invite-box input { flex: 1; font-size: 11px; }
         .invite-box button { width: 40px; padding: 0; }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
+        }
+        .toast {
+            pointer-events: auto;
+            padding: 10px 16px;
+            margin-bottom: 6px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            max-width: 280px;
+            text-align: center;
+            animation: toastSlideIn 0.3s ease-out, toastFadeOut 0.3s ease-in 2.7s forwards;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .toast-success { background: var(--success); color: white; }
+        .toast-error { background: var(--error); color: white; }
+        .toast-info { background: var(--accent); color: white; }
+        .toast-warning { background: #f59e0b; color: white; }
+
+        @keyframes toastSlideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes toastFadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
     </style>
 </head>
 <body>
+    <div id="toast-container"></div>
     <h1><img src="icons/icon128.png" alt="KoalaSync Logo">KoalaSync</h1>
 
     <div class="tabs">
@@ -331,6 +370,11 @@
         <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #334155;">
             <label style="margin-bottom: 0;">Auto-Sync Next Episode</label>
             <input type="checkbox" id="autoSyncNextEpisode" style="width: auto;">
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #334155;">
+            <label style="margin-bottom: 0;">Browser Notifications</label>
+            <input type="checkbox" id="browserNotifications" style="width: auto;">
         </div>
         
         <div style="font-size: 11px; color: var(--text-muted); padding: 8px;">

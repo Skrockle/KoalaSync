@@ -15,8 +15,28 @@ const MIN_VERSION = process.env.MIN_VERSION || '1.0.0';
 const app = express();
 app.set('trust proxy', 1); // For real client IP through reverse proxy
 
-// Health Check
-app.get('/', (req, res) => res.json({ status: 'online', service: 'KoalaSync Relay' }));
+// Health Check with Rate Limiting
+app.get('/', (req, res) => {
+    const clientIp = req.ip;
+    if (!checkHealthRate(clientIp)) {
+        return res.status(429).json({ error: 'Too many requests. Try again later.' });
+    }
+    res.json({ status: 'online', service: 'KoalaSync Relay' });
+});
+
+app.get('/health', (req, res) => {
+    const clientIp = req.ip;
+    if (!checkHealthRate(clientIp)) {
+        return res.status(429).json({ error: 'Rate limited' });
+    }
+    res.json({
+        status: 'ok',
+        uptime: process.uptime(),
+        rooms: rooms.size,
+        connections: io.engine?.clientsCount ?? 0,
+        timestamp: Date.now()
+    });
+});
 
 const httpServer = createServer(app);
 
@@ -84,6 +104,7 @@ setInterval(() => {
 }, 60 * 60 * 1000);
 
 const eventCounts = new Map(); // socketId -> { count, resetTime }
+const healthCounts = new Map(); // ip -> { count, resetTime }
 
 // Clean up connection counts and event counts to prevent memory leak
 setInterval(() => {
@@ -96,6 +117,11 @@ setInterval(() => {
     for (const [socketId, entry] of eventCounts.entries()) {
         if (now > entry.resetTime) {
             eventCounts.delete(socketId);
+        }
+    }
+    for (const [ip, entry] of healthCounts.entries()) {
+        if (now > entry.resetTime) {
+            healthCounts.delete(ip);
         }
     }
 }, 60000);
@@ -116,6 +142,15 @@ function checkEventRate(socketId) {
     entry.count++;
     eventCounts.set(socketId, entry);
     return entry.count <= 30;
+}
+
+function checkHealthRate(ip) {
+    const now = Date.now();
+    const entry = healthCounts.get(ip) || { count: 0, resetTime: now + 60000 };
+    if (now > entry.resetTime) { entry.count = 0; entry.resetTime = now + 60000; }
+    entry.count++;
+    healthCounts.set(ip, entry);
+    return entry.count <= 60;
 }
 
 /**

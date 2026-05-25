@@ -45,16 +45,18 @@ const elements = {
     autoSyncNextEpisode: document.getElementById('autoSyncNextEpisode'),
     episodeLobbyCard: document.getElementById('episodeLobbyCard'),
     lobbyTitle: document.getElementById('lobbyTitle'),
-    lobbyPeerStatus: document.getElementById('lobbyPeerStatus')
+    lobbyPeerStatus: document.getElementById('lobbyPeerStatus'),
+    browserNotifications: document.getElementById('browserNotifications')
 };
 
 let localPeerId = null;
 let lastPeersJson = null;
+let lastKnownPeers = [];
 
 // --- Initialization ---
 async function init() {
     // Load Settings
-    const data = await chrome.storage.sync.get(['serverUrl', 'useCustomServer', 'roomId', 'password', 'filterNoise', 'username', 'autoSyncNextEpisode', 'forceSyncMode']);
+    const data = await chrome.storage.sync.get(['serverUrl', 'useCustomServer', 'roomId', 'password', 'filterNoise', 'username', 'autoSyncNextEpisode', 'forceSyncMode', 'browserNotifications']);
     let username = data.username;
     if (!username) {
         const adjs = ['Happy', 'Cool', 'Fast', 'Smart', 'Brave', 'Calm', 'Sneaky', 'Lazy', 'Wild', 'Chill', 'Lucky', 'Epic'];
@@ -70,6 +72,7 @@ async function init() {
     elements.filterNoise.checked = data.filterNoise !== false;
     elements.autoSyncNextEpisode.checked = data.autoSyncNextEpisode !== false;
     elements.forceSyncMode.value = data.forceSyncMode || 'jump-to-others';
+    elements.browserNotifications.checked = data.browserNotifications === true;
     
     // Set Version Info
     const versionEl = document.getElementById('appVersion');
@@ -177,6 +180,20 @@ function updateLastActionUI(state, peers) {
     header.appendChild(actionSpan);
     header.appendChild(infoSpan);
     elements.lastActionCard.appendChild(header);
+
+    if (state.targetTime !== undefined && state.action === 'seek') {
+        const timeInfo = document.createElement('div');
+        timeInfo.style.cssText = 'font-size:9px; color:var(--text-muted); margin-top:4px;';
+        timeInfo.textContent = `Target: ${formatTime(state.targetTime)}`;
+        elements.lastActionCard.appendChild(timeInfo);
+    }
+
+    if (state.targetTime !== undefined && state.action.includes('force_sync')) {
+        const timeInfo = document.createElement('div');
+        timeInfo.style.cssText = 'font-size:9px; color:var(--text-muted); margin-top:4px;';
+        timeInfo.textContent = `Sync to: ${formatTime(state.targetTime)}`;
+        elements.lastActionCard.appendChild(timeInfo);
+    }
 
     const grid = document.createElement('div');
     grid.style.cssText = 'display:grid; grid-template-columns: repeat(auto-fill, minmax(36px, 1fr)); gap: 5px;';
@@ -389,6 +406,29 @@ function updatePeerList(peers) {
     populateTabs(peers);
 }
 
+function detectPeerChanges(newPeers) {
+    const oldIds = new Set(lastKnownPeers.map(p => p.peerId || p));
+    const newIds = new Set(newPeers.map(p => p.peerId || p));
+
+    for (const peer of newPeers) {
+        const id = peer.peerId || peer;
+        if (!oldIds.has(id)) {
+            const name = peer.username || id.substring(0, 4);
+            showToast(`${name} joined the room`, 'success');
+        }
+    }
+
+    for (const oldPeer of lastKnownPeers) {
+        const id = oldPeer.peerId || oldPeer;
+        if (!newIds.has(id)) {
+            const name = oldPeer.username || id.substring(0, 4);
+            showToast(`${name} left the room`, 'info');
+        }
+    }
+
+    lastKnownPeers = newPeers;
+}
+
 async function populateTabs(providedPeers = null, providedTargetTabId = null) {
     const data = await chrome.storage.sync.get(['filterNoise']);
     const isFilterActive = data.filterNoise !== false;
@@ -451,10 +491,25 @@ async function populateTabs(providedPeers = null, providedTargetTabId = null) {
         elements.targetTab.appendChild(option);
     });
 
-    // Sort: Matches first
+    // Sort: 1. Current tab first, 2. Matches, 3. Rest alphabetically
     const options = Array.from(elements.targetTab.options);
-    const placeholder = options.shift(); // Remove placeholder
-    options.sort((a, b) => (b.textContent.includes('⭐') ? 1 : 0) - (a.textContent.includes('⭐') ? 1 : 0));
+    const placeholder = options.shift();
+    const currentTabId = providedTargetTabId ? parseInt(providedTargetTabId) : null;
+
+    options.sort((a, b) => {
+        const aId = parseInt(a.value);
+        const bId = parseInt(b.value);
+
+        if (aId === currentTabId) return -1;
+        if (bId === currentTabId) return 1;
+
+        const aMatch = a.textContent.includes('⭐');
+        const bMatch = b.textContent.includes('⭐');
+        if (aMatch && !bMatch) return -1;
+        if (!aMatch && bMatch) return 1;
+
+        return a.textContent.localeCompare(b.textContent);
+    });
     elements.targetTab.innerHTML = '';
     elements.targetTab.appendChild(placeholder);
     options.forEach(opt => elements.targetTab.appendChild(opt));
@@ -664,6 +719,10 @@ elements.autoSyncNextEpisode.addEventListener('change', () => {
     chrome.storage.sync.set({ autoSyncNextEpisode: elements.autoSyncNextEpisode.checked });
 });
 
+elements.browserNotifications.addEventListener('change', () => {
+    chrome.storage.sync.set({ browserNotifications: elements.browserNotifications.checked });
+});
+
 elements.forceSyncMode.addEventListener('change', () => {
     chrome.storage.sync.set({ forceSyncMode: elements.forceSyncMode.value });
 });
@@ -695,6 +754,16 @@ elements.tabs.forEach(btn => {
     });
 });
 
+function showToast(message, type = 'info', duration = 3000) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), duration);
+}
+
 function showError(msg) {
     if (!elements.roomError) return;
     elements.roomError.textContent = msg;
@@ -702,16 +771,7 @@ function showError(msg) {
     elements.roomId.style.borderColor = 'var(--error)';
     elements.password.style.borderColor = 'var(--error)';
     
-    // Shake effect
-    const activeTab = document.querySelector('.tab-content.active');
-    if (activeTab) {
-        activeTab.animate([
-            { transform: 'translateX(0)' },
-            { transform: 'translateX(-5px)' },
-            { transform: 'translateX(5px)' },
-            { transform: 'translateX(0)' }
-        ], { duration: 200, iterations: 2 });
-    }
+    showToast(msg, 'error', 5000);
 
     setTimeout(() => {
         if (elements.roomError) elements.roomError.style.display = 'none';
@@ -891,9 +951,18 @@ elements.clearLogs.addEventListener('click', () => {
 });
 
 elements.copyInvite.addEventListener('click', () => {
-    navigator.clipboard.writeText(elements.inviteLink.value);
-    elements.copyInvite.textContent = '✅';
-    setTimeout(() => { elements.copyInvite.textContent = '📋'; }, 2000);
+    navigator.clipboard.writeText(elements.inviteLink.value).then(() => {
+        const original = elements.copyInvite.textContent;
+        elements.copyInvite.textContent = '✓';
+        elements.copyInvite.style.background = 'var(--success)';
+        elements.copyInvite.style.color = 'white';
+        showToast('Invite link copied!', 'success', 2000);
+        setTimeout(() => {
+            elements.copyInvite.textContent = original;
+            elements.copyInvite.style.background = '';
+            elements.copyInvite.style.color = '';
+        }, 2000);
+    });
 });
 
 // --- Logs & Status ---
@@ -919,11 +988,24 @@ chrome.runtime.onMessage.addListener((msg) => {
             showError(msg.log.message);
         }
     } else if (msg.type === 'ACTION_UPDATE') {
+        const state = msg.state;
+        if (state && state.senderId && state.senderId !== 'You') {
+            const actionNames = {
+                'play': '▶ Play',
+                'pause': '⏸ Pause',
+                'seek': '⏩ Seek',
+                'force_sync_prepare': '⚡ Force Sync',
+                'force_sync_execute': '⚡ Force Play'
+            };
+            const action = actionNames[state.action] || state.action;
+            showToast(`${state.senderId} ${action}`, 'info', 2000);
+        }
         chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (res) => {
             if (res && res.peers) updateLastActionUI(msg.state, res.peers);
         });
     } else if (msg.type === 'PEER_UPDATE') {
         updatePeerList(msg.peers);
+        if (msg.peers) detectPeerChanges(msg.peers);
     } else if (msg.type === 'CONNECTION_STATUS') {
         applyConnectionStatus(msg.status);
         if (msg.status === 'connected') {
@@ -1053,6 +1135,10 @@ function refreshDebugInfo() {
 
 init();
 setInterval(refreshLogs, 5000);
+
+window.addEventListener('unload', () => {
+    stopInterpolation();
+});
 
 // --- Episode Lobby UI ---
 function updateLobbyUI(lobby, peers) {

@@ -507,6 +507,13 @@
     function checkVideo() {
         lastMutate = Date.now();
         const video = findVideo();
+
+        if (!video && lastVideoSrc) {
+            reportLog('Video element removed from page', 'warn');
+            lastVideoSrc = null;
+            return;
+        }
+
         if (!video) return;
 
         const currentSrc = video.currentSrc || video.src;

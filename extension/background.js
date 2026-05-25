@@ -411,25 +411,28 @@ function updateBadgeStatus() {
 }
 
 function showNotification(senderName, action) {
-    const label = action === 'play' ? 'started playback' : 
-                  action === 'pause' ? 'paused playback' : 
-                  action === 'seek' ? 'seeked the video' :
-                  action === 'force_sync_prepare' ? 'started force sync' :
-                  action === 'force_sync_execute' ? 'synchronized everyone' : action;
-    
-    // Find username in current room if available
-    let displayName = senderName || 'A peer';
-    if (currentRoom && currentRoom.peers) {
-        const peer = currentRoom.peers.find(p => (p.peerId || p) === senderName);
-        if (peer && peer.username) displayName = peer.username;
-    }
+    chrome.storage.sync.get(['browserNotifications'], (settings) => {
+        if (!settings.browserNotifications) return;
 
-    chrome.notifications.create(`sync_${Date.now()}`, {
-        type: 'basic',
-        iconUrl: 'icons/icon128.png',
-        title: 'KoalaSync',
-        message: `${displayName} ${label}.`,
-        priority: 1
+        const label = action === 'play' ? 'started playback' : 
+                      action === 'pause' ? 'paused playback' : 
+                      action === 'seek' ? 'seeked the video' :
+                      action === 'force_sync_prepare' ? 'started force sync' :
+                      action === 'force_sync_execute' ? 'synchronized everyone' : action;
+        
+        let displayName = senderName || 'A peer';
+        if (currentRoom && currentRoom.peers) {
+            const peer = currentRoom.peers.find(p => (p.peerId || p) === senderName);
+            if (peer && peer.username) displayName = peer.username;
+        }
+
+        chrome.notifications.create(`sync_${Date.now()}`, {
+            type: 'basic',
+            iconUrl: 'icons/icon128.png',
+            title: 'KoalaSync',
+            message: `${displayName} ${label}.`,
+            priority: 1
+        });
     });
 }
 
