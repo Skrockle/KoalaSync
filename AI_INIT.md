@@ -107,8 +107,16 @@ Before starting any task, committing, or pushing, you **MUST** run `git pull --r
    - **ESLint Validation**: Run `npm run lint` (or `npx eslint .`). The output must show **zero errors and zero warnings**. ESLint is configured to catch undefined variables, unused vars, unreachable code, and other semantic issues. **NEVER** commit or push code that fails this check.
 2. Commit all verified code changes and push to `main`.
 3. Create and push a new tag. **MANDATORY**: Tags MUST start with a `v` (e.g., `v1.4.0`). The GitHub Actions release workflow is strictly configured to ignore any tags without the `v` prefix.
+   - **🚫 TAG IMMUTABILITY**: Once a tag is pushed to `origin`, it is **PERMANENT**. You MUST **NEVER** reuse, move, or force-push an existing tag — not even to "fix" a mistake. If a release is missing a fix, increment the version and create a **new** tag (e.g., `v1.7.0` → `v1.7.1`). Tags are immutable identifiers; moving them breaks CI pipelines, corrupts the release history, and causes unreproducible builds.
 4. The CI will extract the version from the tag (e.g., `v1.4.0` → `1.4.0`), inject it into all source files, build the extension artifacts, publish the Docker image, and create a GitHub Release.
 5. Verify the release builds on GitHub Actions.
+
+### 🚫 Force Push Policy
+> [!CAUTION]
+> **Force pushing (`git push --force` or `git push -f`) is FORBIDDEN without explicit user confirmation.**
+> - If a push is rejected due to a non-fast-forward conflict, you **MUST** run `git pull --rebase` first.
+> - If a force push is absolutely required (e.g., squashed history, amended commits), you **MUST** ask the user for explicit permission with a clear explanation of why it's necessary. Never force-push autonomously.
+> - This applies to both branches (`main`) and **tags** (see Tag Immutability above). Force-pushing tags is doubly destructive. Never do it.
 
 ### Adding a Protocol Event
 1. Add the event name to `shared/constants.js`.
