@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     `;
                                 } else {
                                     actions.innerHTML = `
-                                        <a href="#" class="primary" style="text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap: 8px; padding: 1.2rem; background: var(--accent); color: white; border-radius: 12px; font-weight: 700;">
+                                        <a href="https://chromewebstore.google.com/detail/koalasync/obbnmkmlaaddodakcbdljknjpagklifc" class="primary" style="text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap: 8px; padding: 1.2rem; background: var(--accent); color: white; border-radius: 12px; font-weight: 700;">
                                             <img src="assets/chrome.svg" width="20" style="display: block;">
                                             <span lang="en">GET IT ON CHROME WEBSTORE</span><span lang="de">IM CHROME WEB STORE HERUNTERLADEN</span>
                                         </a>
