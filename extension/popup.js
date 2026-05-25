@@ -150,6 +150,9 @@ function updateLastActionUI(state, peers) {
         return;
     }
 
+    const safePeers = peers || [];
+    const safeAcks = state.acks || [];
+
     const actionNames = {
         'play': 'PLAY',
         'pause': 'PAUSE',
@@ -159,7 +162,7 @@ function updateLastActionUI(state, peers) {
     };
 
     let senderName = state.senderId === 'You' ? 'You' : state.senderId;
-    const senderPeer = peers.find(p => (p.peerId || p) === state.senderId);
+    const senderPeer = safePeers.find(p => (p.peerId || p) === state.senderId);
     if (senderPeer && senderPeer.username) senderName = senderPeer.username;
 
     const timeStr = new Date(state.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -198,11 +201,11 @@ function updateLastActionUI(state, peers) {
     const grid = document.createElement('div');
     grid.style.cssText = 'display:grid; grid-template-columns: repeat(auto-fill, minmax(36px, 1fr)); gap: 5px;';
 
-    peers.forEach(peer => {
+    safePeers.forEach(peer => {
         const pId = typeof peer === 'object' ? peer.peerId : peer;
         if (pId === localPeerId) return;
         const pName = (typeof peer === 'object' && peer.username) ? peer.username : pId.substring(0, 4);
-        const isAcked = state.acks.includes(pId) || pId === state.senderId;
+        const isAcked = safeAcks.includes(pId) || pId === state.senderId;
         const color = isAcked ? 'var(--success)' : '#475569';
         const icon = isAcked ? '✓' : '...';
         
@@ -1103,7 +1106,7 @@ function refreshDebugInfo() {
                 };
 
                 addField('STATE', state.paused ? 'PAUSED' : 'PLAYING', 'var(--accent)');
-                addField('TIME', `${state.currentTime.toFixed(2)}s / ${state.duration.toFixed(2)}s`);
+                addField('TIME', `${state.currentTime.toFixed(2)}s / ${(state.duration || 0).toFixed(2)}s`);
                 addField('READY', state.readyState);
                 
                 addSection('Identification');
@@ -1167,14 +1170,14 @@ function updateLobbyUI(lobby, peers) {
         });
     }
 
-    if (peerLines.length > 0) {
+    if (peerLines.length > 0 && elements.lobbyPeerStatus) {
         elements.lobbyPeerStatus.textContent = peerLines.join(' | ');
-    } else {
+    } else if (elements.lobbyPeerStatus) {
         elements.lobbyPeerStatus.textContent = 'Waiting for peers...';
     }
 
     // Show elapsed time
-    if (lobby.createdAt) {
+    if (lobby.createdAt && elements.lobbyPeerStatus) {
         const elapsed = Math.floor((Date.now() - lobby.createdAt) / 1000);
         elements.lobbyPeerStatus.textContent += ` (${elapsed}s)`;
     }

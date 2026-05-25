@@ -577,7 +577,7 @@ function handleServerEvent(event, data) {
                 }
 
                 // Check if all peers responded
-                const peerCount = currentRoom ? currentRoom.peers.length : 1;
+                const peerCount = currentRoom && Array.isArray(currentRoom.peers) ? currentRoom.peers.length : 1;
                 if (forceSyncAcks.size >= peerCount) {
                     executeForceSync();
                 }
@@ -649,7 +649,7 @@ function handleServerEvent(event, data) {
                     }
 
                     if (isForceSyncInitiator) {
-                        const peerCount = currentRoom.peers ? currentRoom.peers.length : 1;
+                        const peerCount = Array.isArray(currentRoom.peers) ? currentRoom.peers.length : 1;
                         if (forceSyncAcks.size >= peerCount) {
                             executeForceSync();
                         }
@@ -1179,7 +1179,7 @@ async function handleAsyncMessage(message, sender, sendResponse) {
                 });
             }
 
-            const peerCount = currentRoom ? currentRoom.peers.length : 1;
+            const peerCount = currentRoom && Array.isArray(currentRoom.peers) ? currentRoom.peers.length : 1;
             if (forceSyncAcks.size >= peerCount) {
                 executeForceSync();
             }
