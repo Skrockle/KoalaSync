@@ -68,7 +68,7 @@ The following features are critical and must not be removed or fundamentally alt
 - **Two-Phase Force Sync**: The `Prepare` → `ACK` → `Execute` flow ensures all peers are buffered before playback resumes.
 - **Episode Auto-Sync**: Ensures series binges stay perfectly synced. A lobby initiates during title transitions, freezing peers until everyone is ready.
 - **Dual Heartbeat**: 
-    - **Background Heartbeat (30s)**: Ensures session persistence even without a video element.
+    - **Background Heartbeat (1m)**: Ensures session persistence even without a video element.
     - **Content Heartbeat (15s)**: Transmits current video metadata (time, title).
 - **Dead Peer Pruning**: Server "Reaper" disconnects peers after 5 minutes of total silence (no heartbeats or events).
 - **Deduplication**: Server kills old sockets if a user re-joins with the same `peerId` to prevent ghosts.

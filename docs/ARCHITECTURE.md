@@ -22,7 +22,7 @@ When a user interacts with a video:
 5. **Execution**: Remote peers receive the command and call `video.play()`, `video.pause()`, or `video.currentTime = targetTime`.
 
 ## 3. Two-Phase Force Sync
-Ensures all peers are frame-perfect and buffered before resuming:
+Ensures all peers are buffered and synchronized before resuming:
 1. **Prepare**: Initiator sends `FORCE_SYNC_PREPARE` with the target timestamp.
 2. **Buffer**: Peers seek and pause. Once buffered (`readyState >= 3`), they send a `FORCE_SYNC_ACK`. (Note: `content.js` limits polling to 8000ms).
 3. **Execute**: Once the Initiator collects ACKs (or after an 8.5s timeout), they send `FORCE_SYNC_EXECUTE`.
@@ -40,7 +40,7 @@ Maintains continuous synchronized viewing when watching series:
 
 ## 5. Peer Lifecycle & Dual Heartbeat
 To maintain a clean room state and eliminate "Ghost Peers":
-- **Session Heartbeat (Background)**: Every 30 seconds, `background.js` sends an "I'm alive" signal to the server. This keeps you in the room even if no video is playing.
+- **Session Heartbeat (Background)**: Every 1 minute, `background.js` sends an "I'm alive" signal to the server. This keeps you in the room even if no video is playing.
 - **Video Heartbeat (Content)**: Every 15 seconds, `content.js` sends current playback metadata (time, title, state) if a video is found.
 - **Server Pruning**: The server runs a "Reaper" every 2 minutes. If a peer has sent **zero** activity (no events and no heartbeats) for 5 minutes, they are forcefully disconnected.
 - **Immediate Cleanup**: Rooms are deleted instantly when the last peer leaves or disconnects.

@@ -103,7 +103,7 @@ When your friend opens the link in their browser:
 
 Both users now need to select which browser tab contains the video to sync:
 
-1. Open a video on any website (YouTube, Twitch, Netflix, etc.).
+1. Open a video on any website (YouTube, Twitch, etc.).
 2. In the extension popup → **Sync** tab → use the **"Target Tab"** dropdown.
 3. The dropdown lists all open tabs, filtered to exclude noise (search engines, social media — configurable via Settings).
 4. Tabs with a **matching video title** are highlighted with a ⭐ prefix for easy identification.
@@ -143,7 +143,7 @@ If videos drift out of sync, either user can click **"Force Sync"**:
 
 ### Phase 2 — Execute
 6. Once all ACKs are received (or after 8.5 seconds), the initiator emits `FORCE_SYNC_EXECUTE`.
-7. All peers call `video.play()` simultaneously, achieving frame-perfect sync.
+7. All peers call `video.play()` simultaneously, achieving synchronized playback.
 
 > **Why two phases?** Without buffering confirmation, peers with slower connections would start playing before they've loaded the target timestamp, causing immediate desync.
 

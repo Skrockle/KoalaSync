@@ -1,11 +1,11 @@
 # KoalaSync Relay Server
 
-A high-performance Node.js relay server for synchronized video playback.
+A Node.js relay server for synchronized video playback.
 
 ## Key Features
 - **Zero-Persistence**: No database. All state is held in RAM.
-- **Privacy First**: No tracking, no logging of user data.
-- **WebSocket Only**: High performance with minimal overhead.
+- **Privacy First**: No tracking, no persistent logging of user data.
+- **WebSocket Only**: Minimal overhead with efficient transport.
 
 ## Setup
 

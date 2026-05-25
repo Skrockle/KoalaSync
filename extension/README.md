@@ -20,7 +20,7 @@ KoalaSync requires `<all_urls>` permission to detect and interact with video ele
 - **No Browsing History**: We do not track or store your browsing history.
 - **State Management**: Sensitive data (Room Passwords) is stored locally using `chrome.storage`.
 - **Zero Telemetry**: No analytics or external tracking scripts.
-- **Zero Runtime Dependencies**: The extension is built with pure Vanilla JS and contains no external libraries or tracking scripts, ensuring maximum performance and privacy.
+- **Zero Runtime Dependencies**: The extension is built with pure Vanilla JS and contains no external libraries or tracking scripts, ensuring performance and privacy.
 
 ## Installation
 1. **Prepare Extension**: From the repository root, run:
