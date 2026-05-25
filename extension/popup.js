@@ -65,19 +65,19 @@ let forceSyncDone = false;
 function getAvatarForName(username) {
     if (!username) return '👤';
     const lower = username.toLowerCase();
-    if (lower.includes('koala')) return '🐨';
-    if (lower.includes('panda')) return '🐼';
-    if (lower.includes('tiger')) return '🐯';
-    if (lower.includes('penguin')) return '🐧';
-    if (lower.includes('fox')) return '🦊';
-    if (lower.includes('bear')) return '🐻';
-    if (lower.includes('rabbit')) return '🐰';
-    if (lower.includes('owl')) return '🦉';
-    if (lower.includes('eagle')) return '🦅';
-    if (lower.includes('wolf')) return '🐺';
-    if (lower.includes('lion')) return '🦁';
-    if (lower.includes('shark')) return '🦈';
-    if (lower.includes('dragon')) return '🐉';
+    const map = {
+        'koala': '🐨', 'panda': '🐼', 'tiger': '🐯', 'eagle': '🦅',
+        'fox': '🦊', 'bear': '🐻', 'wolf': '🐺', 'lion': '🦁',
+        'hawk': '🦅', 'seal': '🦭', 'owl': '🦉', 'shark': '🦈',
+        'dragon': '🐉', 'phoenix': '🐦', 'falcon': '🦅', 'panther': '🐆',
+        'raven': '🐦‍⬛', 'cobra': '🐍', 'lynx': '🐈', 'jaguar': '🐆',
+        'orca': '🐋', 'mantis': '🦗', 'viper': '🐍', 'condor': '🦅',
+        'badger': '🦡', 'otter': '🦦', 'rhino': '🦏', 'crane': '🦩',
+        'mongoose': '🦦', 'specter': '👻'
+    };
+    for (const [key, emoji] of Object.entries(map)) {
+        if (lower.includes(key)) return emoji;
+    }
     return '👤';
 }
 
