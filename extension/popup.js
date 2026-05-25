@@ -61,6 +61,26 @@ let populateTabsToken = null;
 let errorToken = 0;
 let forceSyncDone = false;
 
+// --- Helpers ---
+function getAvatarForName(username) {
+    if (!username) return '👤';
+    const lower = username.toLowerCase();
+    if (lower.includes('koala')) return '🐨';
+    if (lower.includes('panda')) return '🐼';
+    if (lower.includes('tiger')) return '🐯';
+    if (lower.includes('penguin')) return '🐧';
+    if (lower.includes('fox')) return '🦊';
+    if (lower.includes('bear')) return '🐻';
+    if (lower.includes('rabbit')) return '🐰';
+    if (lower.includes('owl')) return '🦉';
+    if (lower.includes('eagle')) return '🦅';
+    if (lower.includes('wolf')) return '🐺';
+    if (lower.includes('lion')) return '🦁';
+    if (lower.includes('shark')) return '🦈';
+    if (lower.includes('dragon')) return '🐉';
+    return '👤';
+}
+
 // --- Initialization ---
 async function init() {
     // Load Settings
@@ -255,6 +275,7 @@ function updateLastActionUI(state, peers) {
         const isAcked = safeAcks.includes(pId) || pId === state.senderId;
         const color = isAcked ? 'var(--success)' : '#475569';
         const icon = isAcked ? '✓' : '...';
+        const avatar = getAvatarForName(pName);
         
         const peerItem = document.createElement('div');
         peerItem.title = pName;
@@ -266,7 +287,7 @@ function updateLastActionUI(state, peers) {
         
         const nameSpan = document.createElement('span');
         nameSpan.style.cssText = 'font-size:7px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:36px;';
-        nameSpan.textContent = pName;
+        nameSpan.textContent = `${avatar} ${pName}`;
         
         peerItem.appendChild(dot);
         peerItem.appendChild(nameSpan);
@@ -385,10 +406,11 @@ function updatePeerList(peers) {
             header.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding-right: 24px;';
 
             const nameSpan = document.createElement('span');
+            const avatar = getAvatarForName(pUsername || pId);
             if (pUsername) {
                 const u = document.createElement('span');
                 u.style.cssText = 'font-weight:600; color:white;';
-                u.textContent = pUsername;
+                u.textContent = `${avatar} ${pUsername}`;
                 const i = document.createElement('span');
                 i.style.cssText = 'font-size:10px; opacity:0.6; font-style:italic;';
                 i.textContent = ` (${pId})`;
@@ -396,7 +418,7 @@ function updatePeerList(peers) {
                 nameSpan.appendChild(i);
             } else {
                 nameSpan.style.fontWeight = '600';
-                nameSpan.textContent = `👤 ${pId}`;
+                nameSpan.textContent = `${avatar} ${pId}`;
             }
 
             header.appendChild(nameSpan);
@@ -585,7 +607,12 @@ async function populateTabs(providedPeers = null, providedTargetTabId = null) {
             option.style.color = 'var(--star)';
         }
         
+        if (tab.audible) {
+            label = `[🔊] ${label}`;
+        }
+        
         option.textContent = label;
+        option.dataset.originalTitle = tab.title;
         elements.targetTab.appendChild(option);
     });
 
@@ -871,7 +898,14 @@ elements.tabs.forEach(btn => {
         elements.tabs.forEach(b => b.classList.remove('active'));
         elements.contents.forEach(c => c.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById(btn.dataset.tab).classList.add('active');
+        
+        const targetContent = document.getElementById(btn.dataset.tab);
+        targetContent.classList.add('active');
+        
+        targetContent.classList.remove('tab-active-animate');
+        void targetContent.offsetWidth; // Force reflow to restart animation
+        targetContent.classList.add('tab-active-animate');
+        
         isDevTabVisible = btn.dataset.tab === 'tab-dev';
         if (isDevTabVisible) refreshLogs();
         if (btn.dataset.tab === 'tab-sync') refreshHistory();
@@ -996,7 +1030,7 @@ elements.retryBtn.addEventListener('click', () => {
 elements.targetTab.addEventListener('change', () => {
     const val = elements.targetTab.value;
     const tabId = val ? parseInt(val) : null;
-    const tabTitle = elements.targetTab.options[elements.targetTab.selectedIndex]?.text.replace('⭐ MATCH: ', '') || null;
+    const tabTitle = elements.targetTab.options[elements.targetTab.selectedIndex]?.dataset.originalTitle || null;
     chrome.runtime.sendMessage({ type: 'SET_TARGET_TAB', tabId, tabTitle });
 });
 
@@ -1130,6 +1164,21 @@ elements.copyInvite.addEventListener('click', () => {
         showToast('Failed to copy to clipboard', 'error');
     });
 });
+
+if (elements.syncTabCopyInvite) {
+    elements.syncTabCopyInvite.addEventListener('click', () => {
+        navigator.clipboard.writeText(elements.inviteLink.value).then(() => {
+            const original = elements.syncTabCopyInvite.textContent;
+            elements.syncTabCopyInvite.textContent = '✓';
+            elements.syncTabCopyInvite.style.color = 'var(--success)';
+            showToast('Invite link copied!', 'success', 2000);
+            setTimeout(() => {
+                elements.syncTabCopyInvite.textContent = original;
+                elements.syncTabCopyInvite.style.color = '';
+            }, 2000);
+        });
+    });
+}
 
 // --- Logs & Status ---
 async function refreshLogs() {

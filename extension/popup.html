@@ -238,6 +238,14 @@
             to { opacity: 0; transform: translateY(-10px); }
         }
 
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateX(5px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .tab-active-animate {
+            animation: fadeSlideIn 0.15s ease-out forwards;
+        }
+
         /* Toggle Switch CSS */
         .toggle-switch {
             position: relative;
@@ -368,7 +376,10 @@
             </select>
         </div>
         
-        <label>Remote Control</label>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <label style="margin: 0;">Remote Control</label>
+            <button id="syncTabCopyInvite" title="Copy Invite Link" style="background:transparent; border:none; padding:4px; font-size:14px; cursor:pointer; opacity:0.8; transition: opacity 0.2s;">🔗</button>
+        </div>
         <div style="display: flex; gap: 8px; margin-bottom: 12px;">
             <button id="playBtn" class="primary" style="flex:1; background: var(--success);">▶ Play</button>
             <button id="pauseBtn" class="primary" style="flex:1; background: var(--error);">⏸ Pause</button>
