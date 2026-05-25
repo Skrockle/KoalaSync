@@ -302,21 +302,30 @@ io.on('connection', (socket) => {
                     }
                 }
                 if (!room) {
-                    if (rooms.size >= MAX_ROOMS) {
-                        socket.emit(EVENTS.ERROR, { message: "Server capacity reached" });
-                        return;
-                    }
+                    // Create and store lock before async boundary
+                    let resolveLock;
+                    lockPromise = new Promise(resolve => { resolveLock = resolve; });
+                    roomCreationLocks.set(roomId, lockPromise);
+                    try {
+                        if (rooms.size >= MAX_ROOMS) {
+                            socket.emit(EVENTS.ERROR, { message: "Server capacity reached" });
+                            return;
+                        }
 
-                    const passwordHash = password ? await bcrypt.hash(password, 10) : null;
-                    room = {
-                        passwordHash,
-                        peers: new Set(),
-                        peerIds: new Map(),
-                        peerData: new Map(),
-                        lastActivity: Date.now()
-                    };
-                    rooms.set(roomId, room);
-                    log('ROOM', `Created room: ${roomId.substring(0, 3)}***`);
+                        const passwordHash = password ? await bcrypt.hash(password, 10) : null;
+                        room = {
+                            passwordHash,
+                            peers: new Set(),
+                            peerIds: new Map(),
+                            peerData: new Map(),
+                            lastActivity: Date.now()
+                        };
+                        rooms.set(roomId, room);
+                        log('ROOM', `Created room: ${roomId.substring(0, 3)}***`);
+                    } finally {
+                        roomCreationLocks.delete(roomId);
+                        resolveLock();
+                    }
                 }
             } else {
                 if (room.passwordHash) {
