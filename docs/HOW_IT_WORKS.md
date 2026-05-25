@@ -155,7 +155,7 @@ While in a room, two heartbeats keep the session alive:
 
 | Heartbeat | Interval | Source | Purpose |
 |:----------|:---------|:-------|:--------|
-| **Background** | 1 minute | `background.js` | Signals "I'm still connected" and handles 5-min auto-reconnect fallback |
+| **Background** | 30 seconds | `background.js` | Signals "I'm still connected" and triggers aggressive reconnect (500ms base, max 5s) |
 | **Content** | 15 seconds | `content.js` | Sends video metadata: `currentTime`, `mediaTitle`, `playbackState`, `volume`, `muted` |
 
 - **Server Reaper**: Every 2 minutes, the server checks for peers with no activity for 5+ minutes and disconnects them ("dead peer pruning").

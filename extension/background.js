@@ -2,8 +2,6 @@ import { EVENTS, PROTOCOL_VERSION, OFFICIAL_SERVER_URL, OFFICIAL_SERVER_TOKEN, A
 
 // --- State Management ---
 let socket = null;
-let reconnectDelay = 1000;
-const MAX_RECONNECT_DELAY = 30000;
 let isConnecting = false;
 let peerId = null; // initialized via getPeerId()
 let currentRoom = null;
@@ -102,11 +100,12 @@ function ensureState() {
 ensureState();
 
 let reconnectTimer = null;
-let reconnectStartTime = null; // New: track when reconnection started
-let reconnectFailed = false; // New: true if we hit the 5-min cap
-let slowReconnectTimer = null; // Infinite slow background reconnect timer
-let isSlowReconnectAttempt = false; // True during slow background reconnect execution
-let lastSlowReconnectAttempt = 0;
+let reconnectStartTime = null;
+let reconnectFailed = false;
+let reconnectAttempts = 0;
+const MAX_RECONNECT_ATTEMPTS = 20;
+const _RECONNECT_BASE_DELAY = 500;
+const _RECONNECT_MAX_DELAY = 5000;
 
 // Force Sync Coordination
 let isForceSyncInitiator = false;
@@ -211,9 +210,6 @@ async function connect() {
     if (isConnecting) return;
     isConnecting = true;
 
-    const isCurrentSlowRetry = isSlowReconnectAttempt;
-    isSlowReconnectAttempt = false;
-
     let finalUrl = '';
     try {
         // --- Phase 1: Storage ---
@@ -245,12 +241,12 @@ async function connect() {
             return;
         }
 
-        if (reconnectFailed && !isCurrentSlowRetry) {
+        if (reconnectFailed) {
             isConnecting = false;
-            return; // Let keepAlive alarm handle the 5-min retry interval
+            return;
         }
 
-        broadcastConnectionStatus('connecting');
+        broadcastConnectionStatus('reconnecting');
         const isCustomServer = settings.serverUrl && settings.useCustomServer;
         finalUrl = isCustomServer ? settings.serverUrl : OFFICIAL_SERVER_URL;
 
@@ -273,7 +269,7 @@ async function connect() {
             throw new Error(`[URL Error] ${e.message}`);
         }
 
-        addLog(`Connecting to ${isCustomServer ? finalUrl : 'Official Server'}...`, 'info');
+        addLog(`Connecting to ${isCustomServer ? finalUrl : 'Official Server'}... (attempt ${reconnectAttempts + 1})`, 'info');
 
         // --- Phase 4: WebSocket Init ---
         try {
@@ -291,15 +287,10 @@ async function connect() {
 
         // --- Phase 5: Event Listeners ---
         socket.onopen = () => {
-            reconnectDelay = 1000;
+            reconnectAttempts = 0;
             addLog('WebSocket Connection Opened', 'success');
             reconnectStartTime = null;
             reconnectFailed = false;
-            isSlowReconnectAttempt = false;
-            if (slowReconnectTimer) {
-                clearTimeout(slowReconnectTimer);
-                slowReconnectTimer = null;
-            }
             chrome.storage.session.set({ reconnectFailed: false });
             isNamespaceJoined = false;
             socket.send('40');
@@ -368,7 +359,7 @@ async function connect() {
                 chrome.runtime.sendMessage({ type: 'PEER_UPDATE', peers: [] }).catch(() => {});
             }
             broadcastConnectionStatus('disconnected');
-            addLog(`Disconnected. Retrying in ${reconnectDelay / 1000}s...`, 'warn');
+            addLog('Disconnected. Scheduling reconnect...', 'warn');
             scheduleReconnect();
         };
 
@@ -394,11 +385,15 @@ function broadcastConnectionStatus(status) {
 
 function updateBadgeStatus() {
     const isConnected = socket && socket.readyState === WebSocket.OPEN && isNamespaceJoined;
-    const status = isConnected ? 'connected' : (isConnecting || (socket && socket.readyState === WebSocket.CONNECTING) ? 'connecting' : 'disconnected');
+    const isReconnecting = !isConnected && reconnectAttempts > 0 && !reconnectFailed;
+    const status = isConnected ? 'connected' : (isConnecting || (socket && socket.readyState === WebSocket.CONNECTING) ? 'connecting' : (isReconnecting ? 'reconnecting' : 'disconnected'));
 
     if (reconnectFailed) {
         chrome.action.setBadgeText({ text: 'ERR' });
         chrome.action.setBadgeBackgroundColor({ color: '#ef4444' });
+    } else if (status === 'reconnecting') {
+        chrome.action.setBadgeText({ text: '...' });
+        chrome.action.setBadgeBackgroundColor({ color: '#f59e0b' });
     } else if (status === 'connecting') {
         chrome.action.setBadgeText({ text: '...' });
         chrome.action.setBadgeBackgroundColor({ color: '#fbbf24' });
@@ -438,29 +433,42 @@ function showNotification(senderName, action) {
 
 function scheduleReconnect() {
     if (reconnectTimer) return;
-    
-    isSlowReconnectAttempt = false;
 
     if (reconnectFailed) {
         return;
     }
-    
+
     if (!reconnectStartTime) reconnectStartTime = Date.now();
 
     // Check 5 minute cap (300,000ms)
     if (Date.now() - reconnectStartTime > 300000) {
         reconnectFailed = true;
         chrome.storage.session.set({ reconnectFailed: true });
-        addLog('Reconnection failed after 5 minutes. Entering slow background retry mode.', 'error');
+        addLog('Reconnection failed after 5 minutes.', 'error');
         broadcastConnectionStatus('reconnect_failed');
         return;
     }
-    
+
+    reconnectAttempts++;
+
+    // Cap at max attempts to prevent infinite loops
+    if (reconnectAttempts > MAX_RECONNECT_ATTEMPTS) {
+        reconnectFailed = true;
+        chrome.storage.session.set({ reconnectFailed: true });
+        addLog('Reconnection failed after max attempts.', 'error');
+        broadcastConnectionStatus('reconnect_failed');
+        return;
+    }
+
+    // Aggressive reconnect: 500ms base, cap at 5s, no exponential growth beyond that
+    const delay = Math.min(_RECONNECT_BASE_DELAY * Math.pow(1.5, reconnectAttempts - 1), _RECONNECT_MAX_DELAY);
+
+    addLog(`Reconnect in ${Math.round(delay)}ms (attempt ${reconnectAttempts})`, 'warn');
+
     reconnectTimer = setTimeout(() => {
         reconnectTimer = null;
-        reconnectDelay = Math.min(reconnectDelay * 2, MAX_RECONNECT_DELAY);
         connect();
-    }, reconnectDelay);
+    }, delay);
 }
 
 // Slow reconnect logic is now handled in the keepAlive alarm
@@ -908,20 +916,13 @@ async function routeToContent(action, payload) {
 }
 
 // --- Keep-Alive Mechanism ---
-chrome.alarms.create('keepAlive', { periodInMinutes: 1 });
+chrome.alarms.create('keepAlive', { periodInMinutes: 0.5 });
 chrome.alarms.onAlarm.addListener(async (alarm) => {
     await ensureState();
     if (alarm.name === 'keepAlive') {
         chrome.storage.session.get('keepAlive', () => {});
         if (!socket || socket.readyState !== WebSocket.OPEN) {
-            if (reconnectFailed) {
-                if (Date.now() - lastSlowReconnectAttempt >= 300000) {
-                    lastSlowReconnectAttempt = Date.now();
-                    isSlowReconnectAttempt = true;
-                    addLog('Alarm triggered 5-min slow reconnect attempt', 'info');
-                    connect();
-                }
-            } else {
+            if (!reconnectFailed) {
                 connect();
             }
         } else if (currentRoom) {
@@ -978,18 +979,13 @@ async function handleAsyncMessage(message, sender, sendResponse) {
     if (message.type === 'CONNECT') {
         reconnectFailed = false;
         reconnectStartTime = null;
-        isSlowReconnectAttempt = false;
-        if (slowReconnectTimer) {
-            clearTimeout(slowReconnectTimer);
-            slowReconnectTimer = null;
-        }
+        reconnectAttempts = 0;
         chrome.storage.session.set({ reconnectFailed: false });
         const settings = await getSettings();
         if (settings.roomId) {
             leaveOldRoomIfSwitching(settings.roomId);
         }
         if (socket && socket.readyState === WebSocket.OPEN && isNamespaceJoined) {
-            // Already connected, but maybe room changed or we need to refresh room state
             if (settings.roomId) {
                 emit(EVENTS.JOIN_ROOM, { 
                     roomId: settings.roomId, 
@@ -1007,18 +1003,18 @@ async function handleAsyncMessage(message, sender, sendResponse) {
     } else if (message.type === 'RETRY_CONNECT') {
         reconnectFailed = false;
         reconnectStartTime = null;
-        reconnectDelay = 1000;
-        isSlowReconnectAttempt = false;
-        if (slowReconnectTimer) {
-            clearTimeout(slowReconnectTimer);
-            slowReconnectTimer = null;
+        reconnectAttempts = 0;
+        if (reconnectTimer) {
+            clearTimeout(reconnectTimer);
+            reconnectTimer = null;
         }
         chrome.storage.session.set({ reconnectFailed: false });
         connect();
         sendResponse({ status: 'ok' });
     } else if (message.type === 'GET_STATUS') {
         const isConnected = socket && socket.readyState === WebSocket.OPEN && isNamespaceJoined;
-        let status = isConnected ? 'connected' : (isConnecting || (socket && socket.readyState === WebSocket.CONNECTING) ? 'connecting' : 'disconnected');
+        const isReconnecting = !isConnected && reconnectAttempts > 0 && !reconnectFailed;
+        let status = isConnected ? 'connected' : (isConnecting || (socket && socket.readyState === WebSocket.CONNECTING) ? 'connecting' : (isReconnecting ? 'reconnecting' : 'disconnected'));
         if (reconnectFailed) status = 'reconnect_failed';
         sendResponse({ 
             status, 
@@ -1026,7 +1022,8 @@ async function handleAsyncMessage(message, sender, sendResponse) {
             peers: currentRoom ? currentRoom.peers : [],
             lastActionState,
             targetTabId: currentTabId,
-            episodeLobby: episodeLobby
+            episodeLobby: episodeLobby,
+            reconnectAttempts
         });
     } else if (message.type === 'LEAVE_ROOM') {
         emit(EVENTS.LEAVE_ROOM, { peerId });

@@ -4,16 +4,13 @@ This document tracks planned features, improvements, and their implementation de
 
 ---
 
-## Antworten auf offenen Fragen
+## Offene technische Fragen
 
-### 1. Graceful Shutdown
-**Korrektur:** Der Server hat bereits Graceful Shutdown implementiert (`server/index.js:481-499`). Bei SIGTERM/SIGINT wird allen Clients eine Neustart-Nachricht gesendet, der HTTP-Server geschlossen und nach 5s erzwungen beendet. **Kein Handlungsbedarf.**
-
-### 6. Service Worker Fallback bei Room-State Verlust
+### 1. Service Worker Fallback bei Room-State Verlust
 Manifest V3 suspendiert den Service Worker nach ~30s Inaktivität. `chrome.alarms` weckt ihn auf, aber:
 - **Problem:** Wenn der SW neu startet, sind alle Variablen (`currentRoom`, `socket`, `isNamespaceJoined`) weg
-- **Aktueller Stand:** `chrome.storage.session` persistiert `currentRoom`, `peerId`, `eventQueue` — der SW stellt diese beim Start wieder her (`restoreSession()`)
-- **Lücke:** Der WebSocket muss neu aufgebaut werden. Das passiert automatisch via `connect()`, aber es gibt eine **Zeitlücke** von 2-5 Sekunden in der Events verloren gehen können. **Verbesserung:** Queue-Events während Reconnect, visualisiere "Reconnecting..." im Popup.
+- **Aktueller Stand:** `chrome.storage.session` persistiert `currentRoom`, `peerId`, `eventQueue` — der SW stellt diese beim Start wieder her (`ensureState()`)
+- **Gelöst:** WebSocket wird automatisch via `connect()` neu aufgebaut. Events werden während Reconnect gequeued und nach Namespace-Join geflushed. "Reconnecting..." Status wird im Popup + Badge angezeigt. KeepAlive-Alarm auf 30s reduziert. Reconnect-Backoff: 500ms Basis, max 5s (statt vorher 1s→30s).
 
 ### 7. Tests für Extensions
 Stimmt, sind aufwändig. Praktische Ansätze:

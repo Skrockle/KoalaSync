@@ -40,10 +40,11 @@ Maintains continuous synchronized viewing when watching series:
 
 ## 5. Peer Lifecycle & Dual Heartbeat
 To maintain a clean room state and eliminate "Ghost Peers":
-- **Session Heartbeat (Background)**: Every 1 minute, `background.js` sends an "I'm alive" signal to the server. This keeps you in the room even if no video is playing.
+- **Session Heartbeat (Background)**: Every 30 seconds, `background.js` sends an "I'm alive" signal to the server. This keeps you in the room even if no video is playing.
 - **Video Heartbeat (Content)**: Every 15 seconds, `content.js` sends current playback metadata (time, title, state) if a video is found.
 - **Server Pruning**: The server runs a "Reaper" every 2 minutes. If a peer has sent **zero** activity (no events and no heartbeats) for 5 minutes, they are forcefully disconnected.
 - **Immediate Cleanup**: Rooms are deleted instantly when the last peer leaves or disconnects.
+- **Reconnect Strategy**: Aggressive backoff — 500ms base, 1.5x multiplier, capped at 5s. Max 20 attempts before marking as failed. Events are queued during disconnect and flushed after namespace rejoin.
 
 > [!CAUTION]
 > **Identity Rule**: Differentiate between `peerId` and `socket.id`. Use `socket.id` exclusively for ephemeral transport routing on the server. Use `peerId` exclusively for identity, state management, and room tracking across the stack.
@@ -54,7 +55,8 @@ KoalaSync uses a megaphone routing approach to minimize server logic:
 - **Storm Prevention**: When dispatching state updates in response to a new user joining (e.g., an active lobby state), ensure ONLY the initiator (or a designated leader) calls `emit()` to prevent $O(N)$ broadcast storms.
 
 ## 7. Security & Stability
-- **Service Worker Lifecycle**: Uses `chrome.alarms` to prevent the Manifest V3 service worker from suspending while in an active room.
+- **Service Worker Lifecycle**: Uses `chrome.alarms` (30s interval) to prevent the Manifest V3 service worker from suspending while in an active room. On wake, runtime state is restored from `chrome.storage.session` via `ensureState()`.
+- **Reconnect Visualization**: Badge shows "..." (orange) during reconnect. Popup displays "Reconnecting..." with attempt counter.
 - **Rate Limiting**: Server-side per-socket and per-IP rate limits to prevent sync-spamming or DoS.
 - **Noise Filtering**: Uses a curated blacklist of domains (Search Engines, Social Media) to declutter the "Target Tab" selector in the popup.
 - **Diagnostics**: A "Dev" tab provides real-time access to the underlying `<video>` state (`readyState`, `paused`, `currentTime`) for easier troubleshooting.

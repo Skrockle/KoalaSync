@@ -545,11 +545,15 @@ async function populateTabs(providedPeers = null, providedTargetTabId = null) {
 function applyConnectionStatus(status) {
     const connected = status === 'connected';
     const connecting = status === 'connecting';
+    const reconnecting = status === 'reconnecting';
     const failed = status === 'reconnect_failed';
 
-    elements.connDot.className = 'status-dot ' + (connected ? 'status-online' : (failed ? 'status-offline' : (connecting ? 'status-online' : 'status-offline')));
+    elements.connDot.className = 'status-dot ' + (connected ? 'status-online' : (failed ? 'status-offline' : ((connecting || reconnecting) ? 'status-online' : 'status-offline')));
     
-    if (connecting) {
+    if (reconnecting) {
+        elements.connDot.style.background = '#f59e0b';
+        elements.connDot.style.boxShadow = '0 0 8px #f59e0b';
+    } else if (connecting) {
         elements.connDot.style.background = '#fbbf24';
         elements.connDot.style.boxShadow = '0 0 8px #fbbf24';
     } else if (failed) {
@@ -560,13 +564,13 @@ function applyConnectionStatus(status) {
         elements.connDot.style.boxShadow = '';
     }
 
-    elements.connText.textContent = connected ? 'Connected' : (connecting ? 'Connecting...' : (failed ? 'Failed' : 'Disconnected'));
+    elements.connText.textContent = connected ? 'Connected' : (reconnecting ? 'Reconnecting...' : (connecting ? 'Connecting...' : (failed ? 'Failed' : 'Disconnected')));
     elements.retryBtn.style.display = failed ? 'block' : 'none';
 
     // Update Join Button during auto-transition
-    if (connecting) {
+    if (connecting || reconnecting) {
         elements.joinBtn.disabled = true;
-        elements.joinBtn.textContent = '🚀 Joining...';
+        elements.joinBtn.textContent = connecting ? '🚀 Joining...' : '🔄 Reconnecting...';
     } else {
         elements.joinBtn.disabled = false;
         elements.joinBtn.textContent = 'Join Room';
@@ -1040,6 +1044,13 @@ chrome.runtime.onMessage.addListener((msg) => {
         if (msg.status === 'disconnected' || msg.status === 'reconnect_failed') {
             elements.joinBtn.disabled = false;
             elements.joinBtn.textContent = 'Join Room';
+        }
+        if (msg.status === 'reconnecting') {
+            chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (res) => {
+                if (res && res.reconnectAttempts !== undefined) {
+                    elements.connText.textContent = `Reconnecting... (${res.reconnectAttempts})`;
+                }
+            });
         }
     } else if (msg.type === 'HISTORY_UPDATE') {
         updateHistory(msg.history);
