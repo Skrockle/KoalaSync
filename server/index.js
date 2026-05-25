@@ -93,6 +93,10 @@ function checkAuthRate(ip, roomId) {
 }
 
 function recordAuthFailure(ip, roomId) {
+    if (failedAuthAttempts.size > 50000) {
+        failedAuthAttempts.clear();
+        log('SECURITY', 'Cleared failedAuthAttempts map to prevent memory leak');
+    }
     const key = `${ip}:${roomId}`;
     const record = failedAuthAttempts.get(key) || { count: 0, lastAttempt: 0 };
     record.count++;
@@ -227,6 +231,12 @@ io.on('connection', (socket) => {
     }
 
     if (clientVersion) {
+        if (typeof clientVersion !== 'string') {
+            log('AUTH', `Invalid version type from ${clientIp}`);
+            socket.emit(EVENTS.ERROR, { message: 'Invalid version format' });
+            socket.disconnect(true);
+            return;
+        }
         const parts = clientVersion.split('.').map(Number);
         const cMaj = parts[0], cMin = parts[1], cPatch = parts[2] || 0;
         const [mMaj, mMin, mPatch] = MIN_VERSION.split('.').map(Number);
@@ -291,6 +301,7 @@ io.on('connection', (socket) => {
             }
 
             let room = rooms.get(roomId);
+            let createdByMe = false;
 
             if (!room) {
                 // Acquire per-room creation lock to prevent race conditions
@@ -298,9 +309,6 @@ io.on('connection', (socket) => {
                 if (lockPromise) {
                     await lockPromise;
                     room = rooms.get(roomId);
-                    if (room) {
-                        // Another concurrent request created it, fall through to password check
-                    }
                 }
                 if (!room) {
                     // Create and store lock before async boundary
@@ -322,13 +330,16 @@ io.on('connection', (socket) => {
                             lastActivity: Date.now()
                         };
                         rooms.set(roomId, room);
+                        createdByMe = true;
                         log('ROOM', `Created room: ${roomId.substring(0, 3)}***`);
                     } finally {
                         roomCreationLocks.delete(roomId);
                         resolveLock();
                     }
                 }
-            } else {
+            }
+
+            if (!createdByMe) {
                 if (room.passwordHash) {
                     if (!password || !(await bcrypt.compare(password, room.passwordHash))) {
                         recordAuthFailure(ip, roomId);
@@ -464,6 +475,11 @@ io.on('connection', (socket) => {
     });
 
     socket.on(EVENTS.GET_ROOMS, () => {
+        if (!checkEventRate(socket.id)) {
+            log('SECURITY', `Event rate limit exceeded for socket (GET_ROOMS): ${socket.id}`);
+            socket.disconnect(true);
+            return;
+        }
         const list = Array.from(rooms.entries()).map(([id, r]) => ({
             id,
             peerCount: r.peers.size,
@@ -581,8 +597,10 @@ process.on('SIGINT',  () => gracefulShutdown('SIGINT'));
 
 process.on('uncaughtException', (err) => {
     log('ERROR', `Uncaught exception: ${err.message}`, err.stack);
+    process.exit(1);
 });
 
 process.on('unhandledRejection', (reason) => {
     log('ERROR', `Unhandled rejection: ${reason}`);
+    process.exit(1);
 });
