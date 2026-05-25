@@ -531,7 +531,15 @@ async function populateTabs(providedPeers = null, providedTargetTabId = null) {
         if (!tab.url || tab.url.startsWith('chrome://')) return false;
         if (isFilterActive && tab.id !== parseInt(currentTargetTabId)) {
             const urlStr = tab.url.toLowerCase();
-            if (BLACKLIST_DOMAINS.some(d => urlStr.includes(d.toLowerCase()))) return false;
+            if (BLACKLIST_DOMAINS.some(d => {
+                const domain = d.toLowerCase();
+                try {
+                    const hostname = new URL(tab.url).hostname.toLowerCase();
+                    if (domain.endsWith('.')) return hostname.startsWith(domain) || hostname.includes('.' + domain);
+                    if (domain.includes('.')) return hostname === domain || hostname.endsWith('.' + domain);
+                } catch {}
+                return urlStr.includes(domain);
+            })) return false;
         }
         return true;
     });
