@@ -15,7 +15,6 @@ let pendingHistory = [];
 let eventQueue = [];
 let isNamespaceJoined = false;
 let lastActionState = { action: null, senderId: null, timestamp: 0, acks: [] };
-let commandSenderMap = new Map(); // tabId -> senderId (tracks who initiated each command per tab)
 
 // --- Boot Sequence Lock ---
 let restorationTask = null;
@@ -908,14 +907,15 @@ async function routeToContent(action, payload) {
     const tabId = parseInt(currentTabId);
     if (isNaN(tabId)) return;
 
-    commandSenderMap.set(tabId, payload?.senderId || null);
     const actionTimestamp = payload?.actionTimestamp || Date.now();
+    const commandSenderId = payload?.senderId || null;
 
     chrome.tabs.sendMessage(tabId, { 
         type: 'SERVER_COMMAND',
         action,
         payload,
-        actionTimestamp
+        actionTimestamp,
+        commandSenderId
     }).catch(err => {
         if (err.message.includes('Receiving end does not exist') || err.message.includes('Extension context invalidated')) {
             chrome.scripting.executeScript({
@@ -925,12 +925,10 @@ async function routeToContent(action, payload) {
                 setTimeout(() => routeToContent(action, payload), 500);
             }).catch(_err => {
                 addLog(`Auto-reinject failed for tab ${tabId}`, 'warn');
-                commandSenderMap.delete(tabId);
             });
         } else {
             addLog(`Content Script not responding in tab ${tabId}`, 'warn');
             currentTabId = null;
-            commandSenderMap.delete(tabId);
             updateBadgeStatus();
         }
     });
@@ -1200,8 +1198,7 @@ async function handleAsyncMessage(message, sender, sendResponse) {
         }
         sendResponse({ status: 'ok' });
     } else if (message.type === 'CMD_ACK') {
-        const tabId = sender.tab ? sender.tab.id : null;
-        const commandSenderId = tabId ? commandSenderMap.get(tabId) : null;
+        const commandSenderId = message.commandSenderId;
         if (commandSenderId && commandSenderId !== peerId) {
             emit(EVENTS.EVENT_ACK, { 
                 senderId: peerId, 

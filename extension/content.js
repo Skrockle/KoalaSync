@@ -280,15 +280,15 @@
             
             if (action === EVENTS.PLAY) {
                 tryMediaAction(EVENTS.PLAY);
-                chrome.runtime.sendMessage({ type: 'CMD_ACK', actionTimestamp: message.actionTimestamp });
+                chrome.runtime.sendMessage({ type: 'CMD_ACK', actionTimestamp: message.actionTimestamp, commandSenderId: message.commandSenderId });
                 actionCompleted = true;
             } else if (action === EVENTS.PAUSE) {
                 tryMediaAction(EVENTS.PAUSE);
-                chrome.runtime.sendMessage({ type: 'CMD_ACK', actionTimestamp: message.actionTimestamp });
+                chrome.runtime.sendMessage({ type: 'CMD_ACK', actionTimestamp: message.actionTimestamp, commandSenderId: message.commandSenderId });
                 actionCompleted = true;
             } else if (action === EVENTS.SEEK) {
                 tryMediaAction(EVENTS.SEEK, payload);
-                chrome.runtime.sendMessage({ type: 'CMD_ACK', actionTimestamp: message.actionTimestamp });
+                chrome.runtime.sendMessage({ type: 'CMD_ACK', actionTimestamp: message.actionTimestamp, commandSenderId: message.commandSenderId });
                 actionCompleted = true;
             } else if (action === EVENTS.FORCE_SYNC_PREPARE) {
                 if (!payload || payload.targetTime === undefined) return;
@@ -312,9 +312,9 @@
                     }).catch(() => {});
                 }
             } else if (action === EVENTS.FORCE_SYNC_EXECUTE) {
-                stopLobbyPoll(); // Clear any pending lobby on force sync
+                stopLobbyPoll();
                 tryMediaAction(EVENTS.PLAY);
-                chrome.runtime.sendMessage({ type: 'CMD_ACK', actionTimestamp: message.actionTimestamp });
+                chrome.runtime.sendMessage({ type: 'CMD_ACK', actionTimestamp: message.actionTimestamp, commandSenderId: message.commandSenderId });
                 actionCompleted = true;
             }
 
