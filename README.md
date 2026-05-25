@@ -8,7 +8,7 @@
   <a href="https://chromewebstore.google.com/detail/koalasync/obbnmkmlaaddodakcbdljknjpagklifc"><img src="https://img.shields.io/badge/Chrome-Download-blue?logo=googlechrome&logoColor=white" alt="Chrome Extension"></a>
 </p>
 
-*KoalaSync is a lightweight Browser Extension and Relay Server for synchronized video playback across any website—YouTube, Twitch, and custom HTML5 players. Built with a focus on **Data Sovereignty** and **Performance**.*
+<p align="center"><sub><i>KoalaSync is a lightweight Browser Extension and Relay Server for synchronized video playback across any website—YouTube, Twitch, and custom HTML5 players. Built with a focus on <b>Data Sovereignty</b> and <b>Performance</b>.</i></sub></p>
 
 ### 🌟 Why KoalaSync?
 
