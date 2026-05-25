@@ -43,10 +43,17 @@
 
 ### 🚀 Quick Start
 
-#### For Users (Installation)
-The easiest way to install KoalaSync is to download the pre-compiled version from the [Releases](https://github.com/Shik3i/KoalaSync/releases) page.
-1. Download the latest `koalasync-chrome.zip` or `koalasync-firefox.zip`.
-2. Extract the file and load it as an "Unpacked Extension" in your browser's Developer Mode.
+#### For Users (Installation & Usage)
+The easiest and safest way to install KoalaSync is directly through the official browser stores:
+- **[Install for Chrome](https://chromewebstore.google.com/detail/koalasync/obbnmkmlaaddodakcbdljknjpagklifc)**
+- **[Install for Firefox](https://addons.mozilla.org/de/firefox/addon/koalasync/)**
+
+*(For manual offline installation: Download the latest `.zip` from the [Releases](https://github.com/Shik3i/KoalaSync/releases) page and load it as an "Unpacked Extension" in Developer Mode).*
+
+**How to use:**
+1. **Create a Room:** Click the Koala icon in your browser and hit `+ Create New Room`.
+2. **Invite Friends:** Share the auto-copied invite link. Once they click it, they automatically join.
+3. **Pick a Video:** Navigate to the Sync Tab, select the tab playing your video, and grab some popcorn! 🍿
 
 #### For Developers (Building)
 To build the extension from source and synchronize protocol constants:
