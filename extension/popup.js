@@ -171,7 +171,11 @@ function updateUI(roomId, password, useCustomServer = false, serverUrl = '') {
 
 function updateLastActionUI(state, peers) {
     if (!state || !state.action) {
-        elements.lastActionCard.innerHTML = '<div style="text-align:center; color: var(--text-muted); font-size: 10px;">No recent commands</div>';
+        elements.lastActionCard.replaceChildren();
+        const el = document.createElement('div');
+        el.style.cssText = 'text-align:center; color: var(--text-muted); font-size: 10px;';
+        el.textContent = 'No recent commands';
+        elements.lastActionCard.appendChild(el);
         return;
     }
 
@@ -304,13 +308,21 @@ function renderEmpty(container, type) {
         rooms: { icon: '\u{1F50D}', title: 'No active rooms', hint: 'Create a room or refresh to find public ones' }
     };
     const state = states[type] || { icon: '', title: '', hint: '' };
-    container.innerHTML = `
-        <div style="text-align:center; padding:16px 8px; color:var(--text-muted);">
-            <div style="font-size:24px; margin-bottom:6px;">${state.icon}</div>
-            <div style="font-size:12px; font-weight:600; margin-bottom:4px;">${state.title}</div>
-            <div style="font-size:10px; opacity:0.7;">${state.hint}</div>
-        </div>
-    `;
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'text-align:center; padding:16px 8px; color:var(--text-muted);';
+    const iconDiv = document.createElement('div');
+    iconDiv.style.cssText = 'font-size:24px; margin-bottom:6px;';
+    iconDiv.textContent = state.icon;
+    const titleDiv = document.createElement('div');
+    titleDiv.style.cssText = 'font-size:12px; font-weight:600; margin-bottom:4px;';
+    titleDiv.textContent = state.title;
+    const hintDiv = document.createElement('div');
+    hintDiv.style.cssText = 'font-size:10px; opacity:0.7;';
+    hintDiv.textContent = state.hint;
+    wrapper.appendChild(iconDiv);
+    wrapper.appendChild(titleDiv);
+    wrapper.appendChild(hintDiv);
+    container.replaceChildren(wrapper);
 }
 
 function updatePeerList(peers) {
@@ -925,7 +937,11 @@ elements.createRoomBtn.addEventListener('click', () => {
 });
 
 elements.refreshRooms.addEventListener('click', () => {
-    elements.publicRooms.innerHTML = '<div style="text-align:center; padding: 10px; color:var(--text-muted);">Refreshing...</div>';
+    elements.publicRooms.replaceChildren();
+    const el = document.createElement('div');
+    el.style.cssText = 'text-align:center; padding: 10px; color:var(--text-muted);';
+    el.textContent = 'Refreshing...';
+    elements.publicRooms.appendChild(el);
     chrome.runtime.sendMessage({ type: 'GET_ROOM_LIST' });
 });
 
@@ -1344,9 +1360,12 @@ function renderOnboardingStep() {
     title.textContent = step.title;
     text.textContent = step.text;
 
-    dots.innerHTML = onboardingSteps.map((_, i) =>
-        `<div style="width:8px; height:8px; border-radius:50%; background:${i === onboardingStep ? 'var(--accent)' : '#475569'};"></div>`
-    ).join('');
+    dots.replaceChildren();
+    onboardingSteps.forEach((_, i) => {
+        const dot = document.createElement('div');
+        dot.style.cssText = `width:8px; height:8px; border-radius:50%; background:${i === onboardingStep ? 'var(--accent)' : '#475569'};`;
+        dots.appendChild(dot);
+    });
 
     nextBtn.textContent = onboardingStep === onboardingSteps.length - 1 ? 'Done!' : 'Next';
 }
