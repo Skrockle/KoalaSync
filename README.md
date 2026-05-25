@@ -45,8 +45,11 @@
 
 #### For Users (Installation & Usage)
 The easiest and safest way to install KoalaSync is directly through the official browser stores:
-- **[Install for Chrome](https://chromewebstore.google.com/detail/koalasync/obbnmkmlaaddodakcbdljknjpagklifc)**
-- **[Install for Firefox](https://addons.mozilla.org/de/firefox/addon/koalasync/)**
+
+<p>
+  <a href="https://chromewebstore.google.com/detail/koalasync/obbnmkmlaaddodakcbdljknjpagklifc"><img src="https://img.shields.io/badge/Chrome-Download-blue?logo=googlechrome&logoColor=white&style=for-the-badge" alt="Chrome Extension"></a>
+  <a href="https://addons.mozilla.org/de/firefox/addon/koalasync/"><img src="https://img.shields.io/badge/Firefox-Download-orange?logo=firefoxbrowser&logoColor=white&style=for-the-badge" alt="Firefox Add-on"></a>
+</p>
 
 *(For manual offline installation: Download the latest `.zip` from the [Releases](https://github.com/Shik3i/KoalaSync/releases) page and load it as an "Unpacked Extension" in Developer Mode).*
 
