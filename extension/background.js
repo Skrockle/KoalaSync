@@ -7,7 +7,6 @@ const MAX_RECONNECT_DELAY = 30000;
 let isConnecting = false;
 let peerId = null; // initialized via getPeerId()
 let currentRoom = null;
-let lastPeersJson = null;
 let currentTabId = null;
 let currentTabTitle = null; // New: for Smart Matching
 let logs = [];
@@ -341,7 +340,7 @@ async function connect() {
                 try {
                     const payload = JSON.parse(msg.substring(2));
                     handleServerEvent(payload[0], payload[1]);
-                } catch (e) {
+                } catch (_e) {
                     addLog(`Failed to parse message: ${msg}`, 'error');
                 }
             }
@@ -894,7 +893,7 @@ async function routeToContent(action, payload) {
                 files: ['content.js']
             }).then(() => {
                 setTimeout(() => routeToContent(action, payload), 500);
-            }).catch(err => {
+            }).catch(_err => {
                 addLog(`Auto-reinject failed for tab ${tabId}`, 'warn');
             });
         } else {
@@ -941,7 +940,7 @@ function leaveOldRoomIfSwitching(newRoomId) {
         if (socket && socket.readyState === WebSocket.OPEN && isNamespaceJoined) {
             try {
                 socket.send(`42${JSON.stringify([EVENTS.LEAVE_ROOM, { peerId }])}`);
-            } catch (e) {
+            } catch (_e) {
                 addLog('Failed to send leave room packet during transition', 'error');
             }
         }
@@ -1356,7 +1355,7 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 });
 
 // Re-inject on full page refresh
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, _tab) => {
     if (currentTabId && tabId === parseInt(currentTabId) && changeInfo.status === 'complete') {
         chrome.scripting.executeScript({
             target: { tabId },

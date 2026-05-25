@@ -9,7 +9,7 @@
         if (window.koalaSyncInjected && chrome.runtime.id) {
             return;
         }
-    } catch (e) {
+    } catch (_e) {
         // Context invalidated, proceed with re-injection
     }
     window.koalaSyncInjected = true;
@@ -42,7 +42,7 @@
     // --- Episode Auto-Sync State ---
     let lastKnownMediaTitle = null;
     let episodeTransitionDebounce = null;
-    let pendingLobbyTitle = null; // Title we're waiting to match (from remote lobby)
+    let _pendingLobbyTitle = null; // Title we're waiting to match (from remote lobby)
     let lobbyPollTimer = null;
 
     function expectEvent(state) {
@@ -131,7 +131,7 @@
 
     function startLobbyPoll(expectedTitle) {
         stopLobbyPoll();
-        pendingLobbyTitle = expectedTitle;
+        _pendingLobbyTitle = expectedTitle;
 
         // NOTE: Do NOT pause here. Three callers reach this function:
         // 1. PAUSE_FOR_LOBBY (initiator): already paused by that handler before calling us.
@@ -151,7 +151,7 @@
 
 
     function stopLobbyPoll() {
-        pendingLobbyTitle = null;
+        _pendingLobbyTitle = null;
         if (lobbyPollTimer) {
             clearInterval(lobbyPollTimer);
             lobbyPollTimer = null;
@@ -223,7 +223,7 @@
                 expectEvent('seek');
                 video.currentTime = data.targetTime;
             }
-        } catch (e) {
+    } catch (e) {
             reportLog(`Media Action Error: ${e.message}`, 'error');
         }
     }

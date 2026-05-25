@@ -102,7 +102,9 @@ Before starting any task, committing, or pushing, you **MUST** run `git pull --r
 > **AI AGENTS MUST FOLLOW THIS EXACT SEQUENCE WHEN RELEASING A NEW VERSION OR TAGGING.**
 > The CI pipeline automatically injects the version from the git tag into `manifest.base.json`, `shared/constants.js`, and `package.json`. You do NOT need to manually bump version numbers.
 > - **Website Versioning**: **NEVER** manually modify the version fallback strings in `website/index.html`. The website dynamically fetches the latest version and release date from `website/version.json` at runtime using `website/app.js`. Manual bumps in the HTML file are completely redundant and should be avoided.
-1. **MANDATORY SYNTAX CHECK**: Before staging, committing, or pushing any changes, you **MUST** run a syntax validation check using `node -c` on every single modified JavaScript file (e.g., `node -c extension/background.js` and `node -c extension/content.js`). **NEVER** commit or push code that fails this check.
+1. **MANDATORY SYNTAX & LINT CHECKS**: Before staging, committing, or pushing any changes, you **MUST** run both checks on every modified JavaScript file:
+   - **Syntax Validation**: Run `node -c` on every single modified JavaScript file (e.g., `node -c extension/background.js` and `node -c extension/content.js`). **NEVER** commit or push code that fails this check.
+   - **ESLint Validation**: Run `npm run lint` (or `npx eslint .`). The output must show **zero errors and zero warnings**. ESLint is configured to catch undefined variables, unused vars, unreachable code, and other semantic issues. **NEVER** commit or push code that fails this check.
 2. Commit all verified code changes and push to `main`.
 3. Create and push a new tag. **MANDATORY**: Tags MUST start with a `v` (e.g., `v1.4.0`). The GitHub Actions release workflow is strictly configured to ignore any tags without the `v` prefix.
 4. The CI will extract the version from the tag (e.g., `v1.4.0` → `1.4.0`), inject it into all source files, build the extension artifacts, publish the Docker image, and create a GitHub Release.

@@ -737,7 +737,7 @@ elements.joinBtn.addEventListener('click', async () => {
         try {
             const urlToCheck = serverUrl.includes('://') ? serverUrl : 'ws://' + serverUrl;
             new URL(urlToCheck);
-        } catch (e) {
+        } catch (_e) {
             showError('Invalid Server URL format.');
             elements.joinBtn.disabled = false;
             elements.joinBtn.textContent = 'Join Room';
