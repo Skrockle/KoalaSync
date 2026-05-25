@@ -103,7 +103,7 @@ When your friend opens the link in their browser:
 
 Both users now need to select which browser tab contains the video to sync:
 
-1. Open a video on any website (YouTube, Twitch, etc.).
+1. Open a video on any website (YouTube, Twitch, Netflix, etc.).
 2. In the extension popup → **Sync** tab → use the **"Target Tab"** dropdown.
 3. The dropdown lists all open tabs, filtered to exclude noise (search engines, social media — configurable via Settings).
 4. Tabs with a **matching video title** are highlighted with a ⭐ prefix for easy identification.
