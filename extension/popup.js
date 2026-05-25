@@ -46,7 +46,8 @@ const elements = {
     episodeLobbyCard: document.getElementById('episodeLobbyCard'),
     lobbyTitle: document.getElementById('lobbyTitle'),
     lobbyPeerStatus: document.getElementById('lobbyPeerStatus'),
-    browserNotifications: document.getElementById('browserNotifications')
+    browserNotifications: document.getElementById('browserNotifications'),
+    autoCopyInvite: document.getElementById('autoCopyInvite')
 };
 
 let localPeerId = null;
@@ -63,7 +64,7 @@ let forceSyncDone = false;
 // --- Initialization ---
 async function init() {
     // Load Settings
-    const data = await chrome.storage.sync.get(['serverUrl', 'useCustomServer', 'roomId', 'password', 'filterNoise', 'username', 'autoSyncNextEpisode', 'forceSyncMode', 'browserNotifications']);
+    const data = await chrome.storage.sync.get(['serverUrl', 'useCustomServer', 'roomId', 'password', 'filterNoise', 'username', 'autoSyncNextEpisode', 'forceSyncMode', 'browserNotifications', 'autoCopyInvite']);
     let username = data.username;
     if (!username) {
         const adjs = ['Happy', 'Cool', 'Fast', 'Smart', 'Brave', 'Calm', 'Sneaky', 'Lazy', 'Wild', 'Chill', 'Lucky', 'Epic', 'Swift', 'Bold', 'Mighty', 'Cosmic', 'Neon', 'Shadow', 'Crystal', 'Thunder', 'Silent', 'Golden', 'Fierce', 'Noble', 'Mystic', 'Frozen', 'Blazing', 'Sapphire', 'Iron', 'Crimson'];
@@ -76,10 +77,11 @@ async function init() {
     elements.roomId.value = data.roomId || '';
     elements.password.value = data.password || '';
     elements.username.value = username;
-    elements.filterNoise.checked = data.filterNoise !== false;
-    elements.autoSyncNextEpisode.checked = data.autoSyncNextEpisode !== false;
-    elements.forceSyncMode.value = data.forceSyncMode || 'jump-to-others';
-    elements.browserNotifications.checked = data.browserNotifications === true;
+    if (elements.filterNoise) elements.filterNoise.checked = data.filterNoise !== false;
+    if (elements.autoSyncNextEpisode) elements.autoSyncNextEpisode.checked = data.autoSyncNextEpisode !== false;
+    if (elements.forceSyncMode) elements.forceSyncMode.value = data.forceSyncMode || 'jump-to-others';
+    if (elements.browserNotifications) elements.browserNotifications.checked = data.browserNotifications === true;
+    if (elements.autoCopyInvite) elements.autoCopyInvite.checked = data.autoCopyInvite !== false;
     
     // Set Version Info
     const versionEl = document.getElementById('appVersion');
@@ -142,6 +144,11 @@ function toggleUIState(inRoom) {
     if (elements.sectionJoin) elements.sectionJoin.style.display = inRoom ? 'none' : 'block';
     if (elements.sectionActive) elements.sectionActive.style.display = inRoom ? 'block' : 'none';
     if (elements.peerListSync) elements.peerListSync.style.display = inRoom ? 'block' : 'none';
+    
+    const syncActive = document.getElementById('sync-active');
+    const syncInactive = document.getElementById('sync-inactive');
+    if (syncActive) syncActive.style.display = inRoom ? 'block' : 'none';
+    if (syncInactive) syncInactive.style.display = inRoom ? 'none' : 'block';
 }
 
 function updateUI(roomId, password, useCustomServer = false, serverUrl = '') {
@@ -152,6 +159,14 @@ function updateUI(roomId, password, useCustomServer = false, serverUrl = '') {
         const encodedUrl = encodeURIComponent(serverUrl || '');
         const invite = `${OFFICIAL_LANDING_PAGE_URL}/join.html#join:${roomId}:${password}:${serverFlag}:${encodedUrl}`;
         elements.inviteLink.value = invite;
+        
+        if (window.justCreatedRoom) {
+            window.justCreatedRoom = false;
+            if (elements.autoCopyInvite && elements.autoCopyInvite.checked && elements.copyInvite) {
+                elements.copyInvite.click();
+            }
+        }
+
         if (elements.activeRoomId) elements.activeRoomId.textContent = roomId;
         if (elements.activeServer) {
             elements.activeServer.textContent = useCustomServer ? (serverUrl || 'Custom Server') : 'Official Server';
@@ -597,6 +612,13 @@ async function populateTabs(providedPeers = null, providedTargetTabId = null) {
 
     if (currentTargetTabId) {
         elements.targetTab.value = currentTargetTabId;
+    } else {
+        const matchOpt = options.find(o => o.textContent.includes('⭐ MATCH:'));
+        if (matchOpt && elements.targetTab.options.length > 1) {
+            elements.targetTab.value = matchOpt.value;
+            const tabTitle = matchOpt.text.replace('⭐ MATCH: ', '') || null;
+            chrome.runtime.sendMessage({ type: 'SET_TARGET_TAB', tabId: parseInt(matchOpt.value), tabTitle });
+        }
     }
 }
 
@@ -815,6 +837,12 @@ elements.browserNotifications.addEventListener('change', () => {
     chrome.storage.sync.set({ browserNotifications: elements.browserNotifications.checked });
 });
 
+if (elements.autoCopyInvite) {
+    elements.autoCopyInvite.addEventListener('change', () => {
+        chrome.storage.sync.set({ autoCopyInvite: elements.autoCopyInvite.checked });
+    });
+}
+
 elements.forceSyncMode.addEventListener('change', () => {
     chrome.storage.sync.set({ forceSyncMode: elements.forceSyncMode.value });
 });
@@ -931,17 +959,23 @@ elements.leaveBtn.addEventListener('click', async () => {
     updateUI(null, null);
 });
 
-elements.createRoomBtn.addEventListener('click', () => {
-    const animals = ['koala', 'panda', 'tiger', 'eagle', 'fox', 'bear'];
-    const adj = ['happy', 'cool', 'fast', 'smart', 'brave', 'calm'];
-    const id = `${adj[Math.floor(Math.random() * adj.length)]}-${animals[Math.floor(Math.random() * animals.length)]}-${Math.floor(Math.random() * 100)}`;
-    const array = new Uint32Array(1);
-    window.crypto.getRandomValues(array);
-    const pass = array[0].toString(36).substring(0, 6);
+function handleCreateRoom() {
+    const generateId = () => Math.random().toString(36).substring(2, 8).toUpperCase();
+    const roomId = generateId();
+    const password = generateId();
+    elements.roomId.value = roomId;
+    elements.password.value = password;
+    window.justCreatedRoom = true;
     
-    elements.roomId.value = id;
-    elements.password.value = pass;
+    // Auto-connect
     elements.joinBtn.click();
+};
+
+elements.createRoomBtn.addEventListener('click', handleCreateRoom);
+const syncTabCreateRoomBtn = document.getElementById('syncTabCreateRoomBtn');
+if (syncTabCreateRoomBtn) syncTabCreateRoomBtn.addEventListener('click', () => {
+    document.querySelector('.tab-btn[data-tab="tab-room"]').click();
+    handleCreateRoom();
 });
 
 elements.refreshRooms.addEventListener('click', () => {
@@ -1045,6 +1079,12 @@ elements.forceSyncBtn.addEventListener('click', async () => {
 });
 
 elements.playBtn.addEventListener('click', () => {
+    if (!elements.targetTab.value) {
+        showToast('Please select a video first!', 'warning');
+        return;
+    }
+    elements.playBtn.textContent = 'Playing...';
+    elements.playBtn.disabled = true;
     chrome.runtime.sendMessage({
         type: 'CONTENT_EVENT',
         action: EVENTS.PLAY,
@@ -1053,6 +1093,12 @@ elements.playBtn.addEventListener('click', () => {
 });
 
 elements.pauseBtn.addEventListener('click', () => {
+    if (!elements.targetTab.value) {
+        showToast('Please select a video first!', 'warning');
+        return;
+    }
+    elements.pauseBtn.textContent = 'Pausing...';
+    elements.pauseBtn.disabled = true;
     chrome.runtime.sendMessage({
         type: 'CONTENT_EVENT',
         action: EVENTS.PAUSE,
@@ -1122,6 +1168,23 @@ chrome.runtime.onMessage.addListener((msg) => {
             const action = actionNames[state.action] || state.action;
             showToast(`${state.senderId} ${action}`, 'info', 2000);
         }
+
+        if (state && (state.action === 'play' || state.action === 'pause')) {
+            const btn = state.action === 'play' ? elements.playBtn : elements.pauseBtn;
+            if (btn && btn.disabled) {
+                chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (res) => {
+                    const peerCount = res && res.peers ? res.peers.length : 1;
+                    if (state.acks && state.acks.length >= peerCount) {
+                        btn.textContent = '✅ Synced!';
+                        setTimeout(() => {
+                            btn.disabled = false;
+                            btn.textContent = state.action === 'play' ? '▶ Play' : '⏸ Pause';
+                        }, 2000);
+                    }
+                });
+            }
+        }
+
         if (state && state.action === 'force_sync_execute') {
             forceSyncDone = true;
             if (forceSyncResetTimer) {
@@ -1130,7 +1193,10 @@ chrome.runtime.onMessage.addListener((msg) => {
             }
             if (elements.forceSyncBtn) {
                 elements.forceSyncBtn.disabled = false;
-                elements.forceSyncBtn.textContent = '⚡ Force Sync';
+                elements.forceSyncBtn.textContent = '✅ Synced!';
+                setTimeout(() => {
+                    elements.forceSyncBtn.textContent = '⚡ Sync All Viewers';
+                }, 2000);
             }
         }
         chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (res) => {
@@ -1339,11 +1405,11 @@ function updateLobbyUI(lobby, peers) {
 
 // --- Onboarding Tour ---
 const onboardingSteps = [
-    { icon: '\u{1F44B}', title: 'Welcome to KoalaSync!', text: 'Watch videos together in perfect sync — no matter where you are. Let\'s take a quick tour!' },
-    { icon: '\u{1F3E0}', title: 'Room Tab', text: 'Create a room and share the invite link with friends. Anyone with the link can join instantly.' },
-    { icon: '\u{1F3AC}', title: 'Sync Tab', text: 'Pick the tab with your video. Play, pause, and seek — everyone stays in sync. Drift? Just hit Force Sync.' },
-    { icon: '\u2699\uFE0F', title: 'Settings', text: 'Pick a fun username, hide distracting tabs, and enable notifications so you never miss a moment.' },
-    { icon: '\u{1F389}', title: 'You\'re all set!', text: 'Open a video, create a room, and start watching together. Enjoy!' }
+    { icon: '👋', title: 'Welcome to KoalaSync!', text: 'Watch videos together in perfect sync — no matter where you are. Let\'s take a quick tour!', targetTab: 'tab-room' },
+    { icon: '🏠', title: '1. Create a Room', text: 'Start here. Create a room and share the invite link with your friends.', targetTab: 'tab-room' },
+    { icon: '🎬', title: '2. Select Video', text: 'Navigate here to select the video you want to sync. Play, pause, and seek — everyone stays in sync.', targetTab: 'tab-sync' },
+    { icon: '⚙️', title: '3. Personalize', text: 'Pick a fun username so your friends know who you are.', targetTab: 'tab-settings' },
+    { icon: '🎉', title: 'You\'re all set!', text: 'Time to grab some popcorn. Enjoy watching together!', targetTab: 'tab-room' }
 ];
 
 let onboardingStep = 0;
@@ -1368,6 +1434,23 @@ function renderOnboardingStep() {
     title.textContent = step.title;
     text.textContent = step.text;
 
+    if (step.targetTab) {
+        const tabBtn = document.querySelector(`.tab-btn[data-tab="${step.targetTab}"]`);
+        if (tabBtn) tabBtn.click();
+        
+        const syncActive = document.getElementById('sync-active');
+        const syncInactive = document.getElementById('sync-inactive');
+        if (step.targetTab === 'tab-sync') {
+            if (syncActive) syncActive.style.display = 'block';
+            if (syncInactive) syncInactive.style.display = 'none';
+        } else {
+            // Restore actual lock state when on other tabs so we don't leave it unlocked
+            const inRoom = elements.sectionActive && elements.sectionActive.style.display === 'block';
+            if (syncActive) syncActive.style.display = inRoom ? 'block' : 'none';
+            if (syncInactive) syncInactive.style.display = inRoom ? 'none' : 'block';
+        }
+    }
+
     dots.replaceChildren();
     onboardingSteps.forEach((_, i) => {
         const dot = document.createElement('div');
@@ -1382,6 +1465,9 @@ function completeOnboarding() {
     const overlay = document.getElementById('onboarding-overlay');
     if (overlay) overlay.style.display = 'none';
     chrome.storage.sync.set({ onboardingComplete: true });
+    
+    const inRoom = elements.sectionActive && elements.sectionActive.style.display === 'block';
+    toggleUIState(inRoom);
 }
 
 document.getElementById('onboarding-next')?.addEventListener('click', () => {

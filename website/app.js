@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const isDE = document.documentElement.classList.contains('lang-de');
                 title.textContent = isDE ? 'Erfolgreich!' : 'Success!';
                 
-                let count = 3;
+                let count = 2;
                 const updateCountdown = () => {
                     const closingMsg = isDE 
                         ? `Du bist dem Raum beigetreten. <br><span style="color:var(--accent); font-weight:bold;">Dieser Tab schließt sich in ${count} Sekunden...</span>`
@@ -226,8 +226,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (banner) {
                 if (success) {
                     banner.style.background = 'var(--success)';
-                    banner.innerHTML = '<div class="container">✅ Joined! This tab will close in 3s...</div>';
-                    setTimeout(() => window.close(), 3000);
+                    banner.innerHTML = '<div class="container">✅ Joined! This tab will close in 2s...</div>';
+                    setTimeout(() => window.close(), 2000);
                 } else {
                     banner.style.background = 'var(--error)';
                     banner.innerHTML = '';
