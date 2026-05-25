@@ -1207,10 +1207,11 @@ function updateLobbyUI(lobby, peers) {
 
 // --- Onboarding Tour ---
 const onboardingSteps = [
-    { icon: '\u{1F3E0}', title: 'Room Tab', text: 'Create or join a room to sync with friends. Share the invite link!' },
-    { icon: '\u{1F3AC}', title: 'Sync Tab', text: 'Select your video tab and control playback. Force Sync fixes drift.' },
-    { icon: '\u2699\uFE0F', title: 'Settings', text: 'Customize your username, filter noise tabs, and toggle auto-sync.' },
-    { icon: '\u{1F527}', title: 'Dev Tab', text: 'Debug connection status, video state, and view action history.' }
+    { icon: '\u{1F44B}', title: 'Welcome to KoalaSync!', text: 'Watch videos together in perfect sync — no matter where you are. Let\'s take a quick tour!' },
+    { icon: '\u{1F3E0}', title: 'Room Tab', text: 'Create a room and share the invite link with friends. Anyone with the link can join instantly.' },
+    { icon: '\u{1F3AC}', title: 'Sync Tab', text: 'Pick the tab with your video. Play, pause, and seek — everyone stays in sync. Drift? Just hit Force Sync.' },
+    { icon: '\u2699\uFE0F', title: 'Settings', text: 'Pick a fun username, hide distracting tabs, and enable notifications so you never miss a moment.' },
+    { icon: '\u{1F389}', title: 'You\'re all set!', text: 'Open a video, create a room, and start watching together. Enjoy!' }
 ];
 
 let onboardingStep = 0;
