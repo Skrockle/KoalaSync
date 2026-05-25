@@ -1,4 +1,4 @@
-# <img src="extension/icons/icon128.png" width="32" valign="middle"> KoalaSync
+<h1 align="center"><img src="extension/icons/icon128.png" width="32" valign="middle"> KoalaSync</h1>
 
 <p align="center">
   <a href="https://github.com/Shik3i/KoalaSync/actions/workflows/release.yml"><img src="https://github.com/Shik3i/KoalaSync/actions/workflows/release.yml/badge.svg" alt="Release Status"></a>
@@ -8,7 +8,7 @@
   <a href="https://chromewebstore.google.com/detail/koalasync/obbnmkmlaaddodakcbdljknjpagklifc"><img src="https://img.shields.io/badge/Chrome-Download-blue?logo=googlechrome&logoColor=white" alt="Chrome Extension"></a>
 </p>
 
-KoalaSync is a lightweight Browser Extension and Relay Server for synchronized video playback across any website—YouTube, Twitch, and custom HTML5 players. Built with a focus on **Data Sovereignty** and **Performance**.
+*KoalaSync is a lightweight Browser Extension and Relay Server for synchronized video playback across any website—YouTube, Twitch, and custom HTML5 players. Built with a focus on **Data Sovereignty** and **Performance**.*
 
 ### 🌟 Why KoalaSync?
 
