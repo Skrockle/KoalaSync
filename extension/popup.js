@@ -143,7 +143,7 @@ function updateUI(roomId, password, useCustomServer = false, serverUrl = '') {
 
 function updateLastActionUI(state, peers) {
     if (!state || !state.action) {
-        elements.lastActionCard.innerHTML = '<div style="text-align:center; color: var(--text-muted); font-size: 11px; padding-top: 20px;">No recent commands</div>';
+        elements.lastActionCard.innerHTML = '<div style="text-align:center; color: var(--text-muted); font-size: 10px;">No recent commands</div>';
         return;
     }
 
@@ -161,32 +161,29 @@ function updateLastActionUI(state, peers) {
 
     const timeStr = new Date(state.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-    // Clear previous content
     elements.lastActionCard.innerHTML = '';
 
-    // Create Header
     const header = document.createElement('div');
-    header.style.cssText = 'display:flex; justify-content:space-between; margin-bottom:10px; align-items:baseline;';
+    header.style.cssText = 'display:flex; justify-content:space-between; margin-bottom:6px; align-items:baseline;';
     
     const actionSpan = document.createElement('span');
-    actionSpan.style.cssText = 'font-weight:700; color:var(--accent); font-size:13px;';
+    actionSpan.style.cssText = 'font-weight:700; color:var(--accent); font-size:11px;';
     actionSpan.textContent = actionNames[state.action] || state.action.toUpperCase();
     
     const infoSpan = document.createElement('span');
-    infoSpan.style.cssText = 'font-size:10px; color:var(--text-muted);';
+    infoSpan.style.cssText = 'font-size:9px; color:var(--text-muted);';
     infoSpan.textContent = `${senderName} @ ${timeStr}`;
     
     header.appendChild(actionSpan);
     header.appendChild(infoSpan);
     elements.lastActionCard.appendChild(header);
 
-    // Create Grid
     const grid = document.createElement('div');
-    grid.style.cssText = 'display:grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 6px;';
+    grid.style.cssText = 'display:grid; grid-template-columns: repeat(auto-fill, minmax(36px, 1fr)); gap: 5px;';
 
     peers.forEach(peer => {
-        const pId = typeof peer === 'object' ? peer.peerId : peer;
-        if (pId === localPeerId) return; // Exclude local user from acknowledgment list
+        const pId = typeof peer === 'object' ? peer.peerId : p;
+        if (pId === localPeerId) return;
         const pName = (typeof peer === 'object' && peer.username) ? peer.username : pId.substring(0, 4);
         const isAcked = state.acks.includes(pId) || pId === state.senderId;
         const color = isAcked ? 'var(--success)' : '#475569';
@@ -197,11 +194,11 @@ function updateLastActionUI(state, peers) {
         peerItem.style.cssText = `display:flex; flex-direction:column; align-items:center; opacity: ${isAcked ? 1 : 0.6};`;
         
         const dot = document.createElement('div');
-        dot.style.cssText = `width:20px; height:20px; border-radius:50%; background:${color}; color:white; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold; margin-bottom:2px;`;
+        dot.style.cssText = `width:18px; height:18px; border-radius:50%; background:${color}; color:white; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:bold; margin-bottom:1px;`;
         dot.textContent = icon;
         
         const nameSpan = document.createElement('span');
-        nameSpan.style.cssText = 'font-size:8px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:40px;';
+        nameSpan.style.cssText = 'font-size:7px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:36px;';
         nameSpan.textContent = pName;
         
         peerItem.appendChild(dot);
