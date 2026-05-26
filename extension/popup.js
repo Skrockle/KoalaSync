@@ -334,7 +334,9 @@ function startInterpolation() {
             const peer = activePeers.find(p => p.peerId === peerId);
             if (peer && peer.playbackState === 'playing' && peer.currentTime != null && peer.lastHeartbeat) {
                 const elapsed = (Date.now() - peer.lastHeartbeat) / 1000;
-                el.textContent = formatTime(peer.currentTime + elapsed);
+                if (elapsed < 45) {
+                    el.textContent = formatTime(peer.currentTime + elapsed);
+                }
             }
         });
     }, 1000);
@@ -477,7 +479,9 @@ function updatePeerList(peers) {
                 let displayTime = p.currentTime;
                 if (p.playbackState === 'playing' && p.lastHeartbeat && p.currentTime != null) {
                     const elapsed = (Date.now() - p.lastHeartbeat) / 1000;
-                    displayTime += elapsed;
+                    if (elapsed < 45) {
+                        displayTime += elapsed;
+                    }
                 }
                 timeSpan.textContent = formatTime(displayTime);
                 statusLine.appendChild(timeSpan);
@@ -1129,6 +1133,11 @@ elements.playBtn.addEventListener('click', () => {
         type: 'CONTENT_EVENT',
         action: EVENTS.PLAY,
         payload: {}
+    }, (response) => {
+        if (response && response.status === 'ok_solo') {
+            elements.playBtn.textContent = '▶ Play';
+            elements.playBtn.disabled = false;
+        }
     });
     // Safety reset: restore button after 2.5s in case no peers respond
     setTimeout(() => {
@@ -1150,6 +1159,11 @@ elements.pauseBtn.addEventListener('click', () => {
         type: 'CONTENT_EVENT',
         action: EVENTS.PAUSE,
         payload: {}
+    }, (response) => {
+        if (response && response.status === 'ok_solo') {
+            elements.pauseBtn.textContent = '⏸ Pause';
+            elements.pauseBtn.disabled = false;
+        }
     });
     // Safety reset: restore button after 2.5s in case no peers respond
     setTimeout(() => {

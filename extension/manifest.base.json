@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "KoalaSync",
-  "version": "1.8.9",
-  "description": "Watch party extension to synchronize video playback on YouTube, Twitch, Netflix, Emby, Jellyfin, and any HTML5 site in real-time with friends.",
+  "version": "1.8.10",
+  "description": "Synchronize video playback on YouTube, Netflix, Emby, Jellyfin, and any HTML5 site in real-time with friends.",
   "permissions": [
     "storage",
     "tabs",

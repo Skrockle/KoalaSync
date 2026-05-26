@@ -706,7 +706,9 @@ function handleServerEvent(event, data) {
                             if (!ignoreStatus) {
                                 peer.playbackState = data.playbackState !== undefined ? data.playbackState : peer.playbackState;
                                 peer.currentTime = data.currentTime !== undefined ? data.currentTime : peer.currentTime;
-                                peer.lastHeartbeat = Date.now();
+                                if (data.playbackState !== undefined || data.currentTime !== undefined) {
+                                    peer.lastHeartbeat = Date.now();
+                                }
                             }
                         } else {
                             // Migration: replace string peer with normalized object
@@ -1169,7 +1171,8 @@ async function handleAsyncMessage(message, sender, sendResponse) {
             addToHistory(message.action, 'You');
             
             const isNonEssentialEvent = message.action === EVENTS.PLAY || message.action === EVENTS.PAUSE || message.action === EVENTS.SEEK;
-            const hasOtherPeers = currentRoom && Array.isArray(currentRoom.peers) && currentRoom.peers.length > 0;
+            const otherCount = currentRoom && Array.isArray(currentRoom.peers) ? currentRoom.peers.filter(p => (typeof p === 'object' ? p.peerId : p) !== peerId).length : 0;
+            const hasOtherPeers = otherCount > 0;
             
             if (isNonEssentialEvent && !hasOtherPeers) {
                 sendResponse({ status: 'ok_solo' });
@@ -1384,11 +1387,41 @@ async function handleAsyncMessage(message, sender, sendResponse) {
 // Tab removal listener
 chrome.tabs.onRemoved.addListener((tabId) => {
     if (tabId === currentTabId) {
+        const wasInRoom = !!currentRoom;
         currentTabId = null;
         currentTabTitle = null;
         chrome.storage.session.set({ currentTabId: null, currentTabTitle: null });
         updateBadgeStatus();
         addLog('Target tab closed.', 'warn');
+
+        if (wasInRoom) {
+            const roomAtClose = currentRoom;
+            getSettings().then(settings => {
+                if (currentRoom !== roomAtClose) return;
+
+                emit(EVENTS.PEER_STATUS, {
+                    peerId,
+                    playbackState: 'paused',
+                    currentTime: null,
+                    mediaTitle: null,
+                    username: settings.username,
+                    tabTitle: null
+                });
+
+                if (currentRoom && Array.isArray(currentRoom.peers)) {
+                    const me = currentRoom.peers.find(p => (p.peerId || p) === peerId);
+                    if (me && typeof me === 'object') {
+                        me.playbackState = 'paused';
+                        me.currentTime = null;
+                        me.mediaTitle = null;
+                        me.tabTitle = null;
+                        me.lastHeartbeat = Date.now();
+                        if (storageInitialized) chrome.storage.session.set({ currentRoom });
+                        chrome.runtime.sendMessage({ type: 'PEER_UPDATE', peers: currentRoom.peers }).catch(() => {});
+                    }
+                }
+            }).catch(() => {});
+        }
     }
 });
 
