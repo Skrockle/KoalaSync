@@ -417,6 +417,10 @@
             }
             return;
         }
+
+        // Suppress only SEEK during visibility grace period (tab re-focus ghost jump).
+        // Play/Pause pass through — user may want to immediately pause after tabbing back.
+        if (Date.now() < visibilityGraceUntil && action === EVENTS.SEEK) return;
         
         chrome.runtime.sendMessage({
             type: 'CONTENT_EVENT',
@@ -433,6 +437,38 @@
         scheduleProactiveHeartbeat();
     }
 
+    // --- Tab Visibility Handling ---
+    // Browsers (especially Firefox) aggressively throttle background tabs.
+    // When the user returns to a video tab, the video element may have lost
+    // time-sync and fires spurious seek events as it recovers (jumping back).
+    // We suppress only SEEK for a short grace period after tab re-focus.
+    // Play/Pause are NOT suppressed — the user may legitimately want to
+    // pause immediately after switching back.
+    let pageVisible = !document.hidden;
+    let visibilityGraceUntil = 0;
+    const VISIBILITY_GRACE_MS = 1000;
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            pageVisible = false;
+        } else if (!pageVisible) {
+            pageVisible = true;
+            visibilityGraceUntil = Date.now() + VISIBILITY_GRACE_MS;
+            reportLog(`Tab re-focused — suppressing seeks for ${VISIBILITY_GRACE_MS / 1000}s to prevent ghost relay`, 'warn');
+        }
+    });
+
+    // Reset on page hide/show (bfcache, tab discard)
+    window.addEventListener('pagehide', () => { pageVisible = false; });
+    window.addEventListener('pageshow', (event) => {
+        // event.persisted is true ONLY when restored from bfcache, not on initial load
+        if (event.persisted && !pageVisible) {
+            pageVisible = true;
+            visibilityGraceUntil = Date.now() + VISIBILITY_GRACE_MS;
+            reportLog(`Page restored from cache — suppressing seeks for ${VISIBILITY_GRACE_MS / 1000}s`, 'warn');
+        }
+    });
+
     const handlePlay = () => reportEvent(EVENTS.PLAY);
     const handlePause = () => reportEvent(EVENTS.PAUSE);
 
@@ -444,7 +480,7 @@
         const current = video.currentTime;
         if (!Number.isFinite(current)) return;
 
-        // Step 1: Check expectedEvents (programmatic seek suppression)
+        // Step 1: Check expectedEvents (programmatic seek from remote peer — ALWAYS process)
         if (expectedEvents.has('seek')) {
             expectedEvents.delete('seek');
             if (expectedTimeouts['seek']) {
@@ -452,20 +488,22 @@
                 delete expectedTimeouts['seek'];
             }
             lastReportedSeekTime = current;
-            // No log — this is routine programmatic behavior (Force Sync, lobby, peer command)
             return;
         }
+
+        // Step 2: Suppress during visibility grace period (tab re-focus ghost events)
+        if (Date.now() < visibilityGraceUntil) return;
 
         const delta = lastReportedSeekTime !== null ? Math.abs(current - lastReportedSeekTime) : null;
         const deltaStr = delta !== null ? `Δ${delta.toFixed(2)}s` : 'Δ?';
 
-        // Step 2: Delta check — skip micro-seeks (buffering, chapter markers, etc.)
+        // Step 3: Delta check — skip micro-seeks (buffering, chapter markers, etc.)
         if (lastReportedSeekTime !== null && delta < MIN_SEEK_DELTA) {
             reportLog(`[Seek] Filtered (${deltaStr} < ${MIN_SEEK_DELTA}s threshold) @ ${current.toFixed(2)}s — not relayed`, 'warn');
             return;
         }
 
-        // Step 3: Debounce rapid consecutive seeks (e.g. scrubbing)
+        // Step 4: Debounce rapid consecutive seeks (e.g. scrubbing)
         // — wait 800ms for the user to settle before relaying
         if (seekDebounceTimer) clearTimeout(seekDebounceTimer);
         seekDebounceTimer = setTimeout(() => {
