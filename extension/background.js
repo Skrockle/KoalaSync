@@ -19,6 +19,10 @@ let lastActionState = { action: null, senderId: null, timestamp: 0, acks: [] };
 let localSeq = 0;                         // Monotonically increasing command sequence for this peer
 const lastSeqBySender = {};               // senderId → last received seq (stale command guard)
 
+function _persistLastSeq() {
+    if (storageInitialized) chrome.storage.session.set({ lastSeqBySender });
+}
+
 // --- Boot Sequence Lock ---
 let restorationTask = null;
 
@@ -38,7 +42,7 @@ function ensureState() {
                 'logs', 'history', 'currentRoom', 'lastActionState', 
                 'eventQueue', 'isForceSyncInitiator', 'forceSyncAcks', 
                 'forceSyncDeadline', 'reconnectFailed', 'reconnectStartTime', 'currentTabId', 'currentTabTitle',
-                'episodeLobby', 'localSeq'
+                'episodeLobby', 'localSeq', 'lastSeqBySender'
             ], (data) => {
                 clearTimeout(storageTimeout);
                 if (data.currentTabId !== undefined) currentTabId = data.currentTabId;
@@ -88,6 +92,7 @@ function ensureState() {
                 }
 
                 if (data.localSeq !== undefined && !isNaN(data.localSeq)) localSeq = data.localSeq;
+                if (data.lastSeqBySender && typeof data.lastSeqBySender === 'object') Object.assign(lastSeqBySender, data.lastSeqBySender);
 
                 storageInitialized = true;
                 
@@ -141,12 +146,13 @@ function extractEpisodeId(title) {
 }
 
 function sameEpisode(titleA, titleB) {
-    if (!titleA || !titleB) return true;
+    if (!titleA && !titleB) return true; // Both unknown → assume same (backward compat)
+    if (!titleA || !titleB) return false; // One unknown, one known → different
     const idA = extractEpisodeId(titleA);
     const idB = extractEpisodeId(titleB);
-    if (idA && idB) return idA === idB;
-    if (idA || idB) return false;
-    return titleA === titleB;
+    if (idA && idB) return idA === idB; // Both have parseable IDs → compare IDs
+    if (idA || idB) return false;       // One has ID, other doesn't → different
+    return titleA === titleB;            // Neither has ID → exact string match
 }
 
 // --- Storage Utils ---
@@ -605,6 +611,7 @@ function handleServerEvent(event, data) {
                     break;
                 }
                 lastSeqBySender[data.senderId] = data.seq;
+                _persistLastSeq();
             }
             if (data.senderId) {
                 addToHistory(event, data.senderId);
@@ -626,6 +633,7 @@ function handleServerEvent(event, data) {
                 const lastSeq = lastSeqBySender[data.senderId];
                 if (lastSeq !== undefined && data.seq <= lastSeq) break;
                 lastSeqBySender[data.senderId] = data.seq;
+                _persistLastSeq();
             }
             if (isForceSyncInitiator) {
                 forceSyncAcks.add(data.senderId);
@@ -660,6 +668,7 @@ function handleServerEvent(event, data) {
                 const lastSeq = lastSeqBySender[data.senderId];
                 if (lastSeq !== undefined && data.seq <= lastSeq) break;
                 lastSeqBySender[data.senderId] = data.seq;
+                _persistLastSeq();
             }
             if (data?.senderId) {
                 addToHistory(event, data.senderId);
@@ -1209,6 +1218,7 @@ async function handleAsyncMessage(message, sender, sendResponse) {
                 
                 routeToContent(EVENTS.FORCE_SYNC_PREPARE, message.payload);
      
+                if (forceSyncTimeout) clearTimeout(forceSyncTimeout);
                 forceSyncTimeout = setTimeout(() => {
                     if (isForceSyncInitiator) {
                         addLog('Force Sync: Timeout waiting for ACKs, executing anyway...', 'warn');

@@ -114,7 +114,8 @@
     // Returns true if two titles likely refer to the same episode.
     // Strict: both must have IDs and match, OR neither has IDs and exact match.
     function sameEpisode(titleA, titleB) {
-        if (!titleA || !titleB) return true; // Can't compare, assume same (backward compat)
+        if (!titleA && !titleB) return true; // Both unknown → assume same (backward compat)
+        if (!titleA || !titleB) return false; // One unknown, one known → different
         const idA = extractEpisodeId(titleA);
         const idB = extractEpisodeId(titleB);
         if (idA && idB) return idA === idB; // Both have parseable IDs → compare IDs
@@ -340,7 +341,7 @@
                 const myTitle = getMediaTitle();
                 if (isDifferentEpisode(senderTitle, myTitle)) {
                     reportLog(`Episode mismatch: sender="${senderTitle || '?'}" vs mine="${myTitle || '?'}" — skipping ${action}. Disable "Auto-Sync next Episode" in settings if this causes issues.`, 'warn');
-                    if (action !== EVENTS.FORCE_SYNC_PREPARE) {
+                    if (action !== EVENTS.FORCE_SYNC_PREPARE && action !== EVENTS.FORCE_SYNC_EXECUTE) {
                         chrome.runtime.sendMessage({ type: 'CMD_ACK', actionTimestamp: message.actionTimestamp, commandSenderId: message.commandSenderId });
                     }
                     return;
