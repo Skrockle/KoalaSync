@@ -130,6 +130,25 @@ let forceSyncTimeout = null;
 let episodeLobby = null; // { expectedTitle, initiatorPeerId, readyPeers: [], createdAt }
 let episodeLobbyTimeout = null;
 
+// --- Episode Title Extraction (synced with content.js) ---
+function extractEpisodeId(title) {
+    if (!title || typeof title !== 'string') return null;
+    const se = title.match(/S(?:eason\s*)?(\d+)[\s\-\.]*E(?:pisode\s*)?(\d+)/i);
+    if (se) return `S${String(se[1]).padStart(2, '0')}E${String(se[2]).padStart(2, '0')}`;
+    const ep = title.match(/(?:Episode|Folge|Ep\.?|#)\s*(\d+)/i);
+    if (ep) return `EP${String(ep[1]).padStart(3, '0')}`;
+    return null;
+}
+
+function sameEpisode(titleA, titleB) {
+    if (!titleA || !titleB) return true;
+    const idA = extractEpisodeId(titleA);
+    const idB = extractEpisodeId(titleB);
+    if (idA && idB) return idA === idB;
+    if (idA || idB) return false;
+    return titleA === titleB;
+}
+
 // --- Storage Utils ---
 
 /**
@@ -746,7 +765,7 @@ function handleServerEvent(event, data) {
             if (data.senderId && data.expectedTitle) {
                 addLog(`Episode lobby from ${data.senderId}: "${data.expectedTitle}"`, 'info');
                 // If we already have a lobby for this same title, treat as dedup
-                if (episodeLobby && episodeLobby.expectedTitle === data.expectedTitle) {
+                if (episodeLobby && sameEpisode(episodeLobby.expectedTitle, data.expectedTitle)) {
                     break; // Already tracking this lobby
                 }
                 // Cancel any existing lobby before starting a new one
@@ -755,7 +774,7 @@ function handleServerEvent(event, data) {
                 episodeLobby = {
                     expectedTitle: data.expectedTitle,
                     initiatorPeerId: data.senderId,
-                    readyPeers: [],
+                    readyPeers: [data.senderId], // Initiator is already ready
                     createdAt: Date.now()
                 };
                 persistEpisodeLobby();
@@ -1247,7 +1266,9 @@ async function handleAsyncMessage(message, sender, sendResponse) {
                 executeForceSync();
             }
         } else {
-            emit(EVENTS.FORCE_SYNC_ACK, { peerId });
+            localSeq++;
+            chrome.storage.session.set({ localSeq });
+            emit(EVENTS.FORCE_SYNC_ACK, { peerId, seq: localSeq });
         }
         sendResponse({ status: 'ok' });
     } else if (message.type === 'CMD_ACK') {
@@ -1342,7 +1363,7 @@ async function handleAsyncMessage(message, sender, sendResponse) {
         }
 
         // If lobby already exists for this title, just mark self ready
-        if (episodeLobby && episodeLobby.expectedTitle === newTitle) {
+        if (episodeLobby && sameEpisode(episodeLobby.expectedTitle, newTitle)) {
             if (!episodeLobby.readyPeers.includes(peerId)) {
                 episodeLobby.readyPeers.push(peerId);
                 persistEpisodeLobby();
@@ -1389,7 +1410,7 @@ async function handleAsyncMessage(message, sender, sendResponse) {
         sendResponse({ status: 'lobby_created' });
     } else if (message.type === 'EPISODE_READY_LOCAL') {
         // Content script confirmed it loaded the lobby episode
-        if (episodeLobby && message.payload && message.payload.title === episodeLobby.expectedTitle) {
+        if (episodeLobby && message.payload && sameEpisode(message.payload.title, episodeLobby.expectedTitle)) {
             if (!episodeLobby.readyPeers.includes(peerId)) {
                 episodeLobby.readyPeers.push(peerId);
                 persistEpisodeLobby();

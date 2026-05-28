@@ -29,8 +29,25 @@
     };
     // --- SHARED_EVENTS_INJECT_END ---
 
-    let expectedEvents = new Set();
-    let expectedTimeouts = {};
+    // Suppresses native event reporting after a programmatic action.
+    // Each entry is a per-type timer (key = 'playing'|'paused'|'seek').
+    // While a timer exists, matching native events are consumed and not relayed.
+    // Timers self-clean after 300ms if the native event never fires.
+    let _suppressTimers = {};
+
+    function _setSuppress(state) {
+        if (_suppressTimers[state]) clearTimeout(_suppressTimers[state]);
+        _suppressTimers[state] = setTimeout(() => {
+            delete _suppressTimers[state];
+        }, 300);
+    }
+
+    function _clearSuppress(state) {
+        if (_suppressTimers[state]) {
+            clearTimeout(_suppressTimers[state]);
+            delete _suppressTimers[state];
+        }
+    }
 
     // --- Seek Relay Filtering ---
     // Minimum seek delta (seconds) to report. Prevents HLS/DASH buffering micro-seeks
@@ -44,19 +61,17 @@
     let episodeTransitionDebounce = null;
     let _pendingLobbyTitle = null; // Title we're waiting to match (from remote lobby)
     let lobbyPollTimer = null;
+    let _autoSyncEnabled = true; // Cached setting, updated via storage.onChanged
 
-    function expectEvent(state) {
-        expectedEvents.add(state);
-        if (expectedTimeouts[state]) {
-            clearTimeout(expectedTimeouts[state]);
-            delete expectedTimeouts[state];
+    // Cache the autoSyncNextEpisode setting
+    chrome.storage.sync.get(['autoSyncNextEpisode'], (data) => {
+        _autoSyncEnabled = data.autoSyncNextEpisode !== false; // default: enabled
+    });
+    chrome.storage.onChanged.addListener((changes, area) => {
+        if (area === 'sync' && changes.autoSyncNextEpisode) {
+            _autoSyncEnabled = changes.autoSyncNextEpisode.newValue !== false;
         }
-        const timeout = state === 'seek' ? 10000 : 1500;
-        expectedTimeouts[state] = setTimeout(() => {
-            expectedEvents.delete(state);
-            delete expectedTimeouts[state];
-        }, timeout);
-    }
+    });
 
     function reportLog(message, level = 'info') {
         chrome.runtime.sendMessage({ type: 'LOG', message, level }).catch(() => {});
@@ -82,6 +97,42 @@
             : null;
     }
 
+    // Extract a canonical episode identifier from a title string.
+    // Handles: S01E01, S1E1, S01 - E01, Season 1 Episode 1, "Folge 5", "Episode 5", "Ep. 5", "#5"
+    // Returns null if no episode pattern found.
+    function extractEpisodeId(title) {
+        if (!title || typeof title !== 'string') return null;
+        // S01E01 patterns (with optional spaces, dashes, dots between S and E)
+        const se = title.match(/S(?:eason\s*)?(\d+)[\s\-\.]*E(?:pisode\s*)?(\d+)/i);
+        if (se) return `S${String(se[1]).padStart(2, '0')}E${String(se[2]).padStart(2, '0')}`;
+        // "Episode X", "Folge X", "Ep. X", "#X"
+        const ep = title.match(/(?:Episode|Folge|Ep\.?|#)\s*(\d+)/i);
+        if (ep) return `EP${String(ep[1]).padStart(3, '0')}`;
+        return null;
+    }
+
+    // Returns true if two titles likely refer to the same episode.
+    // Strict: both must have IDs and match, OR neither has IDs and exact match.
+    function sameEpisode(titleA, titleB) {
+        if (!titleA || !titleB) return true; // Can't compare, assume same (backward compat)
+        const idA = extractEpisodeId(titleA);
+        const idB = extractEpisodeId(titleB);
+        if (idA && idB) return idA === idB; // Both have parseable IDs → compare IDs
+        if (idA || idB) return false;       // One has ID, other doesn't → different
+        return titleA === titleB;            // Neither has ID → exact string match
+    }
+
+    // Returns true only when we are CERTAIN the episodes differ.
+    // Permissive: only blocks if BOTH titles have parseable IDs AND they differ.
+    // Films, music, unparseable titles always pass through.
+    function isDifferentEpisode(titleA, titleB) {
+        if (!titleA || !titleB) return false; // Unknown → allow
+        const idA = extractEpisodeId(titleA);
+        const idB = extractEpisodeId(titleB);
+        if (!idA || !idB) return false; // At least one unparseable → allow
+        return idA !== idB;             // Both parseable → only block if different
+    }
+
     function checkEpisodeTransition() {
         const currentTitle = getMediaTitle();
         const video = findVideo();
@@ -89,7 +140,7 @@
         // Only trigger if: we had a previous title, the title changed,
         // a video exists, and we're near the start of new content.
         if (lastKnownMediaTitle && currentTitle
-            && currentTitle !== lastKnownMediaTitle
+            && !sameEpisode(currentTitle, lastKnownMediaTitle)
             && video
             && video.currentTime < 5
             && video.readyState >= 1) {
@@ -122,11 +173,11 @@
         const video = findVideo();
         const currentTitle = getMediaTitle();
 
-        if (video && currentTitle && currentTitle === expectedTitle
+        if (video && currentTitle && sameEpisode(currentTitle, expectedTitle)
             && video.currentTime < 5 && video.readyState >= 1) {
             // Match! Pause at start and report ready.
             if (!video.paused) {
-                expectEvent('paused');
+                _setSuppress('paused');
                 video.pause();
             }
             stopLobbyPoll();
@@ -193,11 +244,11 @@
                 if (ytButton) {
                     const isCurrentlyPlaying = !video.paused;
                     if ((action === EVENTS.PLAY && !isCurrentlyPlaying) || (action === EVENTS.PAUSE && isCurrentlyPlaying)) {
-                        expectEvent(action === EVENTS.PLAY ? 'playing' : 'paused');
+                        _setSuppress(action === EVENTS.PLAY ? 'playing' : 'paused');
                         ytButton.click();
                     }
                     if (action === EVENTS.SEEK) {
-                        expectEvent('seek');
+                        _setSuppress('seek');
                         video.currentTime = data.targetTime;
                     }
                     return;
@@ -209,11 +260,11 @@
                 if (twitchButton) {
                     const isCurrentlyPlaying = !video.paused;
                     if ((action === EVENTS.PLAY && !isCurrentlyPlaying) || (action === EVENTS.PAUSE && isCurrentlyPlaying)) {
-                        expectEvent(action === EVENTS.PLAY ? 'playing' : 'paused');
+                        _setSuppress(action === EVENTS.PLAY ? 'playing' : 'paused');
                         twitchButton.click();
                     }
                     if (action === EVENTS.SEEK) {
-                        expectEvent('seek');
+                        _setSuppress('seek');
                         video.currentTime = data.targetTime;
                     }
                     return;
@@ -222,16 +273,16 @@
 
             // Fallback for native HTML5
             if (action === EVENTS.PLAY) {
-                expectEvent('playing');
+                _setSuppress('playing');
                 video.play().catch((e) => {
                     reportLog(`Playback prevented: ${e.message}`, 'warn');
-                    expectedEvents.delete('playing');
+                    _clearSuppress('playing');
                 });
             } else if (action === EVENTS.PAUSE) {
-                expectEvent('paused');
+                _setSuppress('paused');
                 video.pause();
             } else if (action === EVENTS.SEEK) {
-                expectEvent('seek');
+                _setSuppress('seek');
                 video.currentTime = data.targetTime;
             }
     } catch (e) {
@@ -277,6 +328,24 @@
         if (message.type === 'SERVER_COMMAND') {
             const { action, payload } = message;
             let actionCompleted = false;
+
+            // Guard: Don't execute sync commands if peers are on different episodes.
+            // Only active when autoSyncNextEpisode setting is enabled (default: on).
+            // Only blocks when BOTH sides have parseable S01E01-style IDs that differ.
+            // Films and unparseable titles always pass through.
+            const syncActions = [EVENTS.PLAY, EVENTS.PAUSE, EVENTS.SEEK,
+                                 EVENTS.FORCE_SYNC_PREPARE, EVENTS.FORCE_SYNC_EXECUTE];
+            if (_autoSyncEnabled && syncActions.includes(action)) {
+                const senderTitle = payload?.mediaTitle;
+                const myTitle = getMediaTitle();
+                if (isDifferentEpisode(senderTitle, myTitle)) {
+                    reportLog(`Episode mismatch: sender="${senderTitle || '?'}" vs mine="${myTitle || '?'}" — skipping ${action}. Disable "Auto-Sync next Episode" in settings if this causes issues.`, 'warn');
+                    if (action !== EVENTS.FORCE_SYNC_PREPARE) {
+                        chrome.runtime.sendMessage({ type: 'CMD_ACK', actionTimestamp: message.actionTimestamp, commandSenderId: message.commandSenderId });
+                    }
+                    return;
+                }
+            }
             
             if (action === EVENTS.PLAY) {
                 tryMediaAction(EVENTS.PLAY);
@@ -298,8 +367,8 @@
                         reportLog(`Media Action Error: Invalid force sync payload - ${JSON.stringify(payload)}`, 'error');
                         return;
                     }
-                    expectEvent('paused');
-                    expectEvent('seek');
+                    _setSuppress('paused');
+                    _setSuppress('seek');
                     video.pause();
                     video.currentTime = payload.targetTime;
                     pollSeekReady(payload.targetTime).then((ready) => {
@@ -345,7 +414,7 @@
         if (message.type === 'PAUSE_FOR_LOBBY') {
             const video = findVideo();
             if (video && !video.paused) {
-                expectEvent('paused');
+                _setSuppress('paused');
                 video.pause();
             }
             // Start lobby poll now that we know the feature is enabled
@@ -409,12 +478,8 @@
 
         const eventState = action === EVENTS.PLAY ? 'playing' : (action === EVENTS.PAUSE ? 'paused' : (action === EVENTS.SEEK ? 'seek' : null));
         
-        if (eventState && expectedEvents.has(eventState)) {
-            expectedEvents.delete(eventState);
-            if (expectedTimeouts[eventState]) {
-                clearTimeout(expectedTimeouts[eventState]);
-                delete expectedTimeouts[eventState];
-            }
+        if (_suppressTimers[eventState]) {
+            _clearSuppress(eventState);
             return;
         }
 
@@ -480,13 +545,9 @@
         const current = video.currentTime;
         if (!Number.isFinite(current)) return;
 
-        // Step 1: Check expectedEvents (programmatic seek from remote peer — ALWAYS process)
-        if (expectedEvents.has('seek')) {
-            expectedEvents.delete('seek');
-            if (expectedTimeouts['seek']) {
-                clearTimeout(expectedTimeouts['seek']);
-                delete expectedTimeouts['seek'];
-            }
+        // Step 1: Check _suppressTimers (programmatic seek from remote peer)
+        if (_suppressTimers['seek']) {
+            _clearSuppress('seek');
             lastReportedSeekTime = current;
             return;
         }

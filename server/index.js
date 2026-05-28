@@ -454,6 +454,7 @@ io.on('connection', (socket) => {
                     // --- S-3: Construct clean relay payload — never forward raw client data ---
                     const relayPayload = {
                         senderId:        mapping.peerId,
+                        seq:             clampNum(data.seq, 0, Number.MAX_SAFE_INTEGER),
                         currentTime:     clampNum(data.currentTime, 0, 86400),
                         targetTime:      clampNum(data.targetTime, 0, 86400),
                         playbackState:   validState(data.playbackState),
