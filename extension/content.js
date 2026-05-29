@@ -383,18 +383,6 @@
                 }
             } else if (action === EVENTS.FORCE_SYNC_EXECUTE) {
                 stopLobbyPoll();
-
-                // Network Latency Compensation: pre-seek video by network transit latency
-                const video = findVideo();
-                if (video && message.actionTimestamp) {
-                    const latency = (Date.now() - message.actionTimestamp) / 1000;
-                    if (latency > 0.05 && latency < 1.0) {
-                        _setSuppress('seek');
-                        video.currentTime += latency;
-                        reportLog(`Force Sync: Compensated ${Math.round(latency * 1000)}ms network latency`, 'info');
-                    }
-                }
-
                 tryMediaAction(EVENTS.PLAY);
                 chrome.runtime.sendMessage({ type: 'CMD_ACK', actionTimestamp: message.actionTimestamp, commandSenderId: message.commandSenderId });
                 actionCompleted = true;
