@@ -1759,6 +1759,42 @@ html.lang-de [lang="en"] {
     filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
 }
 
+.join-status-mascot.searching-mascot {
+    width: 175px; /* Slightly wider due to antenna to keep main body scale identical */
+}
+
+.join-status-pulse {
+    animation: mascot-gentle-pulse 2s ease-in-out infinite;
+}
+
+@keyframes mascot-gentle-pulse {
+    0% {
+        transform: scale(0.96);
+        filter: drop-shadow(0 4px 10px rgba(99, 102, 241, 0.15));
+    }
+    50% {
+        transform: scale(1.04);
+        filter: drop-shadow(0 8px 20px rgba(99, 102, 241, 0.35));
+    }
+    100% {
+        transform: scale(0.96);
+        filter: drop-shadow(0 4px 10px rgba(99, 102, 241, 0.15));
+    }
+}
+
+.legal-mascot {
+    display: block;
+    width: 180px;
+    height: auto;
+    margin: -0.75rem auto 0.4rem auto;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.legal-mascot:hover {
+    transform: scale(1.06) rotate(1.5deg);
+}
+
 .status-ring {
     position: absolute;
     width: 90px;
