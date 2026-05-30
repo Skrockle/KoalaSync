@@ -34,6 +34,7 @@ export default [
         Date: "readonly",
         Error: "readonly",
         URL: "readonly",
+        URLSearchParams: "readonly",
         WebSocket: "readonly",
         self: "readonly"
       }

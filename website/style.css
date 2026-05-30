@@ -1006,7 +1006,8 @@ input:checked + .mock-slider:before {
     }
 }
 
-.install-breathe.firefox {
+.install-breathe.firefox,
+.btn-firefox.install-breathe {
     animation-name: install-breathe-ff;
 }
 

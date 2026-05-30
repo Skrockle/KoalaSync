@@ -568,6 +568,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     btn.style.transform = 'scale(0.95)';
                 });
             }
+
+            // Also pulse the main hero CTA buttons
+            if (!isInstalled) {
+                if (isFirefox) {
+                    firefoxBtns.forEach(btn => {
+                        btn.style.transform = '';
+                        btn.classList.add('install-breathe');
+                    });
+                } else if (isChrome) {
+                    chromeBtns.forEach(btn => {
+                        btn.classList.add('install-breathe');
+                    });
+                }
+            }
         }, 600);
     };
 
