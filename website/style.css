@@ -1466,7 +1466,7 @@ html.lang-de [lang="en"] {
     background: rgba(30, 41, 59, 0.4);
     border: 1px solid var(--glass-border);
     border-radius: 16px;
-    padding: 2.2rem 2rem;
+    padding: 1.2rem 1.6rem 1.7rem 1.6rem;
     text-align: left;
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
     backdrop-filter: blur(8px);
@@ -1503,6 +1503,15 @@ html.lang-de [lang="en"] {
 
 .use-case-card:hover::before {
     opacity: 1;
+}
+
+.use-case-image {
+    display: block;
+    width: 100%;
+    max-width: 272px;
+    height: auto;
+    border-radius: 8px;
+    margin: 0 auto 0 auto;
 }
 
 .use-case-icon {
