@@ -1299,10 +1299,18 @@ html.lang-de [lang="en"] {
 
 /* --- Compatibility Section --- */
 .compat-section {
-    padding: 4rem 0;
+    padding: 1rem 0 3.5rem 0;
     text-align: center;
     background: rgba(255,255,255,0.01);
     border-bottom: 1px solid var(--glass-border);
+}
+
+.compat-mascot {
+    display: block;
+    margin: 0 auto 0.5rem auto;
+    max-width: 320px;
+    width: 100%;
+    height: auto;
 }
 
 .compat-heading {
