@@ -568,7 +568,7 @@
             </h2>
             <p class="section-subtitle" data-reveal style="text-align: center; color: var(--text-muted); margin-bottom: 3.5rem; max-width: 600px; margin-left: auto; margin-right: auto;">
                 <span lang="en">See why open source, ad-free and privacy-first is the superior way to watch together.</span>
-                <span lang="de">Erfahre, warum Open Source, werbefrei und Datenschutz der bessere Weg zum gemeinsamen Schauen sind.</span>
+                <span lang="de">Erfahre, warum Open Source, Werbefreiheit und echter Datenschutz die bessere Wahl für gemeinsames Schauen sind.</span>
             </p>
             
             <div class="comparison-table-wrapper" data-reveal>
@@ -663,7 +663,7 @@
     <section id="how-it-works" style="background: rgba(255,255,255,0.02)">
         <div class="container">
             <h2 style="font-size: 2.5rem; text-align: center; margin-bottom: 4rem;">
-                <span lang="en">Getting Started</span><span lang="de">Loslegen</span>
+                <span lang="en">Getting Started</span><span lang="de">Erste Schritte</span>
             </h2>
             
             <div class="steps">
@@ -676,20 +676,66 @@
                     </div>
                     <!-- Custom Step 1 Illustration -->
                     <div class="step-illustration-1" data-reveal>
-                        <div class="illus-browser-bar">
+                        <div class="illus-browser-container">
                             <div class="illus-browser-header">
-                                <div class="illus-dots">
-                                    <span class="illus-dot"></span>
-                                    <span class="illus-dot"></span>
-                                    <span class="illus-dot"></span>
+                                <div class="illus-browser-dots">
+                                    <span class="illus-browser-dot"></span>
+                                    <span class="illus-browser-dot"></span>
+                                    <span class="illus-browser-dot"></span>
                                 </div>
-                                <div class="illus-address-bar"></div>
-                                <div class="illus-extension-icon"><img src="assets/NewLogoIcon.webp" alt="KoalaSync" width="12" height="12" style="width: 12px; height: 12px; display: block; object-fit: contain;"></div>
+                                <div class="illus-browser-address-bar">
+                                    <span class="url-protocol">https://</span>sync.koalastuff.net
+                                </div>
+                                <div class="illus-browser-toolbar">
+                                    <div class="illus-extension-btn active">
+                                        <img src="assets/NewLogoIcon.webp" alt="KoalaSync Extension" width="14" height="14">
+                                    </div>
+                                </div>
                             </div>
-                            <div class="illus-browser-body">
-                                <div class="illus-line-placeholder" style="width: 80%;"></div>
-                                <div class="illus-line-placeholder" style="width: 50%;"></div>
-                                <div class="illus-line-placeholder" style="width: 90%;"></div>
+                            <div class="illus-browser-content">
+                                <div class="illus-store-card">
+                                    <div class="illus-store-card-header">
+                                        <img src="assets/NewLogoIcon.webp" alt="KoalaSync Logo" class="illus-large-logo" width="30" height="30">
+                                        <div class="illus-store-info">
+                                            <div class="illus-store-title">KoalaSync</div>
+                                            <div class="illus-store-desc">
+                                                <span lang="en">Privacy-first video synchronizer</span>
+                                                <span lang="de">Privatsphäre-fokussierte Video-Synchronisation</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="illus-store-buttons">
+                                        <div class="illus-store-btn chrome">
+                                            <img src="assets/chrome.svg" alt="Chrome Logo" width="12" height="12">
+                                            <span lang="en">Download for Chrome</span>
+                                            <span lang="de">Download für Chrome</span>
+                                        </div>
+                                        <div class="illus-store-btn firefox">
+                                            <img src="assets/firefox.svg" alt="Firefox Logo" width="12" height="12">
+                                            <span lang="en">Download for Firefox</span>
+                                            <span lang="de">Download für Firefox</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Floating Extension Success Popup -->
+                                <div class="illus-extension-popup">
+                                    <div class="popup-title">
+                                        <img src="assets/NewLogoIcon.webp" alt="KoalaSync Logo" width="12" height="12">
+                                        <span>KoalaSync</span>
+                                    </div>
+                                    <div class="popup-status">
+                                        <div class="status-badge-success">
+                                            <span class="status-check">✓</span>
+                                            <span lang="en">Extension Active</span>
+                                            <span lang="de">Erweiterung aktiv</span>
+                                        </div>
+                                    </div>
+                                    <div class="popup-quick-start">
+                                        <span lang="en">Ready to watch together!</span>
+                                        <span lang="de">Bereit zum Mitschauen!</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -698,20 +744,51 @@
                     <div class="step-text" data-reveal>
                         <div class="step-num">02</div>
                         <h3><span lang="en">Create a Room</span><span lang="de">Raum erstellen</span></h3>
-                        <p lang="en">Open the extension, enter a Room ID and Password, and hit Join. Your secure synchronization space is ready.</p>
-                        <p lang="de">Öffnen Sie die Erweiterung, geben Sie eine Raum-ID und ein Passwort ein und klicken Sie auf Beitreten. Ihr sicherer Synchronisationsraum ist bereit.</p>
+                        <p lang="en">Open the extension popup and click "+ Create New Room". KoalaSync automatically generates a secure Room ID and Password, joins it, and copies the invite link to your clipboard.</p>
+                        <p lang="de">Öffne die Erweiterung und klicke auf „+ Neuer Raum“. KoalaSync generiert automatisch eine sichere Raum-ID samt Passwort, tritt dem Raum bei und kopiert den Einladungslink in deine Zwischenablage.</p>
                     </div>
                     <!-- Custom Step 2 Illustration -->
                     <div class="step-illustration-2" data-reveal>
-                        <div class="illus-form-box">
-                            <div class="illus-form-field">
-                                <div class="illus-line-placeholder" style="width: 30%; height: 6px;"></div>
-                                <div class="illus-form-input">
-                                    <div class="illus-typing-text">brave-eagle-80</div>
+                        <div class="illus-popup-card">
+                            <div class="illus-popup-header">
+                                <div class="illus-popup-brand">
+                                    <img src="assets/NewLogoIcon.webp" alt="KoalaSync Logo" width="14" height="14">
+                                    <span>KoalaSync</span>
+                                </div>
+                                <div class="illus-popup-version">v1.9.3</div>
+                            </div>
+                            <div class="illus-popup-tabs">
+                                <div class="illus-popup-tab active">
+                                    <span lang="en">Room</span>
+                                    <span lang="de">Raum</span>
+                                </div>
+                                <div class="illus-popup-tab">
+                                    <span lang="en">Sync</span>
+                                    <span lang="de">Sync</span>
+                                </div>
+                                <div class="illus-popup-tab">
+                                    <span lang="en">Settings</span>
+                                    <span lang="de">Optionen</span>
                                 </div>
                             </div>
-                            <div class="illus-form-btn">
-                                <span lang="en">CREATE ROOM</span><span lang="de">RAUM ERSTELLEN</span>
+                            <div class="illus-popup-body">
+                                <div class="illus-popup-btn action-create-room">
+                                    <span lang="en">+ Create New Room</span>
+                                    <span lang="de">+ Neuer Raum</span>
+                                    <div class="illus-btn-shine"></div>
+                                </div>
+                                
+                                <div class="illus-collapsed-details">
+                                    <span class="details-arrow">▶</span>
+                                    <span lang="en">Manual Connect / Advanced</span>
+                                    <span lang="de">Manuell verbinden / Erweitert</span>
+                                </div>
+                                
+                                <div class="illus-floating-success">
+                                    <span class="success-icon">📋</span>
+                                    <span lang="en">Invite link copied!</span>
+                                    <span lang="de">Einladungslink kopiert!</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -725,31 +802,55 @@
                     </div>
                     <!-- Custom Step 3 Illustration -->
                     <div class="step-illustration-3" data-reveal>
-                        <div class="illus-players-container">
-                            <div class="illus-mini-player">
-                                <div class="illus-video-screen">
-                                    <div class="illus-play-icon">▶</div>
+                        <div class="illus-sync-theater">
+                            <!-- Player A (KoalaPC) -->
+                            <div class="illus-player-card player-a">
+                                <div class="player-header">
+                                    <span class="player-user">🐨 KoalaPC</span>
+                                    <span class="player-badge active">PLAYING</span>
                                 </div>
-                                <div class="illus-player-timeline">
-                                    <div class="illus-timeline-bar">
-                                        <div class="illus-timeline-progress"></div>
+                                <div class="player-video-canvas">
+                                    <div class="player-play-pulse">▶</div>
+                                    <div class="player-video-overlay"></div>
+                                </div>
+                                <div class="player-controls">
+                                    <span class="control-btn">⏸</span>
+                                    <div class="player-timeline">
+                                        <div class="timeline-fill"></div>
+                                        <div class="timeline-knob"></div>
                                     </div>
+                                    <span class="control-time">42:15</span>
                                 </div>
                             </div>
-                            <div class="illus-sync-connection">
-                                <div class="illus-sync-line">
-                                    <div class="illus-sync-pulse"></div>
+                            
+                            <!-- Glowing Sync Bridge -->
+                            <div class="illus-sync-bridge">
+                                <div class="sync-line">
+                                    <div class="sync-beam"></div>
                                 </div>
-                                <span class="illus-sync-label">IN SYNC</span>
+                                <div class="sync-status-badge">
+                                    <span lang="en">IN SYNC</span>
+                                    <span lang="de">SYNCHRON</span>
+                                </div>
                             </div>
-                            <div class="illus-mini-player">
-                                <div class="illus-video-screen">
-                                    <div class="illus-play-icon">▶</div>
+                            
+                            <!-- Player B (LaptopKoala) -->
+                            <div class="illus-player-card player-b">
+                                <div class="player-header">
+                                    <span class="player-user">💻 LaptopKoala</span>
+                                    <span class="player-badge active">PLAYING</span>
                                 </div>
-                                <div class="illus-player-timeline">
-                                    <div class="illus-timeline-bar">
-                                        <div class="illus-timeline-progress"></div>
+                                <div class="player-video-canvas">
+                                    <div class="player-play-pulse">▶</div>
+                                    <div class="player-video-overlay"></div>
+                                </div>
+                                <div class="player-controls">
+                                    <span class="control-btn">⏸</span>
+                                    <div class="player-timeline">
+                                        <div class="timeline-fill"></div>
+                                        <div class="timeline-knob"></div>
                                     </div>
+                                    <span class="control-time">42:15</span>
                                 </div>
                             </div>
                         </div>
@@ -765,9 +866,9 @@
             <h2 style="font-size: 2.5rem; text-align: center; margin-bottom: 1rem;">
                 <span lang="en">For Self-Hosters</span><span lang="de">Für Self-Hoster</span>
             </h2>
-            <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
-                <span lang="en">Maintain full data sovereignty. Deploy your own private relay server in minutes.</span>
-                <span lang="de">Behalte die volle Datenhoheit. Richte deinen eigenen privaten Relay-Server in wenigen Minuten ein.</span>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem; max-width: 650px; margin-left: auto; margin-right: auto;">
+                <span lang="en">Don't trust our server? Maintain full data sovereignty. Deploy your own private relay server in minutes.</span>
+                <span lang="de">Du traust dem Server nicht? Behalte die volle Datenhoheit. Richte deinen eigenen privaten Relay-Server in wenigen Minuten ein.</span>
             </p>
 
             <!-- Mascot Self-Hosting / Deploy Illustration -->

@@ -770,266 +770,646 @@ input:checked + .mock-slider:before {
 
 /* Custom CSS Mockups for step illustrations */
 .step-illustration-1, .step-illustration-2, .step-illustration-3 {
-    background: #1e293b;
-    height: 240px;
-    border-radius: 20px;
+    background: radial-gradient(circle at top left, #1e293b, #0f172a);
+    height: 280px; /* Slightly taller for more detail and breathing room */
+    border-radius: 24px;
     border: 1px solid var(--glass-border);
     position: relative;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Step 1 Illustration: Browser & Extension icon trigger */
-.illus-browser-bar {
-    width: 85%;
-    background: #0f172a;
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 10px;
+.step-illustration-1:hover, .step-illustration-2:hover, .step-illustration-3:hover {
+    transform: translateY(-6px) scale(1.02);
+    border-color: rgba(99, 102, 241, 0.25);
+    box-shadow: 0 25px 50px rgba(99, 102, 241, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* ==========================================================================
+   Step 1 Illustration: Browser & Installed Success Popup
+   ========================================================================== */
+.illus-browser-container {
+    width: 90%;
+    height: 80%;
+    background: #090d16;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
 }
 
 .illus-browser-header {
-    background: #1e293b;
-    padding: 0.5rem 0.75rem;
+    background: #131924;
+    padding: 0.6rem 0.8rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.illus-browser-dots {
+    display: flex;
+    gap: 6px;
+    margin-right: 1.5rem;
+}
+
+.illus-browser-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    opacity: 0.6;
+}
+.illus-browser-dot:nth-child(1) { background: #ef4444; }
+.illus-browser-dot:nth-child(2) { background: #fbbf24; }
+.illus-browser-dot:nth-child(3) { background: #22c55e; }
+
+.illus-browser-address-bar {
+    background: #090d16;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    color: var(--text-muted);
+    font-size: 0.68rem;
+    padding: 3px 12px;
+    flex-grow: 1;
+    max-width: 60%;
+    text-align: center;
+    font-family: monospace;
+    letter-spacing: 0.2px;
+}
+
+.illus-browser-address-bar .url-protocol {
+    color: #22c55e;
+    font-weight: 600;
+}
+
+.illus-browser-toolbar {
+    display: flex;
+    margin-left: auto;
+}
+
+.illus-extension-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.illus-extension-btn.active {
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+    animation: active-pulse 2s infinite alternate;
+}
+
+@keyframes active-pulse {
+    0% { transform: scale(1); box-shadow: 0 0 5px rgba(99, 102, 241, 0.4); }
+    100% { transform: scale(1.08); box-shadow: 0 0 12px rgba(99, 102, 241, 0.7); }
+}
+
+.illus-browser-content {
+    flex-grow: 1;
+    padding: 1rem;
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+}
+
+.illus-store-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    padding: 0.8rem;
+    width: 65%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.illus-store-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.illus-large-logo {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+}
+
+.illus-store-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.illus-store-title {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.1;
+}
+
+.illus-store-desc {
+    font-size: 0.58rem;
+    color: var(--text-muted);
+    line-height: 1.2;
+    margin-top: 2px;
+}
+
+.illus-store-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.illus-store-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    border-radius: 8px;
+    font-size: 0.58rem;
+    font-weight: 700;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    cursor: default;
+    transition: all 0.2s;
+}
+
+.illus-store-btn img {
+    width: 11px;
+    height: 11px;
+    display: block;
+}
+
+.illus-store-btn.chrome {
+    border-color: rgba(99, 102, 241, 0.25);
+    background: rgba(99, 102, 241, 0.08);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.05);
+}
+
+.illus-store-btn.firefox {
+    border-color: rgba(249, 115, 22, 0.25);
+    background: rgba(249, 115, 22, 0.08);
+    box-shadow: 0 0 10px rgba(249, 115, 22, 0.05);
+}
+
+/* Glassmorphic Dropping Success Card */
+.illus-extension-popup {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    width: 145px;
+    background: rgba(30, 41, 59, 0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 0.6rem 0.8rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    animation: popup-float 4s ease-in-out infinite;
+    z-index: 5;
+}
+
+@keyframes popup-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+.illus-extension-popup .popup-title {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 4px;
+}
+
+.illus-extension-popup .popup-title img {
+    width: 12px;
+    height: 12px;
+}
+
+.illus-extension-popup .popup-status {
+    margin-bottom: 4px;
+}
+
+.status-badge-success {
+    background: rgba(34, 197, 94, 0.12);
+    color: #22c55e;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    animation: status-glow 2s infinite alternate;
+}
+
+@keyframes status-glow {
+    0% { box-shadow: 0 0 0 rgba(34, 197, 94, 0); }
+    100% { box-shadow: 0 0 6px rgba(34, 197, 94, 0.3); }
+}
+
+.illus-extension-popup .popup-quick-start {
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+
+/* ==========================================================================
+   Step 2 Illustration: Highly Realistic Extension Popup (Create Room View)
+   ========================================================================== */
+.illus-popup-card {
+    width: 220px; /* Scaled up 16% for a bigger, much more detailed view */
+    background: rgba(30, 41, 59, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 0.95rem; /* Slightly larger padding */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem; /* Tighter vertical layout rhythm */
+    animation: popup-float 4s ease-in-out infinite;
+    animation-delay: -1s;
+}
+
+.illus-popup-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding-bottom: 8px;
 }
 
-.illus-dots {
-    display: flex;
-    gap: 4px;
-}
-
-.illus-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.2);
-}
-
-.illus-address-bar {
-    background: #0f172a;
-    border: 1px solid rgba(255,255,255,0.05);
-    padding: 2px 10px;
-    border-radius: 4px;
-    width: 60%;
-    height: 14px;
-}
-
-.illus-extension-icon {
-    position: relative;
-    width: 20px;
-    height: 20px;
-    background: rgba(99, 102, 241, 0.2);
-    border: 1px solid var(--accent);
-    border-radius: 4px;
+.illus-popup-brand {
     display: flex;
     align-items: center;
-    justify-content: center;
-    animation: pulse-border 2s infinite alternate;
+    gap: 6px;
+    font-size: 0.82rem; /* Scaled up font */
+    font-weight: 800;
+    letter-spacing: -0.2px;
 }
 
-@keyframes pulse-border {
-    0% { box-shadow: 0 0 0 rgba(99, 102, 241, 0); border-color: rgba(99, 102, 241, 0.4); }
-    100% { box-shadow: 0 0 8px rgba(99, 102, 241, 0.6); border-color: var(--accent); }
+.illus-popup-version {
+    font-size: 0.58rem;
+    color: var(--text-muted);
 }
 
-.illus-browser-body {
-    padding: 1.5rem;
-    height: 80px;
+.illus-popup-tabs {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    gap: 4px;
+    background: rgba(9, 13, 22, 0.4);
+    padding: 3px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-.illus-line-placeholder {
-    height: 8px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 4px;
+.illus-popup-tab {
+    flex: 1;
+    text-align: center;
+    font-size: 0.62rem; /* Scaled up font */
+    padding: 4px 0;
+    border-radius: 6px;
+    color: var(--text-muted);
+    font-weight: 600;
 }
 
-/* Step 2 Illustration: Typing in Form Fields */
-.illus-form-box {
-    width: 70%;
+.illus-popup-tab.active {
+    background: var(--card);
+    color: var(--accent);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.illus-popup-body {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    padding: 1rem;
-    backdrop-filter: blur(10px);
+    position: relative;
 }
 
-.illus-form-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-}
-
-.illus-form-input {
-    background: #0f172a;
-    border: 1px solid rgba(99, 102, 241, 0.3);
-    padding: 0.45rem;
-    border-radius: 6px;
-    height: 28px;
+.illus-popup-btn {
+    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    border-radius: 8px;
+    padding: 9px; /* Scaled up padding */
+    color: white;
+    font-weight: 700;
+    font-size: 0.7rem; /* Scaled up font */
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
     position: relative;
     overflow: hidden;
+    cursor: default;
+    animation: create-btn-pulse 2s infinite alternate;
 }
 
-.illus-typing-text {
-    font-family: monospace;
+@keyframes create-btn-pulse {
+    0% { transform: scale(1); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+    100% { transform: scale(1.03); box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5); }
+}
+
+.illus-btn-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+    transform: skewX(-20deg);
+    animation: shimmer-sweep 3s infinite ease-in-out;
+}
+
+@keyframes shimmer-sweep {
+    0% { left: -100%; }
+    50%, 100% { left: 150%; }
+}
+
+.illus-collapsed-details {
+    background: rgba(9, 13, 22, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 7px 12px; /* Scaled up padding */
+    font-size: 0.56rem; /* Scaled up font */
+    color: var(--text-muted);
     font-weight: 700;
-    color: var(--text);
-    font-size: 0.8rem;
+    text-transform: uppercase;
     display: flex;
     align-items: center;
+    gap: 6px;
+    letter-spacing: 0.2px;
 }
 
-.illus-typing-text::after {
-    content: '|';
-    animation: blink-cursor 0.8s infinite;
+.details-arrow {
+    font-size: 0.48rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+/* Floating Success Badge */
+.illus-floating-success {
+    position: absolute;
+    bottom: -1.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(9, 13, 22, 0.9);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 20px;
+    padding: 3px 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    animation: floating-success-fade 5s infinite;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+@keyframes floating-success-fade {
+    0%, 100%, 75% { opacity: 0; transform: translate(-50%, 5px) scale(0.9); }
+    15%, 60% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+.illus-floating-success .success-icon {
+    font-size: 0.65rem;
+}
+
+.illus-floating-success span[lang] {
+    font-size: 0.58rem;
+    color: #22c55e;
+    font-weight: 700;
+}
+
+
+/* ==========================================================================
+   Step 3 Illustration: Dual Screen Theater Sync Setup
+   ========================================================================= */
+.illus-sync-theater {
+    width: 95%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    gap: 0.6rem;
+}
+
+.illus-player-card {
+    width: 145px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 6px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+    z-index: 2;
+}
+
+.illus-player-card.player-a {
+    animation: popup-float 4s ease-in-out infinite;
+    animation-delay: -2s;
+}
+
+.illus-player-card.player-b {
+    animation: popup-float 4s ease-in-out infinite;
+    animation-delay: -3s;
+}
+
+.player-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.55rem;
+}
+
+.player-user {
+    font-weight: 700;
+    color: var(--text);
+}
+
+.player-badge {
+    font-size: 0.42rem;
+    font-weight: 800;
+    padding: 1px 3px;
+    border-radius: 3px;
+}
+
+.player-badge.active {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.player-video-canvas {
+    height: 70px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #1e1b4b, #311042);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.player-video-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at center, rgba(139, 92, 246, 0.1) 0%, transparent 80%);
+}
+
+.player-play-pulse {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, 0.85);
+    color: white;
+    font-size: 0.65rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+    z-index: 3;
+    animation: play-pulse 2s infinite alternate;
+}
+
+@keyframes play-pulse {
+    0% { transform: scale(1); box-shadow: 0 0 6px rgba(99, 102, 241, 0.4); }
+    100% { transform: scale(1.15); box-shadow: 0 0 15px rgba(99, 102, 241, 0.8); }
+}
+
+.player-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 2px 0 2px;
+}
+
+.control-btn {
+    font-size: 0.58rem;
     color: var(--accent);
 }
 
-@keyframes blink-cursor {
-    50% { opacity: 0; }
-}
-
-.illus-form-btn {
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 0.45rem;
-    font-weight: 700;
-    font-size: 0.75rem;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
-}
-
-/* Step 3 Illustration: Multi-player Sync simulation */
-.illus-players-container {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    width: 90%;
-}
-
-.illus-mini-player {
-    flex: 1;
-    background: #0f172a;
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 10px;
-    height: 120px;
-    position: relative;
-    overflow: hidden;
-}
-
-.illus-video-screen {
-    width: 100%;
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 80%);
-}
-
-.illus-play-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: rgba(99, 102, 241, 0.9);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.85rem;
-    box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
-    position: relative;
-}
-
-.illus-player-timeline {
-    height: 20px;
-    background: #1e293b;
-    display: flex;
-    align-items: center;
-    padding: 0 0.5rem;
-    border-top: 1px solid rgba(255,255,255,0.05);
-}
-
-.illus-timeline-bar {
-    flex: 1;
+.player-timeline {
+    flex-grow: 1;
     height: 3px;
-    background: rgba(255,255,255,0.1);
-    position: relative;
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 2px;
+    position: relative;
 }
 
-.illus-timeline-progress {
+.timeline-fill {
     position: absolute;
     top: 0; left: 0;
-    width: 60%;
     height: 100%;
     background: var(--accent);
     border-radius: 2px;
-    animation: timeline-grow 4s infinite linear;
+    width: 60%;
+    animation: theater-grow 6s infinite linear;
 }
 
-@keyframes timeline-grow {
+.timeline-knob {
+    position: absolute;
+    top: -2px;
+    left: 60%;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 0 4px rgba(0,0,0,0.5);
+    transform: translateX(-50%);
+    animation: theater-knob-grow 6s infinite linear;
+}
+
+@keyframes theater-grow {
     0% { width: 0%; }
     100% { width: 100%; }
 }
 
-.illus-sync-connection {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
-    color: var(--accent);
-    font-size: 1.25rem;
-}
-
-.illus-sync-line {
-    width: 40px;
-    height: 2px;
-    background: linear-gradient(to right, var(--accent), var(--success));
-    position: relative;
-}
-
-.illus-sync-pulse {
-    position: absolute;
-    top: -3px;
-    left: 0;
-    width: 8px;
-    height: 8px;
-    background: #fff;
-    border-radius: 50%;
-    box-shadow: 0 0 8px #fff;
-    animation: slide-pulse 2s infinite linear;
-}
-
-@keyframes slide-pulse {
+@keyframes theater-knob-grow {
     0% { left: 0%; }
     100% { left: 100%; }
 }
 
-.illus-sync-label {
-    font-size: 0.55rem;
-    font-weight: 700;
-    background: rgba(34, 197, 94, 0.15);
-    color: #22c55e;
-    padding: 1px 6px;
-    border-radius: 4px;
+.control-time {
+    font-size: 0.5rem;
+    color: var(--text-muted);
+    font-family: monospace;
+}
+
+/* Glowing Connection Sync Bridge */
+.illus-sync-bridge {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    position: relative;
+    z-index: 1;
+}
+
+.illus-sync-bridge .sync-line {
+    width: 100%;
+    height: 2px;
+    background: rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+}
+
+.illus-sync-bridge .sync-beam {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50px;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--accent), var(--success), transparent);
+    animation: sync-flow 2.5s infinite linear;
+}
+
+@keyframes sync-flow {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.sync-status-badge {
+    background: rgba(34, 197, 94, 0.12);
     border: 1px solid rgba(34, 197, 94, 0.25);
+    color: #22c55e;
+    font-size: 0.5rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 6px;
     white-space: nowrap;
+    animation: active-pulse-green 2s infinite alternate;
+}
+
+@keyframes active-pulse-green {
+    0% { box-shadow: 0 0 3px rgba(34, 197, 94, 0.1); }
+    100% { box-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
 }
 
 /* --- Self Hosters Terminal --- */
