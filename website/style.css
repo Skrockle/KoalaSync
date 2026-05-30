@@ -1509,7 +1509,8 @@ html.lang-de [lang="en"] {
     display: block;
     width: 100%;
     max-width: 272px;
-    height: auto;
+    height: 150px;
+    object-fit: contain;
     border-radius: 8px;
     margin: 0 auto 0 auto;
 }
