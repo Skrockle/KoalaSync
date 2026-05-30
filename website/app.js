@@ -527,6 +527,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.style.boxShadow = 'none';
             });
         }
+
+        // Handle Step 1 Landing Page Download Badges & Nav Badge
+        setTimeout(() => {
+            const isInstalled = document.documentElement.dataset.koalasyncInstalled === 'true';
+            
+            // Nav Badge Logic
+            const navBadge = document.getElementById('nav-extension-status');
+            if (isInstalled && navBadge) {
+                navBadge.style.display = 'inline-flex';
+            }
+
+            const illusChrome = document.querySelectorAll('.illus-store-btn.chrome');
+            const illusFirefox = document.querySelectorAll('.illus-store-btn.firefox');
+            
+            if (isFirefox && illusFirefox.length > 0) {
+                illusFirefox.forEach(btn => {
+                    btn.style.order = '-1';
+                    if (!isInstalled) {
+                        btn.classList.add('install-breathe');
+                        btn.style.cursor = 'pointer';
+                        btn.onclick = () => window.open('https://addons.mozilla.org/de/firefox/addon/koalasync/', '_blank');
+                    }
+                });
+                illusChrome.forEach(btn => {
+                    btn.style.opacity = '0.5';
+                    btn.style.transform = 'scale(0.95)';
+                });
+            } else if (isChrome && illusChrome.length > 0) {
+                illusChrome.forEach(btn => {
+                    btn.style.order = '-1';
+                    if (!isInstalled) {
+                        btn.classList.add('install-breathe');
+                        btn.style.cursor = 'pointer';
+                        btn.onclick = () => window.open('https://chromewebstore.google.com/detail/koalasync/obbnmkmlaaddodakcbdljknjpagklifc', '_blank');
+                    }
+                });
+                illusFirefox.forEach(btn => {
+                    btn.style.opacity = '0.5';
+                    btn.style.transform = 'scale(0.95)';
+                });
+            }
+        }, 600);
     };
 
     detectBrowserAndElevateBadge();

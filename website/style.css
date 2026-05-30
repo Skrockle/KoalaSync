@@ -134,6 +134,29 @@ nav {
     width: 40px;
 }
 
+.nav-ext-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10b981;
+    border-radius: 12px;
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);
+    animation: fade-in 0.4s ease-out;
+    margin-left: 0.2rem;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .nav-links {
     display: flex;
     gap: 2rem;
@@ -282,7 +305,7 @@ nav {
 
 .extension-mockup {
     width: 320px;
-    height: 490px;
+    height: 520px;
     background: #0f172a;
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -964,6 +987,38 @@ input:checked + .mock-slider:before {
     border-color: rgba(249, 115, 22, 0.25);
     background: rgba(249, 115, 22, 0.08);
     box-shadow: 0 0 10px rgba(249, 115, 22, 0.05);
+}
+
+.install-breathe {
+    animation: install-breathe 2.5s ease-in-out infinite;
+    z-index: 2;
+    position: relative;
+}
+
+@keyframes install-breathe {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 25px rgba(99, 102, 241, 0.5);
+    }
+}
+
+.install-breathe.firefox {
+    animation-name: install-breathe-ff;
+}
+
+@keyframes install-breathe-ff {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(249, 115, 22, 0.2);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 25px rgba(249, 115, 22, 0.5);
+    }
 }
 
 /* Glassmorphic Dropping Success Card */
