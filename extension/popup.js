@@ -942,6 +942,10 @@ function showError(msg) {
 }
 
 // --- Action Handlers ---
+elements.roomId.addEventListener('input', () => {
+    elements.roomId.value = elements.roomId.value.replace(/[^a-zA-Z0-9\-]/g, '');
+});
+
 elements.joinBtn.addEventListener('click', async () => {
     if (elements.joinBtn.disabled) return;
     const roomIdInput = elements.roomId.value.trim();

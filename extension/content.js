@@ -52,7 +52,7 @@
     // --- Seek Relay Filtering ---
     // Minimum seek delta (seconds) to report. Prevents HLS/DASH buffering micro-seeks
     // from being relayed to peers as user-initiated seeks.
-    const MIN_SEEK_DELTA = 3.0;
+    const MIN_SEEK_DELTA = 2.0;
     let lastReportedSeekTime = null;  // last currentTime we relayed as a SEEK
     let seekDebounceTimer = null;     // debounce timer for rapid seek events
 
@@ -582,7 +582,7 @@
         }
 
         // Step 4: Debounce rapid consecutive seeks (e.g. scrubbing)
-        // — wait 800ms for the user to settle before relaying
+        // — wait 300ms for the user to settle before relaying
         if (seekDebounceTimer) clearTimeout(seekDebounceTimer);
         seekDebounceTimer = setTimeout(() => {
             seekDebounceTimer = null;
@@ -594,7 +594,7 @@
             lastReportedSeekTime = settled;
             reportLog(`[Seek] Relayed @ ${settled.toFixed(2)}s (${finalDeltaStr})`, 'info');
             reportEvent(EVENTS.SEEK);
-        }, 800);
+        }, 300);
     };
 
 

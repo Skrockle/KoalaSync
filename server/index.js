@@ -1,11 +1,17 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import dotenv from 'dotenv';
 import { EVENTS, OFFICIAL_SERVER_TOKEN, PROTOCOL_VERSION } from '../shared/constants.js';
 
 dotenv.config();
+
+function hashPassword(password) {
+    if (!password) return null;
+    const salt = process.env.SERVER_SALT || 'koalasync_salt_3i';
+    return crypto.createHmac('sha256', salt).update(password).digest('hex');
+}
 
 const PORT = process.env.PORT || 3000;
 const MAX_ROOMS = parseInt(process.env.MAX_ROOMS) || 1000;
@@ -351,7 +357,7 @@ io.on('connection', (socket) => {
                             return;
                         }
 
-                        const passwordHash = password ? await bcrypt.hash(password, 10) : null;
+                        const passwordHash = hashPassword(password);
                         room = {
                             passwordHash,
                             peers: new Set(),
@@ -376,7 +382,7 @@ io.on('connection', (socket) => {
 
             if (!createdByMe) {
                 if (room.passwordHash) {
-                    if (!password || !(await bcrypt.compare(password, room.passwordHash))) {
+                    if (!password || hashPassword(password) !== room.passwordHash) {
                         recordAuthFailure(ip, roomId);
                         log('AUTH', `Invalid password from ${ip} for room ${roomId.substring(0, 3)}***`);
                         socket.emit(EVENTS.ERROR, { message: "Invalid password" });

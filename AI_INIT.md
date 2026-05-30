@@ -85,6 +85,7 @@ The following features are critical and must not be removed or fundamentally alt
 - **Server Transport**: Restricted to `websocket` only. Polling is disabled.
 - **Docker Context**: The Docker build must run from the **Repo Root**.
 - **Manifest Settings**: `run_at` must remain `document_idle`, and `all_frames` must remain `false`.
+- **Strict Backward & Forward Compatibility (Store Delay Rule)**: Browser extensions are distributed through stores (e.g., Chrome Web Store, Firefox Add-ons) which can take up to 2 weeks to approve updates. Therefore, the server MUST NOT reject older extension clients unless a critical protocol version bump is explicitly authorized, and new extension versions MUST remain fully operational when connected to older servers (e.g., by silently falling back if a new feature is not supported). This is a core architectural requirement.
 
 ## 9. Security & Deployment
 - **Tokens**: Security tokens are intentionally managed via `shared/constants.js` and server `.env`.

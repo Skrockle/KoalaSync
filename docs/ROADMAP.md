@@ -1,26 +1,15 @@
 # KoalaSync Roadmap
 
-This document tracks planned features, improvements, and their implementation details.
+Dieses Dokument erfasst zukünftige technische Pläne und Optimierungen für das KoalaSync-System.
 
 ---
 
-## Offene technische Fragen
+## Geplante Optimierungen & Technische Roadmap
 
-### 1. Service Worker Fallback bei Room-State Verlust
-Manifest V3 suspendiert den Service Worker nach ~30s Inaktivität. `chrome.alarms` weckt ihn auf, aber:
-- **Problem:** Wenn der SW neu startet, sind alle Variablen (`currentRoom`, `socket`, `isNamespaceJoined`) weg
-- **Aktueller Stand:** `chrome.storage.session` persistiert `currentRoom`, `peerId`, `eventQueue` — der SW stellt diese beim Start wieder her (`ensureState()`)
-- **Gelöst:** WebSocket wird automatisch via `connect()` neu aufgebaut. Events werden während Reconnect gequeued und nach Namespace-Join geflushed. "Reconnecting..." Status wird im Popup + Badge angezeigt. KeepAlive-Alarm auf 30s reduziert. Reconnect-Backoff: 500ms Basis, max 5s (statt vorher 1s→30s).
-
-### 7. Tests für Extensions
-Stimmt, sind aufwändig. Praktische Ansätze:
-- **Unit Tests:** `jest` + `jest-chrome` (mockt `chrome.*` APIs) — testet `popup.js` Logik, Server-Logik
-- **Integration Tests:** `puppeteer` mit `--load-extension` Flag — testet Extension im echten Browser
-- **Server Tests:** `supertest` + `socket.io-client` — testet WebSocket-Flows
-- **Aufwand:** ~400-600 LOC für sinnvolle Testabdeckung der Kernlogik
-
----
-
-## Zukünftige Features
-
-Neue Features werden nur nach expliziter Freigabe hinzugefügt.
+### 1. Behebung des synchronen Sortierungs-Flaschenhalses bei Auth-Failure LRU-Eviction
+* **Kategorie**: Performance / DoS-Prävention
+* **Hintergrund**: Der Server schützt Räume vor Brute-Force-Angriffen durch die Nachverfolgung fehlerhafter Anmeldeversuche (`failedAuthAttempts` Map). Bei Erreichen des Limits von 50.000 Einträgen wird ein Bereinigungsverfahren gestartet, das die gesamte Map in ein Array konvertiert und dieses per `Array.from().sort()` sortiert.
+* **Problem**: Dies blockiert den Node.js-Main-Thread für mehrere Millisekunden und stellt einen potenziellen Denial-of-Service-Vektor (DoS) dar, wenn ein Angreifer gezielt Fehlversuche spamt.
+* **Geplante Lösung**: 
+  - Umstellung auf eine echte, $O(1)$-basierte LRU-Cache-Datenstruktur (z. B. doppelt verkettete Liste in Kombination mit einer Map).
+  - Alternativ: Ein vereinfachtes zeitbasiertes Ablauf-Verfahren oder ein schrittweises Löschen von Segmenten (Chunk-Eviction), um Blockaden des Main-Threads vollständig auszuschließen.

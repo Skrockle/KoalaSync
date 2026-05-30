@@ -788,6 +788,8 @@ function handleServerEvent(event, data) {
                     }
 
                     if (isForceSyncInitiator) {
+                        forceSyncAcks.delete(data.peerId);
+                        chrome.storage.session.set({ forceSyncAcks: Array.from(forceSyncAcks) });
                         expectedAcksCount = Math.max(1, currentRoom.peers ? currentRoom.peers.length : 1);
                         chrome.storage.session.set({ expectedAcksCount });
                         if (forceSyncAcks.size >= expectedAcksCount) {
@@ -1225,7 +1227,8 @@ async function handleAsyncMessage(message, sender, sendResponse) {
         emit(EVENTS.GET_ROOMS, {});
         sendResponse({ status: 'ok' });
     } else if (message.type === 'WEB_JOIN_REQUEST') {
-        const { roomId, password, useCustomServer, serverUrl } = message;
+        const { roomId: rawRoomId, password, useCustomServer, serverUrl } = message;
+        const roomId = typeof rawRoomId === 'string' ? rawRoomId.replace(/[^a-zA-Z0-9\-]/g, '') : '';
         chrome.storage.sync.set({ 
             roomId, 
             password,
