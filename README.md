@@ -1,4 +1,8 @@
-<h1 align="center"><img src="extension/icons/icon128.png" width="32" valign="middle"> KoalaSync</h1>
+<p align="center">
+  <img src="website/assets/PlatformJuggler_New.webp" width="280" alt="KoalaSync Mascot">
+</p>
+
+<h1 align="center">KoalaSync</h1>
 
 <p align="center">
   <a href="https://github.com/Shik3i/KoalaSync/actions/workflows/release.yml"><img src="https://github.com/Shik3i/KoalaSync/actions/workflows/release.yml/badge.svg" alt="Release Status"></a>
