@@ -1607,3 +1607,87 @@ html.lang-de [lang="en"] {
     }
 }
 
+/* --- Join & Invitation Page Visuals --- */
+.join-status-visual {
+    margin-bottom: 2rem;
+    position: relative;
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-ring {
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, 0.05);
+    border: 2px dashed rgba(99, 102, 241, 0.25);
+    z-index: 1;
+}
+
+.status-ring.active-pulse {
+    animation: radar-pulse 3s cubic-bezier(0.25, 0.8, 0.25, 1) infinite;
+}
+
+@keyframes radar-pulse {
+    0% {
+        transform: scale(0.85);
+        opacity: 0.9;
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 0 0 0px rgba(99, 102, 241, 0.15);
+    }
+    50% {
+        transform: scale(1.18);
+        opacity: 0.35;
+        border-color: rgba(56, 189, 248, 0.2);
+        box-shadow: 0 0 0 15px rgba(56, 189, 248, 0);
+    }
+    100% {
+        transform: scale(0.85);
+        opacity: 0.9;
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 0 0 0px rgba(99, 102, 241, 0.15);
+    }
+}
+
+.join-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.join-card-actions .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 1.1rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.join-card-actions .btn svg {
+    margin-right: 0.3rem;
+    flex-shrink: 0;
+}
+
+.join-card-actions .btn img {
+    margin-right: 0.3rem;
+    flex-shrink: 0;
+}
+
+.btn-success {
+    background: #22c55e;
+    color: white !important;
+    box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.3);
+}
+
+.btn-success:hover {
+    background: #16a34a;
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(34, 197, 94, 0.4);
+}
+

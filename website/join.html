@@ -38,8 +38,15 @@
     </nav>
 
     <main class="legal-content join-card">
-        <div class="legal-card" id="join-container" data-reveal style="padding: 2.5rem;">
+        <div class="legal-card" id="join-container" data-reveal style="padding: 2.5rem; text-align: center;">
             <div class="room-badge"><span lang="en">INVITATION DETECTED</span><span lang="de">EINLADUNG ERKANNT</span></div>
+            
+            <!-- Dynamic Status Icon & Pulsing Radar Wave -->
+            <div class="join-status-visual">
+                <div class="status-ring active-pulse" id="status-ring"></div>
+                <div id="join-status-icon" style="font-size: 3rem; z-index: 2; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">🐨</div>
+            </div>
+
             <h1 id="join-title" style="font-size: 2rem; margin-bottom: 1rem;"><span lang="en">Ready to sync?</span><span lang="de">Bereit zum Synchronisieren?</span></h1>
             <p id="join-desc" style="text-align: center; color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem;">
                 <span lang="en">You've been invited to join a synchronized session.</span>
