@@ -8,7 +8,7 @@
     // Update titles dynamically based on page
     var path = window.location.pathname;
     var isIndex = path === '/' || path.endsWith('index.html') || path.split('/').pop() === '';
-    var isJoin = path.endsWith('join.html');
+    var isJoin = path.includes('join');
     
     if (isIndex) {
         var titles = { 

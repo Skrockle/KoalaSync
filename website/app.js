@@ -46,7 +46,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Invite Detection & Bridge
     const checkInvite = () => {
-        const isJoinPage = window.location.pathname.includes('join.html');
+        const isJoinPage = window.location.pathname.includes('join');
+        
+        // Dev Simulation Mode via URL Search Parameter (?dev=success) or Hash (#dev=success / #devsuccess)
+        const urlParams = new URLSearchParams(window.location.search);
+        let devMode = urlParams.get('dev'); 
+        
+        if (!devMode) {
+            const hashClean = window.location.hash.startsWith('#') ? window.location.hash.substring(1) : window.location.hash;
+            const hashParams = new URLSearchParams(hashClean);
+            devMode = hashParams.get('dev');
+        }
+        
+        if (!devMode) {
+            if (window.location.hash.includes('devsuccess') || window.location.search.includes('devsuccess')) devMode = 'success';
+            if (window.location.hash.includes('devfailure') || window.location.search.includes('devfailure')) devMode = 'failure';
+        }
+        
+        if (isJoinPage && devMode) {
+            setTimeout(() => {
+                const displayRoom = document.getElementById('display-room-id');
+                const actions = document.getElementById('join-actions');
+                if (displayRoom) displayRoom.textContent = 'DEV-ROOM';
+                
+                if (actions) {
+                    actions.innerHTML = `
+                        <div class="joining-spinner" style="text-align:center; padding: 1rem;">
+                            <div class="join-spinner"></div>
+                            <div style="font-weight: 600; color: var(--accent);">
+                                <span lang="en">Simulating connection (DEV)...</span><span lang="de">Verbindung wird simuliert (DEV)...</span>
+                            </div>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+                                <span lang="en">Simulating status event in 1.5 seconds.</span><span lang="de">Status-Event wird in 1,5 Sekunden simuliert.</span>
+                            </p>
+                        </div>
+                    `;
+                    setTimeout(() => {
+                        window.dispatchEvent(new CustomEvent('KOALASYNC_STATUS', {
+                            detail: { 
+                                success: devMode === 'success',
+                                message: devMode === 'failure' ? 'Simulated Connection Timeout!' : ''
+                            }
+                        }));
+                    }, 1500);
+                }
+            }, 600);
+            return;
+        }
         
         // Use a short timeout to let the bridge script initialize its dataset attribute
         setTimeout(() => {
@@ -182,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Listen for status from Extension
     window.addEventListener('KOALASYNC_STATUS', (e) => {
         const { success, message } = e.detail;
-        const isJoinPage = window.location.pathname.includes('join.html');
+        const isJoinPage = window.location.pathname.includes('join');
         
         if (isJoinPage) {
             const icon = document.getElementById('join-status-icon');
@@ -192,10 +238,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const ring = document.getElementById('status-ring');
 
             if (success) {
-                if (ring) ring.classList.remove('active-pulse');
+                if (ring) {
+                    ring.classList.remove('active-pulse');
+                    ring.style.display = 'none';
+                }
                 if (icon) {
-                    icon.textContent = '✅';
-                    icon.style.transform = 'scale(1.2)';
+                    icon.innerHTML = '<img src="assets/KoalaThumbsUp.webp" alt="Success" class="join-status-mascot">';
+                    icon.style.transform = 'scale(1)';
                 }
                 const isDE = document.documentElement.classList.contains('lang-de');
                 title.textContent = isDE ? 'Erfolgreich!' : 'Success!';
@@ -222,10 +271,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             } else {
-                if (ring) ring.classList.remove('active-pulse');
+                if (ring) {
+                    ring.classList.remove('active-pulse');
+                    ring.style.display = 'none';
+                }
                 if (icon) {
-                    icon.textContent = '❌';
-                    icon.style.transform = 'scale(1.2)';
+                    icon.innerHTML = '<img src="assets/KoalaThumbsDown.webp" alt="Error" class="join-status-mascot" onerror="this.outerHTML=\'❌\'">';
+                    icon.style.transform = 'scale(1)';
                 }
                 const isDE = document.documentElement.classList.contains('lang-de');
                 title.textContent = isDE ? 'Fehler' : 'Error';
@@ -405,7 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update titles dynamically based on page
         var path = window.location.pathname;
         var isIndex = path === '/' || path.endsWith('index.html') || path.split('/').pop() === '';
-        var isJoin = path.endsWith('join.html');
+        var isJoin = path.includes('join');
         
         if (isIndex) {
             const titles = { 
