@@ -90,8 +90,17 @@ To connect your extension to a self-hosted server, open the popup → **Room** t
 
 ---
 
+### 🌐 Localization & Translations
+
+The official KoalaSync website features a custom static site compiler to offer seamless localization:
+- **Available Languages**: Manually verified languages (English, German) and auto-generated variants ready for review (French, Spanish, Brazilian Portuguese, and Russian).
+- **Contributing**: We welcome community translations! Please refer directly to the [TRANSLATION.md](website/TRANSLATION.md) file for step-by-step instructions on how to review auto-generated translations or contribute support for new languages.
+
+---
+
 ### 📖 Documentation & Links
 
+- **[TRANSLATION.md](website/TRANSLATION.md)**: Translation and localization guide for contributors.
 - **[PRIVACY.md](PRIVACY.md)**: Data Handling and Privacy Policy.
 - **[CONTRIBUTING.md](CONTRIBUTING.md)**: How to help make KoalaSync better.
 - **[HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md)**: Step-by-step walkthrough of the complete user flow.
