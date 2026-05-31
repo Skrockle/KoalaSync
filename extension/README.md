@@ -8,11 +8,12 @@ A Manifest V3 Browser Extension (Chrome & Firefox) for synchronized video playba
 - **Smart Peer IDs**: Hexadecimal IDs combined with customizable Usernames for easy identification.
 - **Dual Heartbeat**: Advanced session tracking (Background) and video synchronization (Content) to prevent ghost sessions.
 - **Live Diagnostics**: Built-in "Dev" tab for real-time video state debugging (ReadyState, CurrentTime, etc.).
+- **Dynamic i18n (Multi-Language)**: Fully localized in 6 languages (`en`, `de`, `fr`, `es`, `pt-BR`, `ru`) with auto-detected fallback and dynamic on-the-fly language selectors.
 
 ## Tab Overview
 1. **Room**: Manage connections, view active peers, and share invitation links.
 2. **Sync**: Control video playback (Play/Pause/Force Sync) and view recent activity.
-3. **Settings**: Customize your Username and toggle domain-based Noise Filtering.
+3. **Settings**: Customize your Username, toggle domain-based Noise Filtering, and switch the App Language.
 4. **Dev**: Monitor connection status and view real-time video element metadata for debugging.
 
 ## Privacy & Permissions

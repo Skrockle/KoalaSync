@@ -146,3 +146,35 @@ document.addEventListener('DOMContentLoaded', async () => {
 *   **Zero URL Pollution:** Keeps invitation hashes private and avoids messy query parameters (`?lang=de`), protecting user privacy.
 *   **Optimal Performance:** Eliminates duplicate hidden text blocks, cutting page weight in half and ensuring smooth rendering.
 *   **Infinite Scale:** Adding new languages to dynamic pages requires zero edits to HTML markup; the engine simply fetches new JSON dictionaries on-demand.
+
+---
+
+## 🔌 Extension Internationalization (i18n)
+
+In **v2.0**, we extended full internationalization support to the **Browser Extension itself**. The architecture mirrors our web-based dynamic localization model to maintain complete parity.
+
+*   **Locales Directory:** [`extension/locales/`](file:///Users/koala/Documents/KoalaPlay/extension/locales/)
+*   **Active Dictionaries:**
+    *   [`en.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/en.json) (Baseline English)
+    *   [`de.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/de.json) (German)
+    *   [`fr.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/fr.json) (French)
+    *   [`es.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/es.json) (Spanish)
+    *   [`pt-BR.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/pt-BR.json) (Portuguese (Brasil))
+    *   [`ru.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/ru.json) (Russian)
+*   **Translation Engine:** [`extension/i18n.js`](file:///Users/koala/Documents/KoalaPlay/extension/i18n.js)
+*   **Validation Script:** [`scripts/test-locales.js`](file:///Users/koala/Documents/KoalaPlay/scripts/test-locales.js)
+
+### ⚙️ How it Works inside the Extension
+
+1. **System Locale Auto-Detection**: On first run, the extension detects the browser system language using `navigator.language` or `chrome.i18n.getUILanguage()`.
+2. **On-the-Fly Redraws**: When the user selects a different language in the settings tab (`#langSelector`), the selection is stored in `chrome.storage.sync` and the translation engine immediately triggers `translateDOM()`. The interface, empty state cards, tooltips, dynamic onboarding tutorial guides, and status badges re-render instantly without reloading the popup.
+3. **Localized System Notifications**: On play, pause, or seek commands, `background.js` retrieves the user's active locale preference from storage, loads the correct dictionary, and pushes native OS notifications fully translated.
+
+### 🧪 Auditing & Sync Checks
+
+To ensure that no language dictionary falls out of sync (causing missing labels or blank interfaces), developers must run the locale auditor tool before packaging releases:
+```bash
+node scripts/test-locales.js
+```
+This script asserts that all JSON dictionary files under `extension/locales/` share exactly the same set of keys as the English baseline (`en.json`).
+

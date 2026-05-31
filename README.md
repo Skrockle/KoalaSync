@@ -92,9 +92,11 @@ To connect your extension to a self-hosted server, open the popup → **Room** t
 
 ### 🌐 Localization & Translations
 
-The official KoalaSync website features a custom static site compiler to offer seamless localization:
-- **Available Languages**: Manually verified languages (English, German) and auto-generated variants ready for review (French, Spanish, Brazilian Portuguese, and Russian).
-- **Contributing**: We welcome community translations! Please refer directly to the [TRANSLATION.md](website/TRANSLATION.md) file for step-by-step instructions on how to review auto-generated translations or contribute support for new languages.
+Both the official KoalaSync website and the **v2.0 Browser Extension** feature full dynamic localization:
+- **Available Languages**: Support is included for 6 languages: English (`en`), German (`de`), French (`fr`), Spanish (`es`), Portuguese (Brazil) (`pt-BR`), and Russian (`ru`).
+- **Real-Time Extension Localization**: Inside the extension Settings panel, users can swap languages instantly. The entire interface, notifications, Empty States, and onboarding guides re-translate dynamically in real-time.
+- **Contributing**: We welcome community translations for both the website and the extension! Please refer directly to the [TRANSLATION.md](website/TRANSLATION.md) guide for step-by-step instructions on how to audit, refine, or add new languages.
+
 
 ---
 
