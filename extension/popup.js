@@ -1,6 +1,7 @@
 import { EVENTS, OFFICIAL_LANDING_PAGE_URL } from './shared/constants.js';
 import { BLACKLIST_DOMAINS } from './shared/blacklist.js';
 import { getAvatarForName, generateUsername } from './shared/names.js';
+import { loadLocale, translateDOM, getMessage } from './i18n.js';
 
 
 const elements = {
@@ -50,7 +51,8 @@ const elements = {
     browserNotifications: document.getElementById('browserNotifications'),
     autoCopyInvite: document.getElementById('autoCopyInvite'),
     syncTabCopyInvite: document.getElementById('syncTabCopyInvite'),
-    cancelLobbyBtn: document.getElementById('cancelLobbyBtn')
+    cancelLobbyBtn: document.getElementById('cancelLobbyBtn'),
+    langSelector: document.getElementById('langSelector')
 };
 
 let localPeerId = null;
@@ -69,7 +71,20 @@ let forceSyncDone = false;
 // --- Initialization ---
 async function init() {
     // Load Settings
-    const data = await chrome.storage.sync.get(['serverUrl', 'useCustomServer', 'roomId', 'password', 'filterNoise', 'username', 'autoSyncNextEpisode', 'forceSyncMode', 'browserNotifications', 'autoCopyInvite']);
+    const data = await chrome.storage.sync.get(['serverUrl', 'useCustomServer', 'roomId', 'password', 'filterNoise', 'username', 'autoSyncNextEpisode', 'forceSyncMode', 'browserNotifications', 'autoCopyInvite', 'locale']);
+    
+    let activeLang = data.locale;
+    if (!activeLang) {
+        const systemLang = (navigator.language || chrome.i18n.getUILanguage()).split('-')[0];
+        activeLang = ['en', 'de', 'fr', 'es', 'pt', 'ru'].includes(systemLang) ? (systemLang === 'pt' ? 'pt-BR' : systemLang) : 'en';
+        chrome.storage.sync.set({ locale: activeLang });
+    }
+    
+    await loadLocale(activeLang);
+    translateDOM();
+    
+    if (elements.langSelector) elements.langSelector.value = activeLang;
+    
     let username = data.username;
     if (!username) {
         username = generateUsername();
@@ -195,7 +210,7 @@ function updateLastActionUI(state, peers) {
         elements.lastActionCard.replaceChildren();
         const el = document.createElement('div');
         el.style.cssText = 'text-align:center; color: var(--text-muted); font-size: 10px;';
-        el.textContent = 'No recent commands';
+        el.textContent = getMessage('NO_RECENT_COMMANDS');
         elements.lastActionCard.appendChild(el);
         return;
     }
@@ -204,14 +219,14 @@ function updateLastActionUI(state, peers) {
     const safeAcks = state.acks || [];
 
     const actionNames = {
-        'play': 'PLAY',
-        'pause': 'PAUSE',
-        'seek': 'SEEK',
-        'force_sync_prepare': 'SYNCING...',
-        'force_sync_execute': 'FORCE PLAY'
+        'play': getMessage('BTN_PLAY').replace('▶ ', '').toUpperCase(),
+        'pause': getMessage('BTN_PAUSE').replace('⏸ ', '').toUpperCase(),
+        'seek': getMessage('NOTIF_SEEK').toUpperCase(),
+        'force_sync_prepare': getMessage('BTN_STATE_SYNCING').toUpperCase(),
+        'force_sync_execute': getMessage('BTN_STATE_SYNCED').toUpperCase()
     };
 
-    let senderName = state.senderId === 'You' ? 'You' : state.senderId;
+    let senderName = state.senderId === 'You' ? (getMessage('LABEL_YOU') || 'YOU') : state.senderId;
     const senderPeer = safePeers.find(p => (p.peerId || p) === state.senderId);
     if (senderPeer && senderPeer.username) senderName = senderPeer.username;
 
@@ -326,10 +341,10 @@ function startInterpolation() {
 
 function renderEmpty(container, type) {
     const states = {
-        peers: { icon: '\u{1F465}', title: 'No peers yet', hint: 'Share your invite link to get started' },
-        history: { icon: '\u{1F4CB}', title: 'No activity yet', hint: 'Play, pause, or seek to see history' },
-        logs: { icon: '\u{1F4DD}', title: 'No logs', hint: 'Connection events will appear here' },
-        rooms: { icon: '\u{1F50D}', title: 'No active rooms', hint: 'Create a room or refresh to find public ones' }
+        peers: { icon: '\u{1F465}', title: getMessage('EMPTY_PEERS_TITLE'), hint: getMessage('EMPTY_PEERS_HINT') },
+        history: { icon: '\u{1F4CB}', title: getMessage('EMPTY_HISTORY_TITLE'), hint: getMessage('EMPTY_HISTORY_HINT') },
+        logs: { icon: '\u{1F4DD}', title: getMessage('EMPTY_LOGS_TITLE'), hint: getMessage('EMPTY_LOGS_HINT') },
+        rooms: { icon: '\u{1F50D}', title: getMessage('EMPTY_ROOMS_TITLE'), hint: getMessage('EMPTY_ROOMS_HINT') }
     };
     const state = states[type] || { icon: '', title: '', hint: '' };
     const wrapper = document.createElement('div');
@@ -423,7 +438,7 @@ function updatePeerList(peers) {
             if (pId === localPeerId) {
                 const you = document.createElement('span');
                 you.style.cssText = 'font-size:10px; color:var(--accent); font-weight:bold;';
-                you.textContent = 'YOU';
+                you.textContent = getMessage('LABEL_YOU') || 'YOU';
                 header.appendChild(you);
             }
 
@@ -498,7 +513,7 @@ function detectPeerChanges(newPeers) {
         const id = peer.peerId || peer;
         if (!oldIds.has(id)) {
             const name = peer.username || id.substring(0, 4);
-            showToast(`${name} joined the room`, 'success');
+            showToast(getMessage('TOAST_PEER_JOINED', { name }), 'success');
         }
     }
 
@@ -506,7 +521,7 @@ function detectPeerChanges(newPeers) {
         const id = oldPeer.peerId || oldPeer;
         if (!newIds.has(id)) {
             const name = oldPeer.username || id.substring(0, 4);
-            showToast(`${name} left the room`, 'info');
+            showToast(getMessage('TOAST_PEER_LEFT', { name }), 'info');
         }
     }
 
@@ -677,7 +692,7 @@ function applyConnectionStatus(status) {
     }
 
     if (elements.connText) {
-        elements.connText.textContent = connected ? 'Connected' : (reconnecting ? 'Reconnecting...' : (connecting ? 'Connecting...' : (failed ? 'Failed' : 'Disconnected')));
+        elements.connText.textContent = connected ? getMessage('STATUS_CONNECTED') : (reconnecting ? getMessage('STATUS_RECONNECTING') : (connecting ? getMessage('STATUS_CONNECTING') : (failed ? getMessage('STATUS_FAILED') : getMessage('STATUS_DISCONNECTED'))));
     }
     if (elements.retryBtn) {
         elements.retryBtn.style.display = failed ? 'block' : 'none';
@@ -686,16 +701,16 @@ function applyConnectionStatus(status) {
     if (elements.joinBtn) {
         if (connecting || reconnecting) {
             elements.joinBtn.disabled = true;
-            elements.joinBtn.textContent = connecting ? '🚀 Joining...' : '🔄 Reconnecting...';
+            elements.joinBtn.textContent = connecting ? getMessage('BTN_STATE_JOINING') : getMessage('BTN_STATE_RECONNECTING');
         } else {
             elements.joinBtn.disabled = false;
-            elements.joinBtn.textContent = 'Join Room';
+            elements.joinBtn.textContent = getMessage('BTN_JOIN_ROOM');
         }
     }
 
-    if (elements.playBtn) elements.playBtn.textContent = '▶ Play';
-    if (elements.pauseBtn) elements.pauseBtn.textContent = '⏸ Pause';
-    if (elements.forceSyncBtn) elements.forceSyncBtn.textContent = '⚡ SYNC';
+    if (elements.playBtn) elements.playBtn.textContent = getMessage('BTN_PLAY');
+    if (elements.pauseBtn) elements.pauseBtn.textContent = getMessage('BTN_PAUSE');
+    if (elements.forceSyncBtn) elements.forceSyncBtn.textContent = getMessage('BTN_SYNC');
 }
 
 function updateHistory(history) {
@@ -884,6 +899,18 @@ elements.serverUrl.addEventListener('input', () => {
 elements.username.addEventListener('change', () => {
     chrome.storage.sync.set({ username: elements.username.value });
 });
+
+if (elements.langSelector) {
+    elements.langSelector.addEventListener('change', async () => {
+        const selectedLang = elements.langSelector.value;
+        await chrome.storage.sync.set({ locale: selectedLang });
+        await loadLocale(selectedLang);
+        translateDOM();
+        refreshLogs();
+        refreshHistory();
+        populateTabs();
+    });
+}
 
 elements.serverUrl.addEventListener('change', () => {
     let url = elements.serverUrl.value.trim();
@@ -1190,14 +1217,14 @@ elements.copyInvite.addEventListener('click', () => {
         elements.copyInvite.textContent = '✓';
         elements.copyInvite.style.background = 'var(--success)';
         elements.copyInvite.style.color = 'white';
-        showToast('Invite link copied!', 'success', 2000);
+        showToast(getMessage('TOAST_INVITE_COPIED'), 'success', 2000);
         setTimeout(() => {
             elements.copyInvite.textContent = original;
             elements.copyInvite.style.background = '';
             elements.copyInvite.style.color = '';
         }, 2000);
     }).catch(() => {
-        showToast('Failed to copy to clipboard', 'error');
+        showToast(getMessage('TOAST_COPY_FAILED'), 'error');
     });
 });
 
@@ -1207,7 +1234,7 @@ if (elements.syncTabCopyInvite) {
             const original = elements.syncTabCopyInvite.textContent;
             elements.syncTabCopyInvite.textContent = '✓';
             elements.syncTabCopyInvite.style.color = 'var(--success)';
-            showToast('Invite link copied!', 'success', 2000);
+            showToast(getMessage('TOAST_INVITE_COPIED'), 'success', 2000);
             setTimeout(() => {
                 elements.syncTabCopyInvite.textContent = original;
                 elements.syncTabCopyInvite.style.color = '';
@@ -1220,12 +1247,12 @@ if (elements.cancelLobbyBtn) {
     elements.cancelLobbyBtn.addEventListener('click', () => {
         chrome.runtime.sendMessage({ type: 'CANCEL_EPISODE_LOBBY' }, (response) => {
             if (response && response.status === 'ok') {
-                showToast('Episode Lobby skipped.', 'info');
+                showToast(getMessage('TOAST_LOBBY_SKIPPED'), 'info');
                 if (elements.episodeLobbyCard) {
                     elements.episodeLobbyCard.style.display = 'none';
                 }
             } else {
-                showToast('Failed to skip lobby.', 'error');
+                showToast(getMessage('TOAST_LOBBY_SKIP_FAILED'), 'error');
             }
         });
     });
@@ -1261,14 +1288,14 @@ chrome.runtime.onMessage.addListener((msg) => {
         const state = msg.state;
         if (state && state.senderId && state.senderId !== 'You') {
             const actionNames = {
-                'play': '▶ Play',
-                'pause': '⏸ Pause',
-                'seek': '⏩ Seek',
-                'force_sync_prepare': '⚡ Sync',
-                'force_sync_execute': '⚡ Sync Play'
+                'play': getMessage('BTN_PLAY'),
+                'pause': getMessage('BTN_PAUSE'),
+                'seek': getMessage('NOTIF_SEEK'),
+                'force_sync_prepare': getMessage('BTN_STATE_SYNCING'),
+                'force_sync_execute': getMessage('BTN_STATE_SYNCED')
             };
             const action = actionNames[state.action] || state.action;
-            showToast(`${state.senderId} ${action}`, 'info', 2000);
+            showToast(getMessage('TOAST_PEER_ACTION', { name: state.senderId, action }), 'info', 2000);
         }
 
         if (state && (state.action === 'play' || state.action === 'pause')) {
@@ -1277,10 +1304,10 @@ chrome.runtime.onMessage.addListener((msg) => {
                 chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (res) => {
                     const peerCount = res && res.peers ? res.peers.length : 1;
                     if (state.acks && state.acks.length >= peerCount) {
-                        btn.textContent = '✅ Synced!';
+                        btn.textContent = getMessage('BTN_STATE_SYNCED');
                         setTimeout(() => {
                             btn.disabled = false;
-                            btn.textContent = state.action === 'play' ? '▶ Play' : '⏸ Pause';
+                            btn.textContent = state.action === 'play' ? getMessage('BTN_PLAY') : getMessage('BTN_PAUSE');
                         }, 2000);
                     }
                 });
@@ -1295,9 +1322,9 @@ chrome.runtime.onMessage.addListener((msg) => {
             }
             if (elements.forceSyncBtn) {
                 elements.forceSyncBtn.disabled = false;
-                elements.forceSyncBtn.textContent = '✅ Synced!';
+                elements.forceSyncBtn.textContent = getMessage('BTN_STATE_SYNCED');
                 setTimeout(() => {
-                    elements.forceSyncBtn.textContent = '⚡ SYNC';
+                    elements.forceSyncBtn.textContent = getMessage('BTN_SYNC');
                 }, 2000);
             }
         }
@@ -1508,11 +1535,11 @@ function updateLobbyUI(lobby, peers) {
 
 // --- Onboarding Tour ---
 const onboardingSteps = [
-    { icon: '👋', title: 'Welcome to KoalaSync!', text: 'Watch videos together in perfect sync — no matter where you are. Let\'s take a quick tour!', targetTab: 'tab-room' },
-    { icon: '🏠', title: '1. Create a Room', text: 'Start here. Create a room and share the invite link with your friends.', targetTab: 'tab-room' },
-    { icon: '🎬', title: '2. Select Video', text: 'Navigate here to select the video you want to sync. Play, pause, and seek — everyone stays in sync.', targetTab: 'tab-sync' },
-    { icon: '⚙️', title: '3. Personalize', text: 'Pick a fun username so your friends know who you are.', targetTab: 'tab-settings' },
-    { icon: '🎉', title: 'You\'re all set!', text: 'Time to grab some popcorn. Enjoy watching together!', targetTab: 'tab-room' }
+    { icon: '👋', get title() { return getMessage('ONBOARDING_1_TITLE'); }, get text() { return getMessage('ONBOARDING_1_TEXT'); }, targetTab: 'tab-room' },
+    { icon: '🏠', get title() { return getMessage('ONBOARDING_2_TITLE'); }, get text() { return getMessage('ONBOARDING_2_TEXT'); }, targetTab: 'tab-room' },
+    { icon: '🎬', get title() { return getMessage('ONBOARDING_3_TITLE'); }, get text() { return getMessage('ONBOARDING_3_TEXT'); }, targetTab: 'tab-sync' },
+    { icon: '⚙️', get title() { return getMessage('ONBOARDING_4_TITLE'); }, get text() { return getMessage('ONBOARDING_4_TEXT'); }, targetTab: 'tab-settings' },
+    { icon: '🎉', get title() { return getMessage('ONBOARDING_5_TITLE'); }, get text() { return getMessage('ONBOARDING_5_TEXT'); }, targetTab: 'tab-room' }
 ];
 
 let onboardingStep = 0;
@@ -1562,7 +1589,7 @@ function renderOnboardingStep() {
         dots.appendChild(dot);
     });
 
-    nextBtn.textContent = onboardingStep === onboardingSteps.length - 1 ? 'Done!' : 'Next';
+    nextBtn.textContent = onboardingStep === onboardingSteps.length - 1 ? (getMessage('ONBOARDING_DONE') !== 'ONBOARDING_DONE' ? getMessage('ONBOARDING_DONE') : 'Done!') : getMessage('BTN_ONBOARDING_NEXT');
 }
 
 function completeOnboarding() {

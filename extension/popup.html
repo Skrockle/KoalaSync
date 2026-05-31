@@ -315,7 +315,7 @@
 <body>
     <div id="toast-container"></div>
     <div class="header-row">
-                    <h1><img src="icons/icon128.png" alt="KoalaSync Logo">KoalaSync</h1>
+                    <h1 data-i18n="APP_TITLE"><img src="icons/icon128.png" alt="KoalaSync Logo">KoalaSync</h1>
                     <a href="https://github.com/Shik3i/KoalaSync" target="_blank" class="popup-version">
                         <svg viewBox="0 0 16 16" fill="currentColor">
                             <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
@@ -325,10 +325,10 @@
                 </div>
 
     <div class="tabs">
-        <button class="tab-btn active" data-tab="tab-room" title="Room settings and connection">Room</button>
-        <button class="tab-btn" data-tab="tab-sync" title="Video sync controls and remote actions">Sync</button>
-        <button class="tab-btn" data-tab="tab-settings" title="Extension preferences">Settings</button>
-        <button class="tab-btn" data-tab="tab-dev" title="Advanced Diagnostics & Logs">Status</button>
+        <button class="tab-btn active" data-tab="tab-room" data-i18n="TAB_ROOM" data-i18n-title="TAB_ROOM_TOOLTIP" title="Room settings and connection">Room</button>
+        <button class="tab-btn" data-tab="tab-sync" data-i18n="TAB_SYNC" data-i18n-title="TAB_SYNC_TOOLTIP" title="Video sync controls and remote actions">Sync</button>
+        <button class="tab-btn" data-tab="tab-settings" data-i18n="TAB_SETTINGS" data-i18n-title="TAB_SETTINGS_TOOLTIP" title="Extension preferences">Settings</button>
+        <button class="tab-btn" data-tab="tab-dev" data-i18n="TAB_STATUS" data-i18n-title="TAB_STATUS_TOOLTIP" title="Advanced Diagnostics & Logs">Status</button>
     </div>
 
     <!-- Room Tab -->
@@ -336,35 +336,35 @@
 
         <!-- JOIN SECTION: Visible when not in a room -->
         <div id="section-join">
-            <button id="createRoomBtn" class="primary" style="margin-bottom: 16px; padding: 14px; font-size: 15px; background: linear-gradient(135deg, #6366f1, #a855f7); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);">+ Create New Room</button>
+            <button id="createRoomBtn" class="primary" style="margin-bottom: 16px; padding: 14px; font-size: 15px; background: linear-gradient(135deg, #6366f1, #a855f7); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);" data-i18n="BTN_CREATE_ROOM">+ Create New Room</button>
             <details style="margin-bottom: 12px; background: var(--card); border: 1px solid #334155; border-radius: 8px; padding: 8px;">
-                <summary style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; cursor: pointer; outline: none;">Manual Connect / Advanced</summary>
+                <summary style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; cursor: pointer; outline: none;" data-i18n="MANUAL_CONNECT_HEADER">Manual Connect / Advanced</summary>
                 <div style="margin-top: 12px;">
             <div class="form-group">
-                <label title="Select which KoalaSync server to use">Server</label>
+                <label title="Select which KoalaSync server to use" data-i18n="LABEL_SERVER">Server</label>
                 <div style="display:flex; gap:4px; margin-bottom:8px;">
-                    <button id="serverOfficial" class="tab-btn active" style="flex:1; padding:6px; font-size:11px;" title="Use the official reliable server">Official</button>
-                    <button id="serverCustom" class="tab-btn" style="flex:1; padding:6px; font-size:11px;" title="Connect to your own self-hosted server">Custom</button>
+                    <button id="serverOfficial" class="tab-btn active" style="flex:1; padding:6px; font-size:11px;" data-i18n="BTN_SERVER_OFFICIAL" data-i18n-title="BTN_SERVER_OFFICIAL_TOOLTIP" title="Use the official reliable server">Official</button>
+                    <button id="serverCustom" class="tab-btn" style="flex:1; padding:6px; font-size:11px;" data-i18n="BTN_SERVER_CUSTOM" data-i18n-title="BTN_SERVER_CUSTOM_TOOLTIP" title="Connect to your own self-hosted server">Custom</button>
                 </div>
-                <input type="text" id="serverUrl" placeholder="wss://your-server:3000" style="display:none;">
+                <input type="text" id="serverUrl" data-i18n-placeholder="PLACEHOLDER_SERVER_URL" placeholder="wss://your-server:3000" style="display:none;">
             </div>
             <div class="form-group">
-                <label title="The unique identifier for your sync room">Room ID</label>
-                <input type="text" id="roomId" placeholder="Enter Room ID" title="The unique ID of the room you want to join">
+                <label title="The unique identifier for your sync room" data-i18n="LABEL_ROOM_ID" data-i18n-title="LABEL_ROOM_ID_TOOLTIP">Room ID</label>
+                <input type="text" id="roomId" data-i18n-placeholder="PLACEHOLDER_ROOM_ID" data-i18n-title="PLACEHOLDER_ROOM_ID_TOOLTIP" placeholder="Enter Room ID" title="The unique ID of the room you want to join">
             </div>
             <div class="form-group">
-                <label title="Optional password to restrict room access">Password (Optional)</label>
-                <input type="password" id="password" placeholder="Room Password (optional)" title="Password for the room (leave empty if none)">
+                <label title="Optional password to restrict room access" data-i18n="LABEL_PASSWORD" data-i18n-title="LABEL_PASSWORD_TOOLTIP">Password (Optional)</label>
+                <input type="password" id="password" data-i18n-placeholder="PLACEHOLDER_PASSWORD" data-i18n-title="PLACEHOLDER_PASSWORD_TOOLTIP" placeholder="Room Password (optional)" title="Password for the room (leave empty if none)">
             </div>
             <div id="roomError" style="display:none; color:var(--error); font-size:11px; margin-bottom:8px; text-align:center;"></div>
-            <button id="joinBtn" class="primary" title="Connect to the room">Join Room</button>
+            <button id="joinBtn" class="primary" data-i18n="BTN_JOIN_ROOM" data-i18n-title="BTN_JOIN_ROOM_TOOLTIP" title="Connect to the room">Join Room</button>
             
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; margin-bottom: 8px;">
-                <label style="margin:0;" title="List of publicly available rooms on this server">Public Rooms</label>
-                <button id="refreshRooms" class="secondary" style="background:transparent; border:none; color:var(--accent); font-size:10px; cursor:pointer;" title="Refresh the list of public rooms">REFRESH</button>
+                <label style="margin:0;" title="List of publicly available rooms on this server" data-i18n="LABEL_PUBLIC_ROOMS" data-i18n-title="LABEL_PUBLIC_ROOMS_TOOLTIP">Public Rooms</label>
+                <button id="refreshRooms" class="secondary" style="background:transparent; border:none; color:var(--accent); font-size:10px; cursor:pointer;" data-i18n="BTN_REFRESH" data-i18n-title="BTN_REFRESH_TOOLTIP" title="Refresh the list of public rooms">REFRESH</button>
             </div>
             <div id="publicRooms" class="info-card" style="max-height: 120px; overflow-y: auto; padding: 4px;">
-                <div style="text-align:center; color: var(--text-muted); font-size: 11px; padding: 10px;">Refreshing...</div>
+                <div style="text-align:center; color: var(--text-muted); font-size: 11px; padding: 10px;" data-i18n="PUBLIC_ROOMS_REFRESHING">Refreshing...</div>
             </div>
                 </div>
             </details>
@@ -374,14 +374,14 @@
         <div id="section-active" style="display:none;">
             <div class="info-card" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--accent);">
                 <div>
-                    <label style="margin-bottom: 0;" title="The room you are currently connected to">Active Room</label>
-                    <div id="activeRoomId" style="font-weight: 700; color: var(--accent); font-size: 16px; letter-spacing: 1px;">NONE</div>
+                    <label style="margin-bottom: 0;" title="The room you are currently connected to" data-i18n="LABEL_ACTIVE_ROOM" data-i18n-title="LABEL_ACTIVE_ROOM_TOOLTIP">Active Room</label>
+                    <div id="activeRoomId" style="font-weight: 700; color: var(--accent); font-size: 16px; letter-spacing: 1px;" data-i18n="ACTIVE_ROOM_NONE">NONE</div>
                 </div>
-                <div id="activeServer" style="font-size: 10px; color: var(--text-muted); text-align: right; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Official Server</div>
+                <div id="activeServer" style="font-size: 10px; color: var(--text-muted); text-align: right; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" data-i18n="ACTIVE_SERVER_OFFICIAL">Official Server</div>
             </div>
 
             <div class="info-card" style="margin-bottom: 20px;">
-                <label title="Share this link with friends so they can join">Invite Link</label>
+                <label title="Share this link with friends so they can join" data-i18n="LABEL_INVITE_LINK" data-i18n-title="LABEL_INVITE_LINK_TOOLTIP">Invite Link</label>
                 <div class="invite-box">
                     <input type="text" id="inviteLink" readonly>
                     <button id="copyInvite" class="secondary">📋</button>
@@ -389,13 +389,13 @@
             </div>
 
             <div style="margin-bottom: 20px;">
-                <label title="Other users currently connected to this room">Peers in Room</label>
+                <label title="Other users currently connected to this room" data-i18n="LABEL_PEERS_IN_ROOM" data-i18n-title="LABEL_PEERS_IN_ROOM_TOOLTIP">Peers in Room</label>
                 <div id="peerList" class="info-card">
-                    <div style="text-align:center; color: var(--text-muted); font-size: 12px;">No peers connected</div>
+                    <div style="text-align:center; color: var(--text-muted); font-size: 12px;" data-i18n="NO_PEERS_CONNECTED">No peers connected</div>
                 </div>
             </div>
 
-            <button id="leaveBtn" class="secondary" style="color: var(--error); border-color: var(--error);">Leave Room</button>
+            <button id="leaveBtn" class="secondary" style="color: var(--error); border-color: var(--error);" data-i18n="BTN_LEAVE_ROOM">Leave Room</button>
         </div>
     </div>
 
@@ -404,44 +404,44 @@
         <!-- SYNC ACTIVE: Visible when in a room -->
         <div id="sync-active">
         <div class="form-group">
-            <label title="Choose the browser tab containing the video to sync">Select Video</label>
+            <label title="Choose the browser tab containing the video to sync" data-i18n="LABEL_SELECT_VIDEO" data-i18n-title="LABEL_SELECT_VIDEO_TOOLTIP">Select Video</label>
             <select id="targetTab">
-                <option value="">-- Select a Tab --</option>
+                <option value="" data-i18n="OPTION_SELECT_TAB">-- Select a Tab --</option>
             </select>
         </div>
         
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-            <label style="margin: 0;">Remote Control</label>
-            <button id="syncTabCopyInvite" title="Copy Invite Link" style="background:transparent; border: 1px solid #334155; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor:pointer; opacity:0.8; transition: opacity 0.2s; color: var(--text-muted); display: flex; align-items: center; gap: 4px; white-space: nowrap;">📋 Invite Link</button>
+            <label style="margin: 0;" data-i18n="LABEL_REMOTE_CONTROL">Remote Control</label>
+            <button id="syncTabCopyInvite" title="Copy Invite Link" style="background:transparent; border: 1px solid #334155; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor:pointer; opacity:0.8; transition: opacity 0.2s; color: var(--text-muted); display: flex; align-items: center; gap: 4px; white-space: nowrap;" data-i18n="BTN_COPY_INVITE" data-i18n-title="BTN_COPY_INVITE_TOOLTIP">📋 Invite Link</button>
         </div>
         <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-            <button id="playBtn" class="primary" style="flex:1; background: var(--success);" title="Send a Play command to everyone">▶ Play</button>
-            <button id="pauseBtn" class="primary" style="flex:1; background: var(--error);" title="Send a Pause command to everyone">⏸ Pause</button>
+            <button id="playBtn" class="primary" style="flex:1; background: var(--success);" title="Send a Play command to everyone" data-i18n="BTN_PLAY" data-i18n-title="BTN_PLAY_TOOLTIP">▶ Play</button>
+            <button id="pauseBtn" class="primary" style="flex:1; background: var(--error);" title="Send a Pause command to everyone" data-i18n="BTN_PAUSE" data-i18n-title="BTN_PAUSE_TOOLTIP">⏸ Pause</button>
         </div>
 
         <div style="display: flex; gap: 8px; margin-bottom: 15px; align-items: stretch;">
-            <button id="forceSyncBtn" class="primary" style="background: linear-gradient(135deg, #6366f1, #a855f7); flex: 1;" title="Force all users to sync up">⚡ SYNC</button>
-            <select id="forceSyncMode" style="flex: 1; background: var(--card); border: 1px solid #334155; color: white; padding: 10px 8px; border-radius: 8px; font-size: 11px; font-family: inherit; cursor: pointer; align-self: stretch;" title="Choose sync target">
-                <option value="jump-to-others">Jump to Others</option>
-                <option value="jump-to-me">Jump to Me</option>
+            <button id="forceSyncBtn" class="primary" style="background: linear-gradient(135deg, #6366f1, #a855f7); flex: 1;" title="Force all users to sync up" data-i18n="BTN_SYNC" data-i18n-title="BTN_SYNC_TOOLTIP">⚡ SYNC</button>
+            <select id="forceSyncMode" style="flex: 1; background: var(--card); border: 1px solid #334155; color: white; padding: 10px 8px; border-radius: 8px; font-size: 11px; font-family: inherit; cursor: pointer; align-self: stretch;" title="Choose sync target" data-i18n-title="OPTION_JUMP_MODE_TOOLTIP">
+                <option value="jump-to-others" data-i18n="OPTION_JUMP_TO_OTHERS">Jump to Others</option>
+                <option value="jump-to-me" data-i18n="OPTION_JUMP_TO_ME">Jump to Me</option>
             </select>
         </div>
 
         <!-- NEW: Last Action Status Card -->
-        <label title="Shows the most recent play, pause, or seek command">Last Activity Status</label>
+        <label title="Shows the most recent play, pause, or seek command" data-i18n="LABEL_LAST_ACTIVITY" data-i18n-title="LABEL_LAST_ACTIVITY_TOOLTIP">Last Activity Status</label>
         <div id="lastActionCard" class="info-card" style="margin-bottom: 15px; max-height: 120px; overflow-y: auto;">
-            <div style="text-align:center; color: var(--text-muted); font-size: 10px;">No recent commands</div>
+            <div style="text-align:center; color: var(--text-muted); font-size: 10px;" data-i18n="NO_RECENT_COMMANDS">No recent commands</div>
         </div>
 
         <!-- Episode Auto-Sync Lobby Status -->
         <div id="episodeLobbyCard" class="info-card" style="display:none; margin-bottom: 15px; border-left: 4px solid var(--star); animation: fadeIn 0.3s ease-out;">
             <div style="display:flex; align-items:center; gap: 6px; margin-bottom: 6px;">
                 <span style="font-size: 16px;">⏳</span>
-                <span style="font-weight: 700; color: var(--star); font-size: 12px;">EPISODE LOBBY</span>
+                <span style="font-weight: 700; color: var(--star); font-size: 12px;" data-i18n="LOBBY_HEADER">EPISODE LOBBY</span>
             </div>
             <div id="lobbyTitle" style="font-size: 11px; color: var(--text); margin-bottom: 6px; font-weight: 600;"></div>
             <div id="lobbyPeerStatus" style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;"></div>
-            <button id="cancelLobbyBtn" class="secondary" style="margin-top: 4px; padding: 6px 10px; font-size: 11px; width: auto; display: block;" title="Cancel lobby and play anyway">Skip & Play anyway</button>
+            <button id="cancelLobbyBtn" class="secondary" style="margin-top: 4px; padding: 6px 10px; font-size: 11px; width: auto; display: block;" title="Cancel lobby and play anyway" data-i18n="BTN_SKIP_PLAY" data-i18n-title="BTN_SKIP_PLAY_TOOLTIP">Skip & Play anyway</button>
         </div>
 
         <div id="peerListSync" class="info-card" style="display:none;"></div>
@@ -450,21 +450,21 @@
         <!-- SYNC INACTIVE: Visible when not in a room -->
         <div id="sync-inactive" style="display:none; text-align: center; padding: 20px 10px;">
             <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
-            <h3 style="margin: 0 0 8px 0; color: var(--accent); font-size: 15px;">Connect to a room first</h3>
-            <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 20px;">You need to join a room via an invite link or create a new one to sync videos.</p>
-            <button id="syncTabCreateRoomBtn" class="primary" style="padding: 12px; font-size: 14px; background: linear-gradient(135deg, #6366f1, #a855f7); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);" title="Create a new random room and join it">Create New Room</button>
+            <h3 style="margin: 0 0 8px 0; color: var(--accent); font-size: 15px;" data-i18n="LOBBY_CONNECT_FIRST">Connect to a room first</h3>
+            <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 20px;" data-i18n="LOBBY_CONNECT_FIRST_DESC">You need to join a room via an invite link or create a new one to sync videos.</p>
+            <button id="syncTabCreateRoomBtn" class="primary" style="padding: 12px; font-size: 14px; background: linear-gradient(135deg, #6366f1, #a855f7); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);" title="Create a new random room and join it" data-i18n="BTN_CREATE_ROOM_ALT" data-i18n-title="BTN_CREATE_ROOM_ALT_TOOLTIP">Create New Room</button>
         </div>
     </div>
     
     <!-- Settings Tab -->
     <div id="tab-settings" class="tab-content">
         <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #334155;">
-            <label style="margin-bottom: 0;" title="Username helps others identify you.">Your Username</label>
-            <input type="text" id="username" placeholder="Anonymous Koala" maxlength="20" style="width: 150px;">
+            <label style="margin-bottom: 0;" title="Username helps others identify you." data-i18n="LABEL_USERNAME" data-i18n-title="LABEL_USERNAME_TOOLTIP">Your Username</label>
+            <input type="text" id="username" data-i18n-placeholder="PLACEHOLDER_USERNAME" placeholder="Anonymous Koala" maxlength="20" style="width: 150px;">
         </div>
 
         <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #334155;">
-            <label style="margin-bottom: 0; cursor: help;" title="Filters out non-video tabs and unrelated domains to keep the list clean">Hide Clutter Tabs</label>
+            <label style="margin-bottom: 0; cursor: help;" title="Filters out non-video tabs and unrelated domains to keep the list clean" data-i18n="LABEL_HIDE_CLUTTER" data-i18n-title="LABEL_HIDE_CLUTTER_TOOLTIP">Hide Clutter Tabs</label>
             <label class="toggle-switch">
                 <input type="checkbox" id="filterNoise" checked>
                 <span class="slider"></span>
@@ -472,7 +472,7 @@
         </div>
 
         <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #334155;">
-            <label style="margin-bottom: 0; cursor: help;" title="Pauses automatically and waits for all peers when an episode changes, then sync-starts together.">Auto-Sync Next Episode</label>
+            <label style="margin-bottom: 0; cursor: help;" title="Pauses automatically and waits for all peers when an episode changes, then sync-starts together." data-i18n="LABEL_AUTO_SYNC_NEXT" data-i18n-title="LABEL_AUTO_SYNC_NEXT_TOOLTIP">Auto-Sync Next Episode</label>
             <label class="toggle-switch">
                 <input type="checkbox" id="autoSyncNextEpisode">
                 <span class="slider"></span>
@@ -480,7 +480,7 @@
         </div>
 
         <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #334155;">
-            <label style="margin-bottom: 0; cursor: help;" title="Automatically copies the invite link to your clipboard when creating a new room.">Auto-Copy Invite Link</label>
+            <label style="margin-bottom: 0; cursor: help;" title="Automatically copies the invite link to your clipboard when creating a new room." data-i18n="LABEL_AUTO_COPY_INVITE" data-i18n-title="LABEL_AUTO_COPY_INVITE_TOOLTIP">Auto-Copy Invite Link</label>
             <label class="toggle-switch">
                 <input type="checkbox" id="autoCopyInvite" checked>
                 <span class="slider"></span>
@@ -488,52 +488,62 @@
         </div>
 
         <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #334155;">
-            <label style="margin-bottom: 0; cursor: help;" title="Shows native system notifications when someone joins/leaves or plays/pauses.">Browser Notifications</label>
+            <label style="margin-bottom: 0; cursor: help;" title="Shows native system notifications when someone joins/leaves or plays/pauses." data-i18n="LABEL_NOTIFICATIONS" data-i18n-title="LABEL_NOTIFICATIONS_TOOLTIP">Browser Notifications</label>
             <label class="toggle-switch">
                 <input type="checkbox" id="browserNotifications">
                 <span class="slider"></span>
             </label>
         </div>
-        
 
+        <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; background: var(--card); padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #334155;">
+            <label style="margin-bottom: 0;" data-i18n="LABEL_LANGUAGE" data-i18n-title="LABEL_LANGUAGE_TOOLTIP" title="Choose your preferred extension language">App Language</label>
+            <select id="langSelector" style="width: 150px; background: var(--bg); border: 1px solid #334155; color: white; padding: 6px 10px; border-radius: 8px; font-size: 13px; cursor: pointer; outline: none; font-family: inherit;">
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+                <option value="fr">Français</option>
+                <option value="es">Español</option>
+                <option value="pt-BR">Português (Brasil)</option>
+                <option value="ru">Русский</option>
+            </select>
+        </div>
 
         <div style="margin-top: 15px; padding: 8px; border-top: 1px solid var(--card);">
-            <label title="Tools for fixing connection issues">Troubleshooting</label>
-            <button id="regenId" class="secondary" style="width: 100%; font-size: 11px;" title="Regenerate your internal ID and reconnect">Regenerate Peer ID</button>
-            <p style="font-size: 9px; color: var(--text-muted); margin-top: 5px; text-align: center;">Use this if you see "Duplicate Identity" errors.</p>
+            <label title="Tools for fixing connection issues" data-i18n="LABEL_TROUBLESHOOTING" data-i18n-title="LABEL_TROUBLESHOOTING_TOOLTIP">Troubleshooting</label>
+            <button id="regenId" class="secondary" style="width: 100%; font-size: 11px;" title="Regenerate your internal ID and reconnect" data-i18n="BTN_REGEN_ID" data-i18n-title="BTN_REGEN_ID_TOOLTIP">Regenerate Peer ID</button>
+            <p style="font-size: 9px; color: var(--text-muted); margin-top: 5px; text-align: center;" data-i18n="REGEN_ID_DESC">Use this if you see "Duplicate Identity" errors.</p>
         </div>
     </div>
 
     <!-- Dev Tab -->
     <div id="tab-dev" class="tab-content">
-        <label title="Current WebSocket connection state">Connection Status</label>
+        <label title="Current WebSocket connection state" data-i18n="LABEL_CONN_STATUS" data-i18n-title="LABEL_CONN_STATUS_TOOLTIP">Connection Status</label>
         <div id="connStatus" class="info-card" style="display:flex; align-items:center; gap: 10px;">
             <span id="connDot" class="status-dot status-offline"></span>
-            <span id="connText" style="flex:1;">Disconnected</span>
-            <button id="retryBtn" class="secondary" style="display:none; width: auto; padding: 4px 8px; font-size: 10px; margin: 0;" title="Attempt to reconnect to the server">RETRY</button>
-            <button id="copyLogs" class="btn secondary" style="width: auto; padding: 4px 10px; font-size: 11px;" title="Copy logs to clipboard for sharing">Copy Logs</button>
+            <span id="connText" style="flex:1;" data-i18n="CONN_STATUS_DISCONNECTED">Disconnected</span>
+            <button id="retryBtn" class="secondary" style="display:none; width: auto; padding: 4px 8px; font-size: 10px; margin: 0;" title="Attempt to reconnect to the server" data-i18n="BTN_RETRY" data-i18n-title="BTN_RETRY_TOOLTIP">RETRY</button>
+            <button id="copyLogs" class="btn secondary" style="width: auto; padding: 4px 10px; font-size: 11px;" title="Copy logs to clipboard for sharing" data-i18n="BTN_COPY_LOGS" data-i18n-title="BTN_COPY_LOGS_TOOLTIP">Copy Logs</button>
         </div>
 
-        <label title="Technical details about the currently selected video element">Video Debug Info</label>
-        <div id="videoDebug" class="info-card" style="font-size: 10px; font-family: monospace; color: var(--text-muted); max-height: 250px; overflow-y: auto; line-height: 1.4;">
+        <label title="Technical details about the currently selected video element" data-i18n="LABEL_VIDEO_DEBUG" data-i18n-title="LABEL_VIDEO_DEBUG_TOOLTIP">Video Debug Info</label>
+        <div id="videoDebug" class="info-card" style="font-size: 10px; font-family: monospace; color: var(--text-muted); max-height: 250px; overflow-y: auto; line-height: 1.4;" data-i18n="VIDEO_DEBUG_EMPTY">
             No tab selected or video detected.
         </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
-            <label title="Chronological log of all sync commands in the room">Full Action History</label>
+            <label title="Chronological log of all sync commands in the room" data-i18n="LABEL_HISTORY" data-i18n-title="LABEL_HISTORY_TOOLTIP">Full Action History</label>
         </div>
         <div id="historyList" class="info-card" style="max-height: 120px; overflow-y: auto; font-size: 10px; margin-bottom: 15px;">
-            <div style="text-align:center; color: var(--text-muted); font-size: 11px;">No activity yet</div>
+            <div style="text-align:center; color: var(--text-muted); font-size: 11px;" data-i18n="HISTORY_EMPTY">No activity yet</div>
         </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
-            <label title="Technical connection logs for debugging">Logs (Last 50)</label>
-            <button id="clearLogs" style="background:transparent; border:none; color:var(--accent); font-size:10px; cursor:pointer;" title="Clear log output">CLEAR</button>
+            <label title="Technical connection logs for debugging" data-i18n="LABEL_LOGS" data-i18n-title="LABEL_LOGS_TOOLTIP">Logs (Last 50)</label>
+            <button id="clearLogs" style="background:transparent; border:none; color:var(--accent); font-size:10px; cursor:pointer;" title="Clear log output" data-i18n="BTN_CLEAR" data-i18n-title="BTN_CLEAR_TOOLTIP">CLEAR</button>
         </div>
         <div id="logList"></div>
         
         <div style="margin-top: 20px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
-            <a href="https://github.com/Shik3i/KoalaSync" target="_blank" style="color: var(--text-muted); text-decoration: none; font-size: 10px; opacity: 0.6; display: block;">GitHub Repository</a>
+            <a href="https://github.com/Shik3i/KoalaSync" target="_blank" style="color: var(--text-muted); text-decoration: none; font-size: 10px; opacity: 0.6; display: block;" data-i18n="LABEL_GITHUB">GitHub Repository</a>
             <div id="appVersion" style="color: var(--text-muted); font-size: 9px; opacity: 0.4; margin-top: 4px;">v0.0.0</div>
         </div>
     </div>
@@ -543,12 +553,12 @@
     <!-- Onboarding Overlay -->
     <div id="onboarding-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter: blur(2px); z-index:1000; align-items:flex-end; justify-content:center; padding-bottom: 20px;">
         <div id="onboarding-card" style="background:var(--card); padding:24px; border-radius:16px; max-width:280px; width:90%; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.5); ">
-            <div id="onboarding-icon" style="font-size:48px; margin-bottom:12px;">\u{1F44B}</div>
+            <div id="onboarding-icon" style="font-size:48px; margin-bottom:12px;">👋</div>
             <h2 id="onboarding-title" style="color:var(--accent); margin:0 0 8px; font-size:16px;">Welcome to KoalaSync!</h2>
             <p id="onboarding-text" style="color:var(--text-muted); font-size:13px; margin:0 0 16px; line-height:1.4;">Let's get you started.</p>
             <div style="display:flex; gap:8px; justify-content:center;">
-                <button id="onboarding-skip" class="secondary" style="width:auto; padding:8px 16px;" title="Skip the tutorial">Skip</button>
-                <button id="onboarding-next" class="primary" style="width:auto; padding:8px 16px;" title="Go to next step">Next</button>
+                <button id="onboarding-skip" class="secondary" style="width:auto; padding:8px 16px;" title="Skip the tutorial" data-i18n="BTN_ONBOARDING_SKIP" data-i18n-title="BTN_ONBOARDING_SKIP_TOOLTIP">Skip</button>
+                <button id="onboarding-next" class="primary" style="width:auto; padding:8px 16px;" title="Go to next step" data-i18n="BTN_ONBOARDING_NEXT" data-i18n-title="BTN_ONBOARDING_NEXT_TOOLTIP">Next</button>
             </div>
             <div id="onboarding-dots" style="margin-top:12px; display:flex; gap:6px; justify-content:center;"></div>
         </div>

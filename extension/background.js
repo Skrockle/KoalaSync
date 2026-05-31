@@ -1,5 +1,7 @@
 import { EVENTS, PROTOCOL_VERSION, OFFICIAL_SERVER_URL, OFFICIAL_SERVER_TOKEN, APP_VERSION, EPISODE_LOBBY_TIMEOUT, FORCE_SYNC_TIMEOUT } from './shared/constants.js';
 import { generateUsername } from './shared/names.js';
+import { loadLocale, getMessage } from './i18n.js';
+
 
 // --- State Management ---
 let socket = null;
@@ -471,26 +473,38 @@ function updateBadgeStatus() {
 }
 
 function showNotification(senderName, action) {
-    chrome.storage.sync.get(['browserNotifications'], (settings) => {
+    chrome.storage.sync.get(['browserNotifications', 'locale'], async (settings) => {
         if (!settings.browserNotifications) return;
 
-        const label = action === 'play' ? 'started playback' : 
-                      action === 'pause' ? 'paused playback' : 
-                      action === 'seek' ? 'seeked the video' :
-                      action === 'force_sync_prepare' ? 'started force sync' :
-                      action === 'force_sync_execute' ? 'synchronized everyone' : action;
-        
+        const lang = settings.locale || 'en';
+        await loadLocale(lang);
+
+        let labelKey = '';
+        if (action === 'play') labelKey = 'NOTIF_PLAY';
+        else if (action === 'pause') labelKey = 'NOTIF_PAUSE';
+        else if (action === 'seek') labelKey = 'NOTIF_SEEK';
+        else if (action === 'force_sync_prepare') labelKey = 'NOTIF_FORCE_PREPARE';
+        else if (action === 'force_sync_execute') labelKey = 'NOTIF_FORCE_EXECUTE';
+
+        const label = labelKey ? getMessage(labelKey) : action;
+
         let displayName = senderName || 'A peer';
         if (currentRoom && Array.isArray(currentRoom.peers)) {
             const peer = currentRoom.peers.find(p => (p.peerId || p) === senderName);
             if (peer && peer.username) displayName = peer.username;
         }
 
+        if (displayName === 'You' || displayName === 'YOU') {
+            displayName = getMessage('LABEL_YOU') || 'YOU';
+        }
+
+        const message = getMessage('TOAST_PEER_ACTION', { name: displayName, action: label }) + '.';
+
         chrome.notifications.create(`sync_${Date.now()}`, {
             type: 'basic',
             iconUrl: 'icons/icon128.png',
             title: 'KoalaSync',
-            message: `${displayName} ${label}.`,
+            message: message,
             priority: 1
         });
     });
