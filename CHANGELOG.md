@@ -18,8 +18,12 @@ All notable changes to the KoalaSync browser extension and relay server.
 
 ## [v2.0.0] — 2026-05-31
 
+### 🌍 Multi-Language Extension (Biggest Feature!)
+- **6-Language UI**: The browser extension is now fully translated into **English, German, French, Spanish, Portuguese (Brazilian), and Russian**. Switch languages instantly in Settings without reload.
+- **Real-Time i18n**: Every label, button, tooltip, toast notification, empty state, and onboarding guide updates dynamically when the language changes.
+- **6-Language Website**: Landing page, join page, legal pages, and the interactive extension mockup now available in all 6 languages with proper hreflang tags.
+
 ### New Features
-- **6-Language Website Mockup**: The interactive extension preview on the landing page now renders in all 6 supported languages (EN/DE/FR/ES/PT-BR/RU), dynamically compiled from locale files.
 - **Copy Debug Report**: The *Copy Logs* button in the Status tab now copies a fully formatted Markdown report containing system info, connection status, video debug data, action history, and logs — ready to paste into GitHub issues.
 - **Platform Auto-Detection**: The Dev tab now identifies streaming platforms (YouTube, Netflix, Twitch, Prime Video, Disney+, HBO Max, Vimeo, Dailymotion) and displays the detected platform.
 - **Enhanced Video Debug Info**: 20+ new fields in the Status tab including network state, buffered ranges, dimensions (with 0×0 warning), media error codes, shadow DOM status, seeking/ended/loop flags, volume, playback speed, and data attributes.
@@ -57,8 +61,7 @@ All notable changes to the KoalaSync browser extension and relay server.
 ## [v1.9.0] — 2026-05-18
 
 ### New Features
-- **Full Dynamic i18n**: The browser extension now supports 6 languages (EN/DE/FR/ES/PT-BR/RU) with real-time language switching without reload.
-- **6-Language Website**: Landing page, join page, and legal pages now available in all 6 languages with proper hreflang tags and canonical URLs.
+- **6-Language Website**: Landing page, join page, and legal pages available in EN/DE/FR/ES/PT-BR/RU with proper hreflang tags and canonical URLs. Extension i18n followed in v2.0.0.
 
 ### Changed
 - **Episode-Aware Sync**: Command sequencing with smarter episode transition detection and echo suppression for smoother series binges.
