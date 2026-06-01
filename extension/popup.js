@@ -190,7 +190,7 @@ function updateUI(roomId, password, useCustomServer = false, serverUrl = '') {
 
         if (elements.activeRoomId) elements.activeRoomId.textContent = roomId;
         if (elements.activeServer) {
-            elements.activeServer.textContent = useCustomServer ? (serverUrl || 'Custom Server') : 'Official Server';
+            elements.activeServer.textContent = useCustomServer ? (serverUrl || getMessage('LABEL_CUSTOM_SERVER')) : getMessage('ACTIVE_SERVER_OFFICIAL');
             elements.activeServer.title = useCustomServer ? (serverUrl || '') : 'syncserver.koalastuff.net';
         }
     } else {
@@ -741,7 +741,7 @@ function updateHistory(history) {
         const senderSpan = document.createElement('span');
         if (item.senderId === 'You') {
             senderSpan.style.color = 'var(--accent)';
-            senderSpan.textContent = 'You';
+            senderSpan.textContent = getMessage('LABEL_YOU') || 'You';
         } else {
             senderSpan.textContent = item.senderId;
         }
@@ -787,14 +787,14 @@ function updateRoomList(rooms) {
 
         if (r.hasPassword) {
             const lock = document.createElement('span');
-            lock.title = 'Password Protected';
+            lock.title = getMessage('LABEL_PASSWORD_PROTECTED');
             lock.textContent = '🔒';
             leftSide.appendChild(lock);
         }
 
         const peerCount = document.createElement('span');
         peerCount.style.cssText = 'font-size:11px; color:var(--accent)';
-        peerCount.textContent = `${parseInt(r.peerCount)} peers`;
+        peerCount.textContent = getMessage('LABEL_PEERS_COUNT', { count: parseInt(r.peerCount) });
 
         item.appendChild(leftSide);
         item.appendChild(peerCount);
@@ -979,14 +979,14 @@ elements.joinBtn.addEventListener('click', async () => {
     const isCreating = !roomIdInput;
     
     elements.joinBtn.disabled = true;
-    elements.joinBtn.textContent = isCreating ? 'Creating Room...' : 'Joining...';
+    elements.joinBtn.textContent = isCreating ? getMessage('BTN_STATE_CREATING') : getMessage('BTN_STATE_JOINING');
     
     if (joinBtnTimeout) clearTimeout(joinBtnTimeout);
     joinBtnTimeout = setTimeout(() => {
         elements.joinBtn.disabled = false;
-        elements.joinBtn.textContent = 'Join Room';
+        elements.joinBtn.textContent = getMessage('BTN_JOIN_ROOM');
         joinBtnTimeout = null;
-        showError('Connection timed out. Please try again.');
+        showError(getMessage('ERR_CONN_TIMEOUT'));
     }, 15000);
     
     const serverUrl = elements.serverUrl.value.trim();
@@ -998,9 +998,9 @@ elements.joinBtn.addEventListener('click', async () => {
             const urlToCheck = serverUrl.includes('://') ? serverUrl : 'ws://' + serverUrl;
             new URL(urlToCheck);
         } catch (_e) {
-            showError('Invalid Server URL format.');
+            showError(getMessage('ERR_INVALID_SERVER_URL'));
             elements.joinBtn.disabled = false;
-            elements.joinBtn.textContent = 'Join Room';
+            elements.joinBtn.textContent = getMessage('BTN_JOIN_ROOM');
             return;
         }
     }
@@ -1054,8 +1054,8 @@ if (syncTabCreateRoomBtn) syncTabCreateRoomBtn.addEventListener('click', () => {
 elements.refreshRooms.addEventListener('click', () => {
     elements.publicRooms.replaceChildren();
     const el = document.createElement('div');
-    el.style.cssText = 'text-align:center; padding: 10px; color:var(--text-muted);';
-    el.textContent = 'Refreshing...';
+    el.style.cssText = 'text-align:center; color: var(--text-muted); font-size: 11px; padding: 10px;';
+    el.textContent = getMessage('PUBLIC_ROOMS_REFRESHING');
     elements.publicRooms.appendChild(el);
     chrome.runtime.sendMessage({ type: 'GET_ROOM_LIST' });
 });
@@ -1082,7 +1082,7 @@ elements.forceSyncBtn.addEventListener('click', async () => {
 
     if (mode === 'jump-to-others') {
         if (!localPeerId) {
-            showError('Identity not yet loaded. Wait a moment and try again.');
+            showError(getMessage('ERR_IDENTITY_NOT_LOADED'));
             return;
         }
         const peers = status.peers || [];
@@ -1091,7 +1091,7 @@ elements.forceSyncBtn.addEventListener('click', async () => {
             .map(p => p.currentTime);
 
         if (otherTimes.length === 0) {
-            showError('No other peers with a known time. Switch to "Jump to Me".');
+            showError(getMessage('ERR_NO_PEERS_TIME'));
             return;
         }
 
@@ -1102,7 +1102,7 @@ elements.forceSyncBtn.addEventListener('click', async () => {
 
     const originalText = elements.forceSyncBtn.textContent;
     elements.forceSyncBtn.disabled = true;
-    elements.forceSyncBtn.textContent = mode === 'jump-to-others' ? `Syncing to group (${formatTime(targetTime)})...` : 'Syncing...';
+    elements.forceSyncBtn.textContent = mode === 'jump-to-others' ? getMessage('BTN_STATE_SYNCING_GROUP', { time: formatTime(targetTime) }) : getMessage('BTN_STATE_SYNCING');
     forceSyncDone = false;
     const peerCount = (status.peers || []).filter(p => (typeof p === 'object' ? p.peerId : p) !== localPeerId).length;
     const syncTimeoutMs = peerCount === 0 ? 3000 : 12000;
@@ -1139,7 +1139,7 @@ elements.forceSyncBtn.addEventListener('click', async () => {
                         });
                     }, 500);
                 }).catch(() => {
-                    showError('Could not connect to video tab.');
+                    showError(getMessage('ERR_NO_VIDEO_TAB'));
                     forceSyncDone = true;
                     elements.forceSyncBtn.disabled = false;
                     elements.forceSyncBtn.textContent = originalText;
@@ -1155,10 +1155,10 @@ elements.forceSyncBtn.addEventListener('click', async () => {
 
 elements.playBtn.addEventListener('click', () => {
     if (!elements.targetTab.value) {
-        showToast('Please select a video first!', 'warning');
+        showToast(getMessage('ERR_SELECT_VIDEO'), 'warning');
         return;
     }
-    elements.playBtn.textContent = '▶ Playing...';
+    elements.playBtn.textContent = getMessage('BTN_STATE_PLAYING');
     elements.playBtn.disabled = true;
     chrome.runtime.sendMessage({
         type: 'CONTENT_EVENT',
@@ -1166,14 +1166,14 @@ elements.playBtn.addEventListener('click', () => {
         payload: {}
     }, (response) => {
         if (response && response.status === 'ok_solo') {
-            elements.playBtn.textContent = '▶ Play';
+            elements.playBtn.textContent = getMessage('BTN_PLAY');
             elements.playBtn.disabled = false;
         }
     });
     // Safety reset: restore button after 2.5s in case no peers respond
     setTimeout(() => {
         if (elements.playBtn.disabled) {
-            elements.playBtn.textContent = '▶ Play';
+            elements.playBtn.textContent = getMessage('BTN_PLAY');
             elements.playBtn.disabled = false;
         }
     }, 2500);
@@ -1181,10 +1181,10 @@ elements.playBtn.addEventListener('click', () => {
 
 elements.pauseBtn.addEventListener('click', () => {
     if (!elements.targetTab.value) {
-        showToast('Please select a video first!', 'warning');
+        showToast(getMessage('ERR_SELECT_VIDEO'), 'warning');
         return;
     }
-    elements.pauseBtn.textContent = '⏸ Pausing...';
+    elements.pauseBtn.textContent = getMessage('BTN_STATE_PAUSING');
     elements.pauseBtn.disabled = true;
     chrome.runtime.sendMessage({
         type: 'CONTENT_EVENT',
@@ -1192,14 +1192,14 @@ elements.pauseBtn.addEventListener('click', () => {
         payload: {}
     }, (response) => {
         if (response && response.status === 'ok_solo') {
-            elements.pauseBtn.textContent = '⏸ Pause';
+            elements.pauseBtn.textContent = getMessage('BTN_PAUSE');
             elements.pauseBtn.disabled = false;
         }
     });
     // Safety reset: restore button after 2.5s in case no peers respond
     setTimeout(() => {
         if (elements.pauseBtn.disabled) {
-            elements.pauseBtn.textContent = '⏸ Pause';
+            elements.pauseBtn.textContent = getMessage('BTN_PAUSE');
             elements.pauseBtn.disabled = false;
         }
     }, 2500);
@@ -1288,14 +1288,17 @@ chrome.runtime.onMessage.addListener((msg) => {
         const state = msg.state;
         if (state && state.senderId && state.senderId !== 'You') {
             const actionNames = {
-                'play': getMessage('BTN_PLAY'),
-                'pause': getMessage('BTN_PAUSE'),
+                'play': getMessage('NOTIF_PLAY'),
+                'pause': getMessage('NOTIF_PAUSE'),
                 'seek': getMessage('NOTIF_SEEK'),
-                'force_sync_prepare': getMessage('BTN_STATE_SYNCING'),
-                'force_sync_execute': getMessage('BTN_STATE_SYNCED')
+                'force_sync_prepare': getMessage('NOTIF_FORCE_PREPARE'),
+                'force_sync_execute': getMessage('NOTIF_FORCE_EXECUTE')
             };
             const action = actionNames[state.action] || state.action;
-            showToast(getMessage('TOAST_PEER_ACTION', { name: state.senderId, action }), 'info', 2000);
+            let displayName = state.senderId;
+            const peer = lastKnownPeers.find(p => (p.peerId || p) === state.senderId);
+            if (peer && peer.username) displayName = peer.username;
+            showToast(getMessage('TOAST_PEER_ACTION', { name: displayName, action }), 'info', 2000);
         }
 
         if (state && (state.action === 'play' || state.action === 'pause')) {
@@ -1388,10 +1391,10 @@ elements.copyLogs.addEventListener('click', () => {
         const text = logs.map(l => `[${l.timestamp}] [${l.type}] ${l.message}`).join('\n');
         navigator.clipboard.writeText(text).then(() => {
             const original = elements.copyLogs.textContent;
-            elements.copyLogs.textContent = 'Copied!';
+            elements.copyLogs.textContent = getMessage('TOAST_LOGS_COPIED');
             setTimeout(() => elements.copyLogs.textContent = original, 2000);
         }).catch(() => {
-            showToast('Failed to copy to clipboard', 'error');
+            showToast(getMessage('TOAST_COPY_FAILED'), 'error');
         });
     });
 });
@@ -1403,14 +1406,14 @@ function refreshDebugInfo() {
 
     chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (res) => {
         if (!res || !res.targetTabId) {
-            if (elements.videoDebug) elements.videoDebug.textContent = 'No target tab selected.';
+            if (elements.videoDebug) elements.videoDebug.textContent = getMessage('DEBUG_NO_TAB');
             return;
         }
 
         // Request direct state from the content script via background
         chrome.runtime.sendMessage({ type: 'GET_VIDEO_STATE', tabId: res.targetTabId }, (state) => {
             if (!state || state.error) {
-                if (elements.videoDebug) elements.videoDebug.textContent = 'Could not communicate with tab video.';
+                if (elements.videoDebug) elements.videoDebug.textContent = getMessage('DEBUG_COMM_FAIL');
                 return;
             }
 
@@ -1502,7 +1505,7 @@ function updateLobbyUI(lobby, peers) {
     }
 
     elements.episodeLobbyCard.style.display = 'block';
-    elements.lobbyTitle.textContent = `\u{1F3AC} Waiting for: "${lobby.expectedTitle}"`;
+    elements.lobbyTitle.textContent = getMessage('LOBBY_WAITING_FOR', { title: lobby.expectedTitle });
 
     // Build peer readiness list
     const readySet = new Set(lobby.readyPeers || []);
@@ -1515,7 +1518,7 @@ function updateLobbyUI(lobby, peers) {
             const avatar = getAvatarForName(pName);
             const isReady = readySet.has(pId);
             const icon = isReady ? '\u2705' : '\u23f3';
-            const label = isReady ? 'Ready' : 'Loading...';
+            const label = isReady ? getMessage('LABEL_LOBBY_PEER_READY') : getMessage('LABEL_LOBBY_PEER_LOADING');
             peerLines.push(`${icon} ${avatar} ${pName} \u2014 ${label}`);
         });
     }
@@ -1523,7 +1526,7 @@ function updateLobbyUI(lobby, peers) {
     if (peerLines.length > 0 && elements.lobbyPeerStatus) {
         elements.lobbyPeerStatus.textContent = peerLines.join(' | ');
     } else if (elements.lobbyPeerStatus) {
-        elements.lobbyPeerStatus.textContent = 'Waiting for peers...';
+        elements.lobbyPeerStatus.textContent = getMessage('LOBBY_WAITING_PEERS');
     }
 
     // Show elapsed time

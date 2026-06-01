@@ -1,6 +1,6 @@
 import { EVENTS, PROTOCOL_VERSION, OFFICIAL_SERVER_URL, OFFICIAL_SERVER_TOKEN, APP_VERSION, EPISODE_LOBBY_TIMEOUT, FORCE_SYNC_TIMEOUT } from './shared/constants.js';
 import { generateUsername } from './shared/names.js';
-import { loadLocale, getMessage } from './i18n.js';
+import { loadLocale, getMessage, SUPPORTED_LANGUAGES } from './i18n.js';
 
 
 // --- State Management ---
@@ -476,7 +476,11 @@ function showNotification(senderName, action) {
     chrome.storage.sync.get(['browserNotifications', 'locale'], async (settings) => {
         if (!settings.browserNotifications) return;
 
-        const lang = settings.locale || 'en';
+        let lang = settings.locale;
+        if (!lang) {
+            const systemLang = (navigator.language || chrome.i18n.getUILanguage()).split('-')[0];
+            lang = SUPPORTED_LANGUAGES.includes(systemLang) ? systemLang : 'en';
+        }
         await loadLocale(lang);
 
         let labelKey = '';
@@ -650,11 +654,19 @@ function handleServerEvent(event, data) {
             isConnecting = false;
             broadcastConnectionStatus('disconnected');
             addLog(`Server Error: ${data.message}`, 'error');
-            chrome.notifications.create(`error_${Date.now()}`, {
-                type: 'basic',
-                iconUrl: 'icons/icon128.png',
-                title: 'KoalaSync Error',
-                message: data.message
+            chrome.storage.sync.get(['locale'], async (settings) => {
+                let lang = settings.locale;
+                if (!lang) {
+                    const systemLang = (navigator.language || chrome.i18n.getUILanguage()).split('-')[0];
+                    lang = SUPPORTED_LANGUAGES.includes(systemLang) ? systemLang : 'en';
+                }
+                await loadLocale(lang);
+                chrome.notifications.create(`error_${Date.now()}`, {
+                    type: 'basic',
+                    iconUrl: 'icons/icon128.png',
+                    title: getMessage('NOTIF_ERROR_TITLE') || 'KoalaSync Error',
+                    message: data.message
+                });
             });
             // Inform Website Bridge & Popup
             const errStatusMsg = { type: 'JOIN_STATUS', success: false, message: data.message };
@@ -969,13 +981,38 @@ function cancelEpisodeLobby(reason) {
     clearEpisodeLobbyState();
     addLog(`Episode lobby cancelled: ${reason} for "${title}"`, 'warn');
 
+    const reasonKeys = {
+        'Timeout': 'LOBBY_CANCEL_TIMEOUT',
+        'Timeout (recovered)': 'LOBBY_CANCEL_TIMEOUT_RECOVERED',
+        'All other peers left': 'LOBBY_CANCEL_PEERS_LEFT',
+        'Timeout — not all peers loaded the episode': 'LOBBY_CANCEL_TIMEOUT_PEERS_LOAD',
+        'Cancelled by user': 'LOBBY_CANCEL_USER'
+    };
+
     // Chrome notification on failure (per Q2: only notify on failure)
-    chrome.notifications.create(`episode_${Date.now()}`, {
-        type: 'basic',
-        iconUrl: 'icons/icon128.png',
-        title: 'KoalaSync — Episode Sync Failed',
-        message: `Auto-sync cancelled: ${reason}. You may need to manually sync.`,
-        priority: 1
+    chrome.storage.sync.get(['browserNotifications', 'locale'], async (settings) => {
+        if (!settings.browserNotifications) return;
+
+        let lang = settings.locale;
+        if (!lang) {
+            const systemLang = (navigator.language || chrome.i18n.getUILanguage()).split('-')[0];
+            lang = SUPPORTED_LANGUAGES.includes(systemLang) ? systemLang : 'en';
+        }
+        await loadLocale(lang);
+
+        const reasonKey = reasonKeys[reason];
+        const localizedReason = reasonKey ? getMessage(reasonKey) : reason;
+
+        const titleText = getMessage('NOTIF_LOBBY_CANCEL_TITLE') || 'KoalaSync — Episode Sync Failed';
+        const messageText = getMessage('NOTIF_LOBBY_CANCEL_MSG', { reason: localizedReason }) || `Auto-sync cancelled: ${localizedReason}. You may need to manually sync.`;
+
+        chrome.notifications.create(`episode_${Date.now()}`, {
+            type: 'basic',
+            iconUrl: 'icons/icon128.png',
+            title: titleText,
+            message: messageText,
+            priority: 1
+        });
     });
 }
 

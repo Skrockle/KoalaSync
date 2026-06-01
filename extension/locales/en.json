@@ -1,7 +1,6 @@
 {
   "LANG_CODE": "en",
   "HTML_CLASS": "lang-en",
-
   "APP_TITLE": "KoalaSync",
   "TAB_ROOM": "Room",
   "TAB_ROOM_TOOLTIP": "Room settings and connection",
@@ -11,7 +10,6 @@
   "TAB_SETTINGS_TOOLTIP": "Extension preferences",
   "TAB_STATUS": "Status",
   "TAB_STATUS_TOOLTIP": "Advanced Diagnostics & Logs",
-
   "BTN_CREATE_ROOM": "+ Create New Room",
   "MANUAL_CONNECT_HEADER": "Manual Connect / Advanced",
   "LABEL_SERVER": "Server",
@@ -35,7 +33,6 @@
   "BTN_REFRESH": "REFRESH",
   "BTN_REFRESH_TOOLTIP": "Refresh the list of public rooms",
   "PUBLIC_ROOMS_REFRESHING": "Refreshing...",
-
   "LABEL_ACTIVE_ROOM": "Active Room",
   "LABEL_ACTIVE_ROOM_TOOLTIP": "The room you are currently connected to",
   "ACTIVE_ROOM_NONE": "NONE",
@@ -46,7 +43,6 @@
   "LABEL_PEERS_IN_ROOM_TOOLTIP": "Other users currently connected to this room",
   "NO_PEERS_CONNECTED": "No peers connected",
   "BTN_LEAVE_ROOM": "Leave Room",
-
   "LABEL_SELECT_VIDEO": "Select Video",
   "LABEL_SELECT_VIDEO_TOOLTIP": "Choose the browser tab containing the video to sync",
   "OPTION_SELECT_TAB": "-- Select a Tab --",
@@ -74,7 +70,6 @@
   "LOBBY_CONNECT_FIRST_DESC": "You need to join a room via an invite link or create a new one to sync videos.",
   "BTN_CREATE_ROOM_ALT": "Create New Room",
   "BTN_CREATE_ROOM_ALT_TOOLTIP": "Create a new random room and join it",
-
   "LABEL_USERNAME": "Your Username",
   "LABEL_USERNAME_TOOLTIP": "Username helps others identify you.",
   "PLACEHOLDER_USERNAME": "Anonymous Koala",
@@ -93,7 +88,6 @@
   "BTN_REGEN_ID": "Regenerate Peer ID",
   "BTN_REGEN_ID_TOOLTIP": "Regenerate your internal ID and reconnect",
   "REGEN_ID_DESC": "Use this if you see \"Duplicate Identity\" errors.",
-
   "LABEL_CONN_STATUS": "Connection Status",
   "LABEL_CONN_STATUS_TOOLTIP": "Current WebSocket connection state",
   "CONN_STATUS_DISCONNECTED": "Disconnected",
@@ -112,7 +106,6 @@
   "BTN_CLEAR": "CLEAR",
   "BTN_CLEAR_TOOLTIP": "Clear log output",
   "LABEL_GITHUB": "GitHub Repository",
-
   "BTN_ONBOARDING_SKIP": "Skip",
   "BTN_ONBOARDING_SKIP_TOOLTIP": "Skip the tutorial",
   "BTN_ONBOARDING_NEXT": "Next",
@@ -127,7 +120,6 @@
   "ONBOARDING_4_TEXT": "Pick a fun username so your friends know who you are.",
   "ONBOARDING_5_TITLE": "You're all set!",
   "ONBOARDING_5_TEXT": "Time to grab some popcorn. Enjoy watching together!",
-
   "ERR_CONN_TIMEOUT": "Connection timed out. Please try again.",
   "ERR_INVALID_SERVER_URL": "Invalid Server URL format.",
   "ERR_IDENTITY_NOT_LOADED": "Identity not yet loaded. Wait a moment and try again.",
@@ -142,13 +134,11 @@
   "TOAST_PEER_JOINED": "{name} joined the room",
   "TOAST_PEER_LEFT": "{name} left the room",
   "TOAST_PEER_ACTION": "{name} {action}",
-
   "STATUS_CONNECTED": "Connected",
   "STATUS_RECONNECTING": "Reconnecting...",
   "STATUS_CONNECTING": "Connecting...",
   "STATUS_FAILED": "Failed",
   "STATUS_DISCONNECTED": "Disconnected",
-
   "BTN_STATE_JOINING": "🚀 Joining...",
   "BTN_STATE_RECONNECTING": "🔄 Reconnecting...",
   "BTN_STATE_PLAYING": "▶ Playing...",
@@ -156,16 +146,13 @@
   "BTN_STATE_SYNCING_GROUP": "Syncing to group ({time})...",
   "BTN_STATE_SYNCING": "Syncing...",
   "BTN_STATE_SYNCED": "✅ Synced!",
-
   "NOTIF_PLAY": "started playback",
   "NOTIF_PAUSE": "paused playback",
   "NOTIF_SEEK": "seeked the video",
   "NOTIF_FORCE_PREPARE": "started force sync",
   "NOTIF_FORCE_EXECUTE": "synchronized everyone",
-
   "DEBUG_NO_TAB": "No target tab selected.",
   "DEBUG_COMM_FAIL": "Could not communicate with tab video.",
-
   "EMPTY_PEERS_TITLE": "No peers yet",
   "EMPTY_PEERS_HINT": "Share your invite link to get started",
   "EMPTY_HISTORY_TITLE": "No activity yet",
@@ -173,5 +160,21 @@
   "EMPTY_LOGS_TITLE": "No logs",
   "EMPTY_LOGS_HINT": "Connection events will appear here",
   "EMPTY_ROOMS_TITLE": "No active rooms",
-  "EMPTY_ROOMS_HINT": "Create a room or refresh to find public ones"
+  "EMPTY_ROOMS_HINT": "Create a room or refresh to find public ones",
+  "LABEL_YOU": "You",
+  "ONBOARDING_DONE": "Done!",
+  "LABEL_LOBBY_PEER_READY": "Ready",
+  "LABEL_LOBBY_PEER_LOADING": "Loading...",
+  "LABEL_PASSWORD_PROTECTED": "Password Protected",
+  "LABEL_PEERS_COUNT": "{count} peers",
+  "LABEL_CUSTOM_SERVER": "Custom Server",
+  "BTN_STATE_CREATING": "🚀 Creating Room...",
+  "NOTIF_LOBBY_CANCEL_TITLE": "KoalaSync — Episode Sync Failed",
+  "NOTIF_LOBBY_CANCEL_MSG": "Auto-sync cancelled: {reason}. You may need to manually sync.",
+  "LOBBY_CANCEL_TIMEOUT": "Timeout",
+  "LOBBY_CANCEL_TIMEOUT_RECOVERED": "Timeout (recovered)",
+  "LOBBY_CANCEL_PEERS_LEFT": "All other peers left",
+  "LOBBY_CANCEL_TIMEOUT_PEERS_LOAD": "Timeout — not all peers loaded the episode",
+  "LOBBY_CANCEL_USER": "Cancelled by user",
+  "NOTIF_ERROR_TITLE": "KoalaSync Error"
 }

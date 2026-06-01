@@ -1,7 +1,6 @@
 {
   "LANG_CODE": "pt-BR",
   "HTML_CLASS": "lang-pt-br",
-
   "APP_TITLE": "KoalaSync",
   "TAB_ROOM": "Sala",
   "TAB_ROOM_TOOLTIP": "Configurações da sala e conexão",
@@ -11,7 +10,6 @@
   "TAB_SETTINGS_TOOLTIP": "Preferências da extensão",
   "TAB_STATUS": "Status",
   "TAB_STATUS_TOOLTIP": "Diagnósticos avançados e logs",
-
   "BTN_CREATE_ROOM": "+ Criar nova sala",
   "MANUAL_CONNECT_HEADER": "Conexão manual / Avançado",
   "LABEL_SERVER": "Servidor",
@@ -35,7 +33,6 @@
   "BTN_REFRESH": "ATUALIZAR",
   "BTN_REFRESH_TOOLTIP": "Atualizar a lista de salas públicas",
   "PUBLIC_ROOMS_REFRESHING": "Atualizando...",
-
   "LABEL_ACTIVE_ROOM": "Sala ativa",
   "LABEL_ACTIVE_ROOM_TOOLTIP": "A sala à qual você está conectado no momento",
   "ACTIVE_ROOM_NONE": "NENHUMA",
@@ -46,7 +43,6 @@
   "LABEL_PEERS_IN_ROOM_TOOLTIP": "Outros usuários conectados atualmente a esta sala",
   "NO_PEERS_CONNECTED": "Sem participantes conectados",
   "BTN_LEAVE_ROOM": "Sair da sala",
-
   "LABEL_SELECT_VIDEO": "Selecionar vídeo",
   "LABEL_SELECT_VIDEO_TOOLTIP": "Escolha a aba do navegador contendo o vídeo a ser sincronizado",
   "OPTION_SELECT_TAB": "-- Selecione uma aba --",
@@ -74,7 +70,6 @@
   "LOBBY_CONNECT_FIRST_DESC": "Você precisa entrar em uma sala através de um link de convite ou criar uma nova para sincronizar vídeos.",
   "BTN_CREATE_ROOM_ALT": "Criar nova sala",
   "BTN_CREATE_ROOM_ALT_TOOLTIP": "Criar uma nova sala aleatória e entrar",
-
   "LABEL_USERNAME": "Seu nome de usuário",
   "LABEL_USERNAME_TOOLTIP": "O nome de usuário ajuda os outros a identificá-lo.",
   "PLACEHOLDER_USERNAME": "Coala anônimo",
@@ -93,7 +88,6 @@
   "BTN_REGEN_ID": "Regenerar ID de participante",
   "BTN_REGEN_ID_TOOLTIP": "Regenerar seu ID interno e conectar novamente",
   "REGEN_ID_DESC": "Use esta opção se notar erros de 'Identidade duplicada'.",
-
   "LABEL_CONN_STATUS": "Status da conexão",
   "LABEL_CONN_STATUS_TOOLTIP": "Status atual da conexão WebSocket",
   "CONN_STATUS_DISCONNECTED": "Desconectado",
@@ -112,7 +106,6 @@
   "BTN_CLEAR": "LIMPAR",
   "BTN_CLEAR_TOOLTIP": "Limpar a saída dos logs",
   "LABEL_GITHUB": "Repositório GitHub",
-
   "BTN_ONBOARDING_SKIP": "Pular",
   "BTN_ONBOARDING_SKIP_TOOLTIP": "Pular o tutorial",
   "BTN_ONBOARDING_NEXT": "Próximo",
@@ -127,7 +120,6 @@
   "ONBOARDING_4_TEXT": "Escolha um nome de usuário divertido para que seus amigos saibam quem você é.",
   "ONBOARDING_5_TITLE": "Tudo pronto!",
   "ONBOARDING_5_TEXT": "Hora de pegar a pipoca. Divirta-se assistindo com seus amigos!",
-
   "ERR_CONN_TIMEOUT": "Tempo limite de conexão esgotado. Tente novamente.",
   "ERR_INVALID_SERVER_URL": "Formato de URL do servidor inválido.",
   "ERR_IDENTITY_NOT_LOADED": "Identidade não carregada ainda. Aguarde um momento e tente novamente.",
@@ -142,13 +134,11 @@
   "TOAST_PEER_JOINED": "{name} entrou na sala",
   "TOAST_PEER_LEFT": "{name} saiu da sala",
   "TOAST_PEER_ACTION": "{name} {action}",
-
   "STATUS_CONNECTED": "Conectado",
   "STATUS_RECONNECTING": "Reconectando...",
   "STATUS_CONNECTING": "Conectando...",
   "STATUS_FAILED": "Falhou",
   "STATUS_DISCONNECTED": "Desconectado",
-
   "BTN_STATE_JOINING": "🚀 Entrando...",
   "BTN_STATE_RECONNECTING": "🔄 Reconectando...",
   "BTN_STATE_PLAYING": "▶ Reproduzindo...",
@@ -156,16 +146,13 @@
   "BTN_STATE_SYNCING_GROUP": "Sincronizando com o grupo ({time})...",
   "BTN_STATE_SYNCING": "Sincronizando...",
   "BTN_STATE_SYNCED": "✅ Sincronizado!",
-
   "NOTIF_PLAY": "iniciou a reprodução",
   "NOTIF_PAUSE": "pausou a reprodução",
   "NOTIF_SEEK": "mudou a posição do vídeo",
   "NOTIF_FORCE_PREPARE": "iniciou uma sincronização forçada",
   "NOTIF_FORCE_EXECUTE": "sincronizou todos",
-
   "DEBUG_NO_TAB": "Nenhuma aba alvo selecionada.",
   "DEBUG_COMM_FAIL": "Não foi possível comunicar com o vídeo da aba.",
-
   "EMPTY_PEERS_TITLE": "Nenhum participante ainda",
   "EMPTY_PEERS_HINT": "Compartilhe seu link de convite para começar",
   "EMPTY_HISTORY_TITLE": "Sem atividade ainda",
@@ -173,5 +160,21 @@
   "EMPTY_LOGS_TITLE": "Sem logs",
   "EMPTY_LOGS_HINT": "Os eventos de conexão aparecerão aqui",
   "EMPTY_ROOMS_TITLE": "Sem salas ativas",
-  "EMPTY_ROOMS_HINT": "Crie uma sala ou atualize para buscar salas públicas"
+  "EMPTY_ROOMS_HINT": "Crie uma sala ou atualize para buscar salas públicas",
+  "LABEL_YOU": "Você",
+  "ONBOARDING_DONE": "Concluído!",
+  "LABEL_LOBBY_PEER_READY": "Pronto",
+  "LABEL_LOBBY_PEER_LOADING": "Carregando...",
+  "LABEL_PASSWORD_PROTECTED": "Protegido por senha",
+  "LABEL_PEERS_COUNT": "{count} participantes",
+  "LABEL_CUSTOM_SERVER": "Servidor personalizado",
+  "BTN_STATE_CREATING": "🚀 Criando sala...",
+  "NOTIF_LOBBY_CANCEL_TITLE": "KoalaSync — Falha na sincronização do episódio",
+  "NOTIF_LOBBY_CANCEL_MSG": "Sincronização automática cancelada: {reason}. Pode ser necessário sincronizar manualmente.",
+  "LOBBY_CANCEL_TIMEOUT": "Tempo limite esgotado",
+  "LOBBY_CANCEL_TIMEOUT_RECOVERED": "Tempo limite esgotado (recuperado)",
+  "LOBBY_CANCEL_PEERS_LEFT": "Todos os outros participantes saíram",
+  "LOBBY_CANCEL_TIMEOUT_PEERS_LOAD": "Tempo limite esgotado — nem todos os participantes carregaram o episódio",
+  "LOBBY_CANCEL_USER": "Cancelado pelo usuário",
+  "NOTIF_ERROR_TITLE": "Erro do KoalaSync"
 }

@@ -1,7 +1,6 @@
 {
   "LANG_CODE": "fr",
   "HTML_CLASS": "lang-fr",
-
   "APP_TITLE": "KoalaSync",
   "TAB_ROOM": "Salon",
   "TAB_ROOM_TOOLTIP": "Paramètres de salon et connexion",
@@ -11,7 +10,6 @@
   "TAB_SETTINGS_TOOLTIP": "Préférences de l'extension",
   "TAB_STATUS": "Statut",
   "TAB_STATUS_TOOLTIP": "Diagnostics avancés & Journaux",
-
   "BTN_CREATE_ROOM": "+ Créer un nouveau salon",
   "MANUAL_CONNECT_HEADER": "Connexion manuelle / Avancé",
   "LABEL_SERVER": "Serveur",
@@ -35,7 +33,6 @@
   "BTN_REFRESH": "ACTUALISER",
   "BTN_REFRESH_TOOLTIP": "Actualiser la liste des salons publics",
   "PUBLIC_ROOMS_REFRESHING": "Actualisation...",
-
   "LABEL_ACTIVE_ROOM": "Salon actif",
   "LABEL_ACTIVE_ROOM_TOOLTIP": "Le salon auquel vous êtes actuellement connecté",
   "ACTIVE_ROOM_NONE": "AUCUN",
@@ -46,7 +43,6 @@
   "LABEL_PEERS_IN_ROOM_TOOLTIP": "Autres utilisateurs connectés à ce salon",
   "NO_PEERS_CONNECTED": "Aucun membre connecté",
   "BTN_LEAVE_ROOM": "Quitter le salon",
-
   "LABEL_SELECT_VIDEO": "Choisir une vidéo",
   "LABEL_SELECT_VIDEO_TOOLTIP": "Choisissez l'onglet du navigateur contenant la vidéo à synchroniser",
   "OPTION_SELECT_TAB": "-- Choisir un onglet --",
@@ -74,7 +70,6 @@
   "LOBBY_CONNECT_FIRST_DESC": "Vous devez rejoindre un salon via un lien d'invitation ou en créer un nouveau pour synchroniser des vidéos.",
   "BTN_CREATE_ROOM_ALT": "Créer un nouveau salon",
   "BTN_CREATE_ROOM_ALT_TOOLTIP": "Créer un salon aléatoire et le rejoindre",
-
   "LABEL_USERNAME": "Votre pseudo",
   "LABEL_USERNAME_TOOLTIP": "Votre pseudo permet aux autres de vous identifier.",
   "PLACEHOLDER_USERNAME": "Koala anonyme",
@@ -93,7 +88,6 @@
   "BTN_REGEN_ID": "Régénérer l'identifiant",
   "BTN_REGEN_ID_TOOLTIP": "Régénérer votre identifiant interne et vous reconnecter",
   "REGEN_ID_DESC": "Utilisez cette option si vous rencontrez des erreurs de 'Double identité'.",
-
   "LABEL_CONN_STATUS": "Statut de la connexion",
   "LABEL_CONN_STATUS_TOOLTIP": "Statut actuel de la connexion WebSocket",
   "CONN_STATUS_DISCONNECTED": "Déconnecté",
@@ -112,7 +106,6 @@
   "BTN_CLEAR": "EFFACER",
   "BTN_CLEAR_TOOLTIP": "Effacer la sortie des journaux",
   "LABEL_GITHUB": "Dépôt GitHub",
-
   "BTN_ONBOARDING_SKIP": "Passer",
   "BTN_ONBOARDING_SKIP_TOOLTIP": "Passer le didacticiel",
   "BTN_ONBOARDING_NEXT": "Suivant",
@@ -127,7 +120,6 @@
   "ONBOARDING_4_TEXT": "Choisissez un pseudo sympa pour que vos amis sachent qui vous êtes.",
   "ONBOARDING_5_TITLE": "Vous êtes prêt !",
   "ONBOARDING_5_TEXT": "Il est temps de préparer le pop-corn. Bon visionnage !",
-
   "ERR_CONN_TIMEOUT": "Délai de connexion dépassé. Veuillez réessayer.",
   "ERR_INVALID_SERVER_URL": "Format d'adresse de serveur non valide.",
   "ERR_IDENTITY_NOT_LOADED": "Identifiant non encore chargé. Veuillez patienter et réessayer.",
@@ -142,13 +134,11 @@
   "TOAST_PEER_JOINED": "{name} a rejoint le salon",
   "TOAST_PEER_LEFT": "{name} a quitté le salon",
   "TOAST_PEER_ACTION": "{name} a {action}",
-
   "STATUS_CONNECTED": "Connecté",
   "STATUS_RECONNECTING": "Reconnexion...",
   "STATUS_CONNECTING": "Connexion...",
   "STATUS_FAILED": "Échec",
   "STATUS_DISCONNECTED": "Déconnecté",
-
   "BTN_STATE_JOINING": "🚀 Connexion...",
   "BTN_STATE_RECONNECTING": "🔄 Reconnexion...",
   "BTN_STATE_PLAYING": "▶ Lecture...",
@@ -156,16 +146,13 @@
   "BTN_STATE_SYNCING_GROUP": "Synchro au groupe ({time})...",
   "BTN_STATE_SYNCING": "Synchronisation...",
   "BTN_STATE_SYNCED": "✅ Synchronisé !",
-
   "NOTIF_PLAY": "lancé la lecture",
   "NOTIF_PAUSE": "mis la lecture en pause",
   "NOTIF_SEEK": "déplacé la position dans la vidéo",
   "NOTIF_FORCE_PREPARE": "lancé une synchronisation forcée",
   "NOTIF_FORCE_EXECUTE": "synchronisé tout le monde",
-
   "DEBUG_NO_TAB": "Aucun onglet cible sélectionné.",
   "DEBUG_COMM_FAIL": "Impossible de communiquer avec l'onglet vidéo.",
-
   "EMPTY_PEERS_TITLE": "Aucun membre pour l'instant",
   "EMPTY_PEERS_HINT": "Partagez votre lien d'invitation pour commencer",
   "EMPTY_HISTORY_TITLE": "Aucune activité pour l'instant",
@@ -173,5 +160,21 @@
   "EMPTY_LOGS_TITLE": "Aucun journal",
   "EMPTY_LOGS_HINT": "Les événements de connexion s'afficheront ici",
   "EMPTY_ROOMS_TITLE": "Aucun salon actif",
-  "EMPTY_ROOMS_HINT": "Créez un salon ou actualisez pour trouver des salons publics"
+  "EMPTY_ROOMS_HINT": "Créez un salon ou actualisez pour trouver des salons publics",
+  "LABEL_YOU": "Vous",
+  "ONBOARDING_DONE": "Terminé !",
+  "LABEL_LOBBY_PEER_READY": "Prêt",
+  "LABEL_LOBBY_PEER_LOADING": "Chargement...",
+  "LABEL_PASSWORD_PROTECTED": "Protégé par mot de passe",
+  "LABEL_PEERS_COUNT": "{count} membres",
+  "LABEL_CUSTOM_SERVER": "Serveur personnalisé",
+  "BTN_STATE_CREATING": "🚀 Création de la salle...",
+  "NOTIF_LOBBY_CANCEL_TITLE": "KoalaSync — Échec de la synchronisation de l'épisode",
+  "NOTIF_LOBBY_CANCEL_MSG": "Synchronisation automatique annulée : {reason}. Vous devrez peut-être synchroniser manuellement.",
+  "LOBBY_CANCEL_TIMEOUT": "Délai d'attente dépassé",
+  "LOBBY_CANCEL_TIMEOUT_RECOVERED": "Délai dépassé (récupéré)",
+  "LOBBY_CANCEL_PEERS_LEFT": "Tous les autres membres sont partis",
+  "LOBBY_CANCEL_TIMEOUT_PEERS_LOAD": "Délai dépassé — tous les membres n'ont pas chargé l'épisode",
+  "LOBBY_CANCEL_USER": "Annulé par l'utilisateur",
+  "NOTIF_ERROR_TITLE": "Erreur KoalaSync"
 }

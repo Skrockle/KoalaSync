@@ -1,7 +1,6 @@
 {
   "LANG_CODE": "ru",
   "HTML_CLASS": "lang-ru",
-
   "APP_TITLE": "KoalaSync",
   "TAB_ROOM": "Комната",
   "TAB_ROOM_TOOLTIP": "Настройки комнаты и подключение",
@@ -11,7 +10,6 @@
   "TAB_SETTINGS_TOOLTIP": "Настройки расширения",
   "TAB_STATUS": "Статус",
   "TAB_STATUS_TOOLTIP": "Дополнительная диагностика и журналы",
-
   "BTN_CREATE_ROOM": "+ Создать комнату",
   "MANUAL_CONNECT_HEADER": "Ручное подключение / Дополнительно",
   "LABEL_SERVER": "Сервер",
@@ -35,7 +33,6 @@
   "BTN_REFRESH": "ОБНОВИТЬ",
   "BTN_REFRESH_TOOLTIP": "Обновить список публичных комнат",
   "PUBLIC_ROOMS_REFRESHING": "Обновление...",
-
   "LABEL_ACTIVE_ROOM": "Активная комната",
   "LABEL_ACTIVE_ROOM_TOOLTIP": "Комната, к которой вы сейчас подключены",
   "ACTIVE_ROOM_NONE": "НЕТ",
@@ -46,7 +43,6 @@
   "LABEL_PEERS_IN_ROOM_TOOLTIP": "Другие пользователи, подключенные к этой комнате",
   "NO_PEERS_CONNECTED": "Нет подключенных участников",
   "BTN_LEAVE_ROOM": "Выйти из комнаты",
-
   "LABEL_SELECT_VIDEO": "Выбрать видео",
   "LABEL_SELECT_VIDEO_TOOLTIP": "Выберите вкладку браузера, содержащую видео для синхронизации",
   "OPTION_SELECT_TAB": "-- Выберите вкладку --",
@@ -74,7 +70,6 @@
   "LOBBY_CONNECT_FIRST_DESC": "Вам необходимо войти в комнату по ссылке-приглашению или создать новую, чтобы синхронизировать видео.",
   "BTN_CREATE_ROOM_ALT": "Создать новую комнату",
   "BTN_CREATE_ROOM_ALT_TOOLTIP": "Создать новую случайную комнату и войти",
-
   "LABEL_USERNAME": "Ваше имя пользователя",
   "LABEL_USERNAME_TOOLTIP": "Имя пользователя помогает другим узнать вас.",
   "PLACEHOLDER_USERNAME": "Анонимный Коала",
@@ -93,7 +88,6 @@
   "BTN_REGEN_ID": "Сбросить Peer ID",
   "BTN_REGEN_ID_TOOLTIP": "Сбросить ваш внутренний идентификатор и переподключиться",
   "REGEN_ID_DESC": "Используйте при появлении ошибок дублирования идентификации.",
-
   "LABEL_CONN_STATUS": "Статус подключения",
   "LABEL_CONN_STATUS_TOOLTIP": "Текущий статус WebSocket-соединения с сервером",
   "CONN_STATUS_DISCONNECTED": "Отключено",
@@ -112,7 +106,6 @@
   "BTN_CLEAR": "ОЧИСТИТЬ",
   "BTN_CLEAR_TOOLTIP": "Очистить вывод логов",
   "LABEL_GITHUB": "Репозиторий GitHub",
-
   "BTN_ONBOARDING_SKIP": "Пропустить",
   "BTN_ONBOARDING_SKIP_TOOLTIP": "Пропустить руководство",
   "BTN_ONBOARDING_NEXT": "Далее",
@@ -127,7 +120,6 @@
   "ONBOARDING_4_TEXT": "Введите имя пользователя, чтобы друзья знали, кто совершает действия.",
   "ONBOARDING_5_TITLE": "Всё готово!",
   "ONBOARDING_5_TEXT": "Время готовить попкорн. Приятного совместного просмотра!",
-
   "ERR_CONN_TIMEOUT": "Время ожидания подключения истекло. Пожалуйста, попробуйте снова.",
   "ERR_INVALID_SERVER_URL": "Неверный формат URL-адреса сервера.",
   "ERR_IDENTITY_NOT_LOADED": "Идентификатор еще не загружен. Подождите немного и повторите попытку.",
@@ -142,13 +134,11 @@
   "TOAST_PEER_JOINED": "{name} вошел в комнату",
   "TOAST_PEER_LEFT": "{name} вышел из комнаты",
   "TOAST_PEER_ACTION": "{name}: {action}",
-
   "STATUS_CONNECTED": "Подключено",
   "STATUS_RECONNECTING": "Переподключение...",
   "STATUS_CONNECTING": "Подключение...",
   "STATUS_FAILED": "Ошибка",
   "STATUS_DISCONNECTED": "Отключено",
-
   "BTN_STATE_JOINING": "🚀 Вход...",
   "BTN_STATE_RECONNECTING": "🔄 Переподключение...",
   "BTN_STATE_PLAYING": "▶ Запуск...",
@@ -156,16 +146,13 @@
   "BTN_STATE_SYNCING_GROUP": "Синхронизация по группе ({time})...",
   "BTN_STATE_SYNCING": "Синхронизация...",
   "BTN_STATE_SYNCED": "✅ Синхронно!",
-
   "NOTIF_PLAY": "запустил воспроизведение",
   "NOTIF_PAUSE": "приостановил воспроизведение",
   "NOTIF_SEEK": "перемотал видео",
   "NOTIF_FORCE_PREPARE": "запустил принудительный синхрон",
   "NOTIF_FORCE_EXECUTE": "синхронизировал воспроизведение у всех",
-
   "DEBUG_NO_TAB": "Целевая вкладка не выбрана.",
   "DEBUG_COMM_FAIL": "Не удалось связаться с плеером на вкладке.",
-
   "EMPTY_PEERS_TITLE": "Участников пока нет",
   "EMPTY_PEERS_HINT": "Поделитесь ссылкой-приглашением, чтобы начать",
   "EMPTY_HISTORY_TITLE": "История действий пуста",
@@ -173,5 +160,21 @@
   "EMPTY_LOGS_TITLE": "Журнал пуст",
   "EMPTY_LOGS_HINT": "События подключения будут отображаться здесь",
   "EMPTY_ROOMS_TITLE": "Нет активных комнат",
-  "EMPTY_ROOMS_HINT": "Создайте комнату или обновите список, чтобы найти публичные"
+  "EMPTY_ROOMS_HINT": "Создайте комнату или обновите список, чтобы найти публичные",
+  "LABEL_YOU": "Вы",
+  "ONBOARDING_DONE": "Готово!",
+  "LABEL_LOBBY_PEER_READY": "Готов",
+  "LABEL_LOBBY_PEER_LOADING": "Загрузка...",
+  "LABEL_PASSWORD_PROTECTED": "Защищено паролем",
+  "LABEL_PEERS_COUNT": "{count} участников",
+  "LABEL_CUSTOM_SERVER": "Свой сервер",
+  "BTN_STATE_CREATING": "🚀 Создание комнаты...",
+  "NOTIF_LOBBY_CANCEL_TITLE": "KoalaSync — Ошибка синхронизации серии",
+  "NOTIF_LOBBY_CANCEL_MSG": "Автосинхронизация отменена: {reason}. Возможно, вам придется выполнить синхронизацию вручную.",
+  "LOBBY_CANCEL_TIMEOUT": "Время ожидания истекло",
+  "LOBBY_CANCEL_TIMEOUT_RECOVERED": "Время ожидания истекло (восстановлено)",
+  "LOBBY_CANCEL_PEERS_LEFT": "Все остальные участники вышли",
+  "LOBBY_CANCEL_TIMEOUT_PEERS_LOAD": "Время ожидания истекло — не все участники загрузили серию",
+  "LOBBY_CANCEL_USER": "Отменено пользователем",
+  "NOTIF_ERROR_TITLE": "Ошибка KoalaSync"
 }
