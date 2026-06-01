@@ -351,6 +351,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 badgeDe.textContent = `v${version} JETZT VERFÜGBAR • ${relativeTimeDe}`;
             }
 
+            document.querySelectorAll('.mockup-version').forEach(el => {
+                el.textContent = `v${version}`;
+            });
+
             // Update Schema.org structured data dynamically
             const schemaScript = document.getElementById('schema-software');
             if (schemaScript) {
