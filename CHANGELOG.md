@@ -16,7 +16,7 @@ All notable changes to the KoalaSync browser extension and relay server.
 
 ---
 
-## [v2.0.0] — 2026-05-31
+## [v2.0.0] — 2026-06-01
 
 ### 🌍 Multi-Language Extension (Biggest Feature!)
 - **6-Language UI**: The browser extension is now fully translated into **English, German, French, Spanish, Portuguese (Brazilian), and Russian**. Switch languages instantly in Settings without reload.
@@ -36,7 +36,7 @@ All notable changes to the KoalaSync browser extension and relay server.
 
 ---
 
-## [v1.9.3] — 2026-05-23
+## [v1.9.3] — 2026-05-30
 
 ### Fixed
 - Smart disconnect handling when leaving rooms
@@ -52,7 +52,7 @@ All notable changes to the KoalaSync browser extension and relay server.
 
 ---
 
-## [v1.9.0] — 2026-05-18
+## [v1.9.0] — 2026-05-28
 
 ### Changed
 - **Episode-Aware Sync**: Command sequencing with smarter episode transition detection and echo suppression for smoother series binges.
