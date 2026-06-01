@@ -4,8 +4,8 @@ This document tracks which streaming platforms and media servers have been teste
 
 | Service | Sync Works | Media Title | Episode Auto-Sync | Notes |
 |---------|:----------:|:-----------:|:-----------------:|-------|
-| **YouTube** | ✅ Full | ✅ Full | ✅ Full | Best-in-class support. Native player API, reliable title detection. |
-| **Twitch** | ✅ Full | ✅ Full | N/A | Live-only platform. Tested on regular streams. |
+| **YouTube** | ✅ Full | ✅ Full | ❌ | Best-in-class support. Native player API, reliable title detection. |
+| **Twitch** | ✅ Full | ✅ Full | ❌ | Live-only platform. Tested on regular streams. |
 | **Netflix** | ✅ Full | ⚠️ Hidden | ⚠️ Manual | Sync works perfectly, but DRM prevents media title detection. Episode transitions may require manual lobby. |
 | **Emby** | ✅ Full | ✅ Full | ✅ Full | Self-hosted. Full HTML5 player access. |
 | **Jellyfin** | ✅ Full | ✅ Full | ✅ Full | Self-hosted. Full HTML5 player access. |
@@ -17,7 +17,6 @@ This document tracks which streaming platforms and media servers have been teste
 | **Vimeo** | Not tested | Not tested | Not tested | — |
 | **Dailymotion** | Not tested | Not tested | Not tested | — |
 | **ARD / ZDF Mediathek** | Not tested | Not tested | Not tested | German public broadcasters. HTML5 players expected to work. |
-| **Spotify (Web Player)** | ❌ N/A | N/A | N/A | Audio-only platform. KoalaSync targets `<video>` elements. |
 
 ## Legend
 
