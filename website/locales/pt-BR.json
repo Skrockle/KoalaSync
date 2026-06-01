@@ -126,8 +126,8 @@
   "FAQ_A4": "Google Chrome, Mozilla Firefox, Microsoft Edge, Opera, Brave e todos os navegadores baseados em Chromium. Instale diretamente da Chrome Web Store ou das extensões do Firefox.",
   "FAQ_Q5": "Todos os meus amigos precisam instalar a extensão?",
   "FAQ_A5": "Sim, cada participante precisa do KoalaSync — mas sem cadastro ou criação de conta. Basta clicar no link de convite, instalar a extensão se necessário e você entra na sala automaticamente.",
-  "FAQ_Q6": "Meus dados estão seguros? Vocês rastreiam ou armazenam o que eu assisto?",
-  "FAQ_A6": "Não. O servidor relay do KoalaSync é apenas RAM — todos os dados da sessão são excluídos quando você sai da sala. Sem banco de dados, sem registros, sem análises, sem contas de usuário. O código fonte é totalmente aberto e auditável no GitHub.",
+  "FAQ_Q6": "Meus dados estão seguros? E se eu não confiar no servidor oficial?",
+  "FAQ_A6": "Totalmente seguro. O servidor relay do KoalaSync opera apenas em RAM — todos os dados da sessão são excluídos ao sair da sala. Sem banco de dados, sem registros, sem análises, sem contas. Se preferir controle total: hospede seu próprio servidor relay privado via Docker em minutos. O código fonte é totalmente aberto e auditável no GitHub.",
   
   "FOOTER_MIT": "Código aberto sob a Licença MIT.",
   "FOOTER_RAM": "Nenhum dado é armazenado em nossos servidores. Retransmissão apenas em RAM.",
