@@ -88,6 +88,8 @@ To connect your extension to a self-hosted server, open the popup → **Room** t
 
 > **⚠️ Note**: `ws://` only works for `localhost`. If you deploy to a real domain, you **must** use `wss://` (e.g., `wss://sync.yourdomain.com`). This requires a TLS-terminating reverse proxy (e.g., Caddy, Nginx, or Traefik) in front of the relay server. See [Caddyfile.example](Caddyfile.example) for a production-ready template.
 
+To verify your relay is reachable from outside, visit `https://your-domain.com` in a browser — it should return `{"status":"online","service":"KoalaSync Relay"}`.
+
 ---
 
 ### 🌐 Localization & Translations
