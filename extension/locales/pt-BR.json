@@ -26,7 +26,7 @@
   "LABEL_PASSWORD_TOOLTIP": "Senha opcional para restringir o acesso à sala",
   "PLACEHOLDER_PASSWORD": "Senha da sala (opcional)",
   "PLACEHOLDER_PASSWORD_TOOLTIP": "Senha para a sala (deixe em branco se não houver)",
-  "BTN_JOIN_ROOM": "Entrar na sala",
+  "BTN_JOIN_ROOM": "Entrar / Criar sala",
   "BTN_JOIN_ROOM_TOOLTIP": "Conectar à sala",
   "LABEL_PUBLIC_ROOMS": "Salas públicas",
   "LABEL_PUBLIC_ROOMS_TOOLTIP": "Lista de salas públicas disponíveis neste servidor",

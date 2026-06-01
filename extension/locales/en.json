@@ -26,7 +26,7 @@
   "LABEL_PASSWORD_TOOLTIP": "Optional password to restrict room access",
   "PLACEHOLDER_PASSWORD": "Room Password (optional)",
   "PLACEHOLDER_PASSWORD_TOOLTIP": "Password for the room (leave empty if none)",
-  "BTN_JOIN_ROOM": "Join Room",
+  "BTN_JOIN_ROOM": "Join / Create Room",
   "BTN_JOIN_ROOM_TOOLTIP": "Connect to the room",
   "LABEL_PUBLIC_ROOMS": "Public Rooms",
   "LABEL_PUBLIC_ROOMS_TOOLTIP": "List of publicly available rooms on this server",

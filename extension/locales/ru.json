@@ -26,7 +26,7 @@
   "LABEL_PASSWORD_TOOLTIP": "Дополнительный пароль для ограничения доступа к комнате",
   "PLACEHOLDER_PASSWORD": "Пароль комнаты (опционально)",
   "PLACEHOLDER_PASSWORD_TOOLTIP": "Пароль от комнаты (оставьте пустым, если его нет)",
-  "BTN_JOIN_ROOM": "Войти в комнату",
+  "BTN_JOIN_ROOM": "Войти / Создать комнату",
   "BTN_JOIN_ROOM_TOOLTIP": "Подключиться к комнате",
   "LABEL_PUBLIC_ROOMS": "Публичные комнаты",
   "LABEL_PUBLIC_ROOMS_TOOLTIP": "Список публично доступных комнат на этом сервере",

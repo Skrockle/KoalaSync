@@ -26,7 +26,7 @@
   "LABEL_PASSWORD_TOOLTIP": "Mot de passe optionnel pour restreindre l'accès au salon",
   "PLACEHOLDER_PASSWORD": "Mot de passe du salon (optionnel)",
   "PLACEHOLDER_PASSWORD_TOOLTIP": "Mot de passe du salon (laisser vide si aucun)",
-  "BTN_JOIN_ROOM": "Rejoindre le salon",
+  "BTN_JOIN_ROOM": "Rejoindre / Créer le salon",
   "BTN_JOIN_ROOM_TOOLTIP": "Se connecter au salon",
   "LABEL_PUBLIC_ROOMS": "Salons publics",
   "LABEL_PUBLIC_ROOMS_TOOLTIP": "Liste des salons publics disponibles sur ce serveur",

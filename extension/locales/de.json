@@ -26,7 +26,7 @@
   "LABEL_PASSWORD_TOOLTIP": "Optionales Passwort, um den Raumzugang zu beschränken",
   "PLACEHOLDER_PASSWORD": "Raum-Passwort (optional)",
   "PLACEHOLDER_PASSWORD_TOOLTIP": "Passwort für den Raum (leer lassen, wenn keines vorhanden)",
-  "BTN_JOIN_ROOM": "Raum beitreten",
+  "BTN_JOIN_ROOM": "Raum beitreten / erstellen",
   "BTN_JOIN_ROOM_TOOLTIP": "Mit dem Raum verbinden",
   "LABEL_PUBLIC_ROOMS": "Öffentliche Räume",
   "LABEL_PUBLIC_ROOMS_TOOLTIP": "Liste der öffentlich verfügbaren Räume auf diesem Server",

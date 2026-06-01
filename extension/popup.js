@@ -59,6 +59,7 @@ let localPeerId = null;
 let lastPeersJson = null;
 let lastKnownPeers = [];
 let isDevTabVisible = false;
+let reconnectSlowMode = false;
 let joinBtnTimeout = null;
 let forceSyncResetTimer = null;
 let popupIntervals = [];
@@ -128,6 +129,7 @@ async function init() {
         }
         if (res) {
             localPeerId = res.peerId;
+            reconnectSlowMode = res.reconnectSlowMode || false;
             applyConnectionStatus(res.status);
             updatePeerList(res.peers);
             lastKnownPeers = res.peers || [];
@@ -671,10 +673,9 @@ function applyConnectionStatus(status) {
     const connected = status === 'connected';
     const connecting = status === 'connecting';
     const reconnecting = status === 'reconnecting';
-    const failed = status === 'reconnect_failed';
 
     if (elements.connDot) {
-        elements.connDot.className = 'status-dot ' + (connected ? 'status-online' : (failed ? 'status-offline' : ((connecting || reconnecting) ? 'status-online' : 'status-offline')));
+        elements.connDot.className = 'status-dot ' + (connected ? 'status-online' : ((connecting || reconnecting) ? 'status-online' : 'status-offline'));
         
         if (reconnecting) {
             elements.connDot.style.background = '#f59e0b';
@@ -682,7 +683,7 @@ function applyConnectionStatus(status) {
         } else if (connecting) {
             elements.connDot.style.background = '#fbbf24';
             elements.connDot.style.boxShadow = '0 0 8px #fbbf24';
-        } else if (failed) {
+        } else if (!connected) {
             elements.connDot.style.background = '#ef4444';
             elements.connDot.style.boxShadow = 'none';
         } else {
@@ -692,15 +693,15 @@ function applyConnectionStatus(status) {
     }
 
     if (elements.connText) {
-        elements.connText.textContent = connected ? getMessage('STATUS_CONNECTED') : (reconnecting ? getMessage('STATUS_RECONNECTING') : (connecting ? getMessage('STATUS_CONNECTING') : (failed ? getMessage('STATUS_FAILED') : getMessage('STATUS_DISCONNECTED'))));
+        elements.connText.textContent = connected ? getMessage('STATUS_CONNECTED') : (reconnecting ? getMessage('STATUS_RECONNECTING') : (connecting ? getMessage('STATUS_CONNECTING') : getMessage('STATUS_DISCONNECTED')));
     }
     if (elements.retryBtn) {
-        elements.retryBtn.style.display = failed ? 'block' : 'none';
+        elements.retryBtn.style.display = reconnecting && reconnectSlowMode ? 'block' : 'none';
     }
 
     if (elements.joinBtn) {
         if (connecting || reconnecting) {
-            elements.joinBtn.disabled = true;
+            elements.joinBtn.disabled = !reconnectSlowMode;
             elements.joinBtn.textContent = connecting ? getMessage('BTN_STATE_JOINING') : getMessage('BTN_STATE_RECONNECTING');
         } else {
             elements.joinBtn.disabled = false;
@@ -858,9 +859,12 @@ function setServerMode(custom) {
     elements.serverOfficial.classList.toggle('active', !custom);
     elements.serverCustom.classList.toggle('active', custom);
     elements.serverUrl.style.display = custom ? 'block' : 'none';
-    chrome.storage.sync.get(['useCustomServer'], (data) => {
+    chrome.storage.sync.get(['useCustomServer', 'serverUrl'], (data) => {
         if (data.useCustomServer !== custom) {
             chrome.storage.sync.set({ useCustomServer: custom });
+            if (!custom || data.serverUrl) {
+                chrome.runtime.sendMessage({ type: 'RETRY_CONNECT' });
+            }
         }
     });
 }
@@ -918,6 +922,9 @@ elements.serverUrl.addEventListener('change', () => {
         url = 'ws://' + url;
         elements.serverUrl.value = url;
         chrome.storage.sync.set({ serverUrl: url });
+    }
+    if (elements.serverCustom.classList.contains('active') && url) {
+        chrome.runtime.sendMessage({ type: 'RETRY_CONNECT' });
     }
 });
 
@@ -993,6 +1000,12 @@ elements.joinBtn.addEventListener('click', async () => {
     const useCustom = elements.serverCustom.classList.contains('active');
 
     // Proactive URL Validation
+    if (useCustom && !serverUrl) {
+        showError(getMessage('ERR_INVALID_SERVER_URL'));
+        elements.joinBtn.disabled = false;
+        elements.joinBtn.textContent = getMessage('BTN_JOIN_ROOM');
+        return;
+    }
     if (useCustom && serverUrl) {
         try {
             const urlToCheck = serverUrl.includes('://') ? serverUrl : 'ws://' + serverUrl;
@@ -1008,7 +1021,7 @@ elements.joinBtn.addEventListener('click', async () => {
     const roomId = roomIdInput || Math.random().toString(36).substring(2, 8).toUpperCase();
     const password = elements.password.value;
 
-    await chrome.storage.sync.set({ serverUrl, roomId, password });
+    await chrome.storage.sync.set({ serverUrl, roomId, password, useCustomServer: useCustom });
     elements.roomId.value = roomId;
 
     // Tell background to connect
@@ -1338,20 +1351,25 @@ chrome.runtime.onMessage.addListener((msg) => {
         updatePeerList(msg.peers);
         if (msg.peers) detectPeerChanges(msg.peers);
     } else if (msg.type === 'CONNECTION_STATUS') {
-        applyConnectionStatus(msg.status);
+        if (msg.status !== 'reconnecting') {
+            applyConnectionStatus(msg.status);
+            reconnectSlowMode = false;
+        }
         if (msg.status === 'connected') {
             chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (res) => {
                 if (res && res.peers) updatePeerList(res.peers);
                 if (res && res.lastActionState) updateLastActionUI(res.lastActionState, res.peers);
             });
         }
-        if (msg.status === 'disconnected' || msg.status === 'reconnect_failed') {
+        if (msg.status === 'disconnected') {
             elements.joinBtn.disabled = false;
-            elements.joinBtn.textContent = 'Join Room';
+            elements.joinBtn.textContent = getMessage('BTN_JOIN_ROOM');
         }
         if (msg.status === 'reconnecting') {
             chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (res) => {
                 if (chrome.runtime.lastError) return;
+                if (res && res.reconnectSlowMode !== undefined) reconnectSlowMode = res.reconnectSlowMode;
+                applyConnectionStatus(msg.status);
                 if (res && res.reconnectAttempts !== undefined) {
                     if (elements.connText) {
                         elements.connText.textContent = `Reconnecting... (${res.reconnectAttempts})`;
