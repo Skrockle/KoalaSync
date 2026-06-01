@@ -138,6 +138,7 @@ let reconnectTimer = null;
 let reconnectStartTime = null;
 let reconnectFailed = false;
 let reconnectAttempts = 0;
+let currentServerUrl = null;
 const MAX_RECONNECT_ATTEMPTS = 20;
 const _RECONNECT_BASE_DELAY = 500;
 const _RECONNECT_MAX_DELAY = 5000;
@@ -272,6 +273,10 @@ function addLog(message, type = 'info') {
 }
 
 // --- WebSocket Client ---
+function resolveServerUrl(settings) {
+    return (settings.serverUrl && settings.useCustomServer) ? settings.serverUrl : OFFICIAL_SERVER_URL;
+}
+
 function forceDisconnect() {
     if (reconnectTimer) {
         clearTimeout(reconnectTimer);
@@ -294,6 +299,7 @@ function forceDisconnect() {
         socket.close();
         socket = null;
     }
+    currentServerUrl = null;
     isConnecting = false;
     isNamespaceJoined = false;
     isForceSyncInitiator = false;
@@ -376,6 +382,8 @@ async function connect() {
         }
 
         addLog(`Connecting to ${isCustomServer ? finalUrl : 'Official Server'}... (attempt ${reconnectAttempts + 1})`, 'info');
+
+        currentServerUrl = finalUrl;
 
         // --- Phase 4: WebSocket Init ---
         try {
@@ -1230,8 +1238,20 @@ async function handleAsyncMessage(message, sender, sendResponse) {
         if (settings.roomId) {
             leaveOldRoomIfSwitching(settings.roomId);
         }
-        forceDisconnect();
-        connect();
+        const desiredUrl = resolveServerUrl(settings);
+        if (desiredUrl !== currentServerUrl || !socket || socket.readyState !== WebSocket.OPEN || !isNamespaceJoined) {
+            if (desiredUrl !== currentServerUrl) forceDisconnect();
+            connect();
+        } else if (settings.roomId) {
+            emit(EVENTS.JOIN_ROOM, { 
+                roomId: settings.roomId, 
+                password: settings.password,
+                peerId,
+                username: settings.username,
+                tabTitle: currentTabTitle,
+                protocolVersion: PROTOCOL_VERSION
+            });
+        }
         sendResponse({ status: 'ok' });
     } else if (message.type === 'RETRY_CONNECT') {
         reconnectFailed = false;
@@ -1306,8 +1326,21 @@ async function handleAsyncMessage(message, sender, sendResponse) {
             chrome.storage.session.set({ reconnectFailed: false, reconnectAttempts: 0, reconnectStartTime: null });
             broadcastConnectionStatus('connecting');
             leaveOldRoomIfSwitching(roomId);
-            forceDisconnect();
-            connect();
+            const settings = await getSettings();
+            const desiredUrl = resolveServerUrl(settings);
+            if (desiredUrl !== currentServerUrl || !socket || socket.readyState !== WebSocket.OPEN || !isNamespaceJoined) {
+                if (desiredUrl !== currentServerUrl) forceDisconnect();
+                connect();
+            } else {
+                emit(EVENTS.JOIN_ROOM, { 
+                    roomId, 
+                    password,
+                    peerId,
+                    username: settings.username,
+                    tabTitle: currentTabTitle,
+                    protocolVersion: PROTOCOL_VERSION
+                });
+            }
             addLog(`Joining room via link: ${roomId}`, 'info');
             sendResponse({ status: 'ok' });
         });

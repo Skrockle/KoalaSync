@@ -19,7 +19,9 @@ export const USERNAME_ADJECTIVES = [
     'Happy', 'Cool', 'Fast', 'Smart', 'Brave', 'Calm', 'Sneaky', 'Lazy',
     'Wild', 'Chill', 'Lucky', 'Epic', 'Swift', 'Bold', 'Mighty',
     'Cosmic', 'Neon', 'Shadow', 'Crystal', 'Thunder', 'Silent', 'Golden',
-    'Fierce', 'Noble', 'Mystic', 'Frozen', 'Blazing', 'Sapphire', 'Iron', 'Crimson'
+    'Fierce', 'Noble', 'Mystic', 'Frozen', 'Blazing', 'Sapphire', 'Iron', 'Crimson',
+    'Turbo', 'Zen', 'Pixel', 'Cyber', 'Solar', 'Lunar', 'Astro', 'Hyper',
+    'Steel', 'Rogue', 'Alpha', 'Omega', 'Royal', 'Pixel', 'Warp', 'Frost',
 ];
 
 export const USERNAME_NOUNS = [
@@ -44,6 +46,8 @@ export const USERNAME_NOUNS = [
     'Beetle', 'Snail', 'Dragonfly', 'Caterpillar',
     'Alien', 'Robot', 'Mermaid', 'Ghoul', 'Sprite', 'Cyborg',
     'Dinosaur', 'Reaper', 'Wraith', 'Sphinx',
+    'Yeti', 'Goblin', 'Pirate', 'Ninja', 'Samurai', 'Wizard', 'Knight',
+    'Bandit', 'Storm', 'Comet', 'Nebula', 'Quasar', 'Vortex',
 ];
 
 export const ANIMAL_EMOJI_MAP = {
@@ -262,6 +266,19 @@ export const ANIMAL_EMOJI_MAP = {
     'croc': '🐊',
     'gnat': '🦟',
     'gnu': '🦬',
+    'yeti': '🦍',
+    'goblin': '👺',
+    'pirate': '🏴',
+    'ninja': '🥷',
+    'samurai': '🥷',
+    'wizard': '🧙',
+    'knight': '⚔️',
+    'bandit': '🦹',
+    'storm': '🌩️',
+    'comet': '☄️',
+    'nebula': '🌌',
+    'quasar': '🌟',
+    'vortex': '🌪️',
 };
 
 export function getAvatarForName(username) {

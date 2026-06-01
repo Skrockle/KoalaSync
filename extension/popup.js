@@ -1,6 +1,6 @@
 import { EVENTS, OFFICIAL_LANDING_PAGE_URL } from './shared/constants.js';
 import { BLACKLIST_DOMAINS } from './shared/blacklist.js';
-import { getAvatarForName, generateUsername } from './shared/names.js';
+import { getAvatarForName, generateUsername, USERNAME_ADJECTIVES, USERNAME_NOUNS } from './shared/names.js';
 import { loadLocale, translateDOM, getMessage } from './i18n.js';
 
 
@@ -1018,7 +1018,7 @@ elements.joinBtn.addEventListener('click', async () => {
         }
     }
 
-    const roomId = roomIdInput || Math.random().toString(36).substring(2, 8).toUpperCase();
+    const roomId = roomIdInput || generateRoomId();
     let password = elements.password.value;
     if (isCreating && !password) {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -1048,6 +1048,13 @@ elements.leaveBtn.addEventListener('click', async () => {
     updateUI(null, null);
 });
 
+function generateRoomId() {
+    const adj = USERNAME_ADJECTIVES[Math.floor(Math.random() * USERNAME_ADJECTIVES.length)];
+    const noun = USERNAME_NOUNS[Math.floor(Math.random() * USERNAME_NOUNS.length)];
+    const num = Math.floor(Math.random() * 99) + 1;
+    return `${adj.toUpperCase()}-${noun.toUpperCase()}-${num}`;
+}
+
 function handleCreateRoom() {
     const secureGenerateId = (length = 6) => {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -1055,7 +1062,7 @@ function handleCreateRoom() {
         self.crypto.getRandomValues(array);
         return Array.from(array, byte => chars[byte % chars.length]).join('');
     };
-    const roomId = secureGenerateId();
+    const roomId = generateRoomId();
     const password = secureGenerateId();
     elements.roomId.value = roomId;
     elements.password.value = password;
