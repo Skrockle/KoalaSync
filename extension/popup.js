@@ -1019,7 +1019,15 @@ elements.joinBtn.addEventListener('click', async () => {
     }
 
     const roomId = roomIdInput || Math.random().toString(36).substring(2, 8).toUpperCase();
-    const password = elements.password.value;
+    let password = elements.password.value;
+    if (isCreating && !password) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const array = new Uint8Array(6);
+        self.crypto.getRandomValues(array);
+        password = Array.from(array, byte => chars[byte % chars.length]).join('');
+        elements.password.value = password;
+        window.justCreatedRoom = true;
+    }
 
     await chrome.storage.sync.set({ serverUrl, roomId, password, useCustomServer: useCustom });
     elements.roomId.value = roomId;

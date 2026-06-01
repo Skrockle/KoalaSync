@@ -1300,23 +1300,15 @@ async function handleAsyncMessage(message, sender, sendResponse) {
             useCustomServer: !!useCustomServer,
             serverUrl: serverUrl || ''
         }, async () => {
+            reconnectFailed = false;
+            reconnectStartTime = null;
+            reconnectAttempts = 0;
+            chrome.storage.session.set({ reconnectFailed: false, reconnectAttempts: 0, reconnectStartTime: null });
             broadcastConnectionStatus('connecting');
             leaveOldRoomIfSwitching(roomId);
-            if (socket && socket.readyState === WebSocket.OPEN && isNamespaceJoined) {
-                // FORCE TRANSITION: Emit Join Room directly if already connected
-                const settings = await getSettings();
-                emit(EVENTS.JOIN_ROOM, { 
-                    roomId, 
-                    password,
-                    peerId,
-                    username: settings.username,
-                    tabTitle: currentTabTitle,
-                    protocolVersion: PROTOCOL_VERSION
-                });
-                addLog(`Joining room via link: ${roomId}`, 'info');
-            } else {
-                connect();
-            }
+            forceDisconnect();
+            connect();
+            addLog(`Joining room via link: ${roomId}`, 'info');
             sendResponse({ status: 'ok' });
         });
     } else if (message.type === 'REGENERATE_ID') {
