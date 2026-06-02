@@ -459,7 +459,7 @@
                 if (h === 'youtube.com' || h.endsWith('.youtube.com')) return 'YouTube';
                 if (h === 'twitch.tv' || h.endsWith('.twitch.tv')) return 'Twitch';
                 if (h === 'netflix.com' || h.endsWith('.netflix.com')) return 'Netflix';
-                if (h === 'primevideo.com' || h.endsWith('.primevideo.com') || /(^|\.)amazon\.(com|co\.uk|de|fr|it|es|ca|co\.jp|in|com\.au|com\.br|com\.mx|nl|se|pl|sg|ae|sa|tr|cn)$/.test(h)) return 'Prime Video';
+                if (h === 'primevideo.com' || h.endsWith('.primevideo.com') || /(^|\.)amazon\.(com\.[a-z]{2}|co\.[a-z]{2}|[a-z]{2,})$/.test(h)) return 'Prime Video';
                 if (h === 'disneyplus.com' || h.endsWith('.disneyplus.com')) return 'Disney+';
                 if (h === 'hulu.com' || h.endsWith('.hulu.com')) return 'Hulu';
                 if (h === 'hbomax.com' || h.endsWith('.hbomax.com') || h === 'max.com' || h.endsWith('.max.com')) return 'Max/HBO';
