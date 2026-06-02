@@ -111,6 +111,7 @@ Both the official KoalaSync website and the **v2.0 Browser Extension** feature f
 - **[TRANSLATION.md](website/TRANSLATION.md)**: Translation and localization guide for contributors.
 - **[PRIVACY.md](PRIVACY.md)**: Data Handling and Privacy Policy.
 - **[CONTRIBUTING.md](CONTRIBUTING.md)**: How to help make KoalaSync better.
+- **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)**: Our community standards and expectations.
 - **[HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md)**: Step-by-step walkthrough of the complete user flow.
 - **[ARCHITECTURE.md](docs/ARCHITECTURE.md)**: Deep-dive into the two-phase sync and heartbeat logic.
 - **[SECURITY.md](SECURITY.md)**: Disclosure policy and security practices.
