@@ -503,7 +503,7 @@ io.on('connection', (socket) => {
                         mediaTitle:      clamp(data.mediaTitle, 100),
                         volume:          clampNum(data.volume, 0, 1),
                         muted:           validBool(data.muted),
-                        peerId:          typeof data.peerId === 'string' ? data.peerId.substring(0, 16) : undefined,
+                        peerId:          mapping.peerId,
                         status:          typeof data.status === 'string' ? data.status.substring(0, 16) : undefined,
                         expectedTitle:   clamp(data.expectedTitle, 100),
                         title:           clamp(data.title, 100),
