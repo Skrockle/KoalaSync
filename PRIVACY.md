@@ -2,6 +2,8 @@
 
 **KoalaSync does not collect, store, or sell any personal data.**
 
+*We don't track you. We only track our server* (relying exclusively on aggregated, anonymous, and non-personal system metrics to monitor performance and stability).
+
 KoalaSync is designed with a **Security-First & Volatile** architecture. This means we prioritize keeping your data out of persistent storage, though certain technical data must be processed temporarily to ensure service stability and security.
 
 ## 1. Data Processing (In-Memory Only)
