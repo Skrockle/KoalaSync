@@ -15,81 +15,65 @@ modules:
       bearer_token: "YOUR_ADMIN_METRICS_TOKEN"
     metrics:
       - name: koalasync_uptime_seconds
-        type: gauge
         path: '{.uptime}'
         help: "Uptime of the KoalaSync relay server in seconds"
 
       - name: koalasync_rooms
-        type: gauge
         path: '{.rooms}'
         help: "Total active rooms"
 
       - name: koalasync_connections
-        type: gauge
         path: '{.connections}'
         help: "Total active socket connections (sockets)"
 
       - name: koalasync_peers
-        type: gauge
         path: '{.peers}'
         help: "Total connected peers across all rooms"
 
       - name: koalasync_rooms_with_lobby
-        type: gauge
         path: '{.roomsWithLobby}'
         help: "Number of rooms waiting in an episode lobby"
 
       - name: koalasync_avg_peers_per_room
-        type: gauge
         path: '{.avgPeersPerRoom}'
         help: "Average number of peers per room"
 
       - name: koalasync_max_peers_in_room
-        type: gauge
         path: '{.maxPeersInRoom}'
         help: "Maximum number of peers in a single room"
 
       - name: koalasync_memory_rss_bytes
-        type: gauge
         path: '{.memory.rss}'
         help: "Resident Set Size (RSS) memory usage in bytes"
 
       - name: koalasync_memory_heap_used_bytes
-        type: gauge
         path: '{.memory.heapUsed}'
         help: "V8 engine heap used in bytes"
 
       - name: koalasync_memory_heap_total_bytes
-        type: gauge
         path: '{.memory.heapTotal}'
         help: "V8 engine heap total in bytes"
 
       - name: koalasync_rate_limit_connections
-        type: gauge
         path: '{.rateLimitEntries.connections}'
         help: "Number of entries tracked in the connection rate limiter"
 
       - name: koalasync_rate_limit_events
-        type: gauge
         path: '{.rateLimitEntries.events}'
         help: "Number of entries in the event rate limiter"
 
       - name: koalasync_rate_limit_health
-        type: gauge
         path: '{.rateLimitEntries.health}'
         help: "Number of entries in the health rate limiter"
 
       - name: koalasync_rate_limit_admin_metrics_auth
-        type: gauge
         path: '{.rateLimitEntries.adminMetricsAuth}'
         help: "Number of entries in the admin metrics auth rate limiter"
 
       - name: koalasync_rate_limit_auth_failures
-        type: gauge
         path: '{.rateLimitEntries.authFailures}'
         help: "Number of entries in the authentication failures cache"
 
       - name: koalasync_rate_limit_room_list
-        type: gauge
         path: '{.rateLimitEntries.roomList}'
         help: "Number of entries in the room list cooldown cache"
