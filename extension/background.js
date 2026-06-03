@@ -482,12 +482,15 @@ async function connect() {
 
         socket.onerror = () => {
             broadcastConnectionStatus('disconnected');
-            addLog('WebSocket Error: Connection failed', 'error');
+            const logType = reconnectAttempts > 1 ? 'error' : 'warn';
+            addLog('WebSocket Error: Connection failed', logType);
         };
 
     } catch (e) {
         isConnecting = false;
-        addLog(e.message, 'error');
+        const logType = reconnectAttempts > 1 ? 'error' : 'warn';
+        const errMsg = (e && e.message) ? e.message : String(e || 'Unknown connection error');
+        addLog(errMsg, logType);
         broadcastConnectionStatus('disconnected');
         scheduleReconnect();
     }
