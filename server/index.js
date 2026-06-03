@@ -116,6 +116,10 @@ const peerToSocket = new Map(); // peerId -> socketId (Global lookup)
 const roomCreationLocks = new Map(); // roomId -> Promise (prevents race on room creation)
 
 function log(type, message, details = '') {
+    const debugLogging = process.env.DEBUG_LOGGING === '1';
+    const isVerbose = type === 'CONN' || type === 'ROOM' || type === 'DEDUPE' || type === 'CORS';
+    if (!debugLogging && isVerbose) return;
+
     const timestamp = new Date().toISOString();
     console.log(`[${timestamp}] [${type}] ${message}`, details);
 }

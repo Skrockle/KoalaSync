@@ -12,13 +12,16 @@ A Node.js relay server for synchronized video playback.
 ### Environment
 Copy `.env.example` to `.env` and configure your settings.
 ```bash
-PORT=3000
-MAX_ROOMS=1000
-MAX_PEERS_PER_ROOM=25
-MIN_VERSION=1.0.0
+PORT="3000"
+MAX_ROOMS="1000"
+MAX_PEERS_PER_ROOM="25"
+MIN_VERSION="1.0.0"
 # Optional: enables aggregate-only admin metrics on /health with Authorization: Bearer <token>
 # Use a long random token, 32+ characters recommended.
-ADMIN_METRICS_TOKEN=
+ADMIN_METRICS_TOKEN=""
+
+# Optional: set to "1" to enable verbose connection, room-join/leave, and CORS logs in the console. Default is "0" (disabled).
+DEBUG_LOGGING="0"
 ```
 
 ### Health & Metrics

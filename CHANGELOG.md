@@ -4,6 +4,13 @@ All notable changes to the KoalaSync browser extension and relay server.
 
 ---
 
+## [v2.0.7] — 2026-06-03
+
+### Added
+- Added a `DEBUG_LOGGING` environment variable to the relay server (defaulting to `"0"` / disabled) to prevent console spam from verbose connection (`CONN`), room activity (`ROOM`, `DEDUPE`), and `CORS` events under load. Critical logs like `SERVER`, `SECURITY`, `AUTH`, and `ERROR` remain enabled at all times.
+
+---
+
 ## [v2.0.6] — 2026-06-03
 
 ### Performance & Security Hardening
