@@ -157,6 +157,9 @@ async function init() {
     refreshLogs();
     refreshHistory();
 
+    // Default connection status (localized) before async check
+    applyConnectionStatus('disconnected');
+
     // Initial Status Check
     chrome.runtime.sendMessage({ type: 'GET_STATUS' }, async (res) => {
         if (chrome.runtime.lastError) {
@@ -947,9 +950,33 @@ if (elements.langSelector) {
         await chrome.storage.sync.set({ locale: selectedLang });
         await loadLocale(selectedLang);
         translateDOM();
+        
+        // Re-apply connection and room UI state since translateDOM may overwrite dynamic elements
+        chrome.runtime.sendMessage({ type: 'GET_STATUS' }, async (res) => {
+            if (chrome.runtime.lastError) return;
+            if (res) {
+                localPeerId = res.peerId;
+                reconnectSlowMode = res.reconnectSlowMode || false;
+                applyConnectionStatus(res.status);
+                updatePeerList(res.peers);
+                lastKnownPeers = res.peers || [];
+                if (res.lastActionState) updateLastActionUI(res.lastActionState, res.peers);
+                
+                const data = await chrome.storage.sync.get(['roomId', 'password', 'useCustomServer', 'serverUrl']);
+                updateUI(data.roomId, data.password, data.useCustomServer, data.serverUrl);
+                
+                await populateTabs(res.peers, res.targetTabId);
+                if (res.episodeLobby) updateLobbyUI(res.episodeLobby, res.peers);
+            } else {
+                applyConnectionStatus('disconnected');
+                const data = await chrome.storage.sync.get(['roomId', 'password', 'useCustomServer', 'serverUrl']);
+                updateUI(data.roomId, data.password, data.useCustomServer, data.serverUrl);
+                await populateTabs();
+            }
+        });
+
         refreshLogs();
         refreshHistory();
-        populateTabs();
     });
 }
 

@@ -1,4 +1,4 @@
-import { EVENTS, PROTOCOL_VERSION, OFFICIAL_SERVER_URL, OFFICIAL_SERVER_TOKEN, APP_VERSION, EPISODE_LOBBY_TIMEOUT, FORCE_SYNC_TIMEOUT } from './shared/constants.js';
+import { EVENTS, PROTOCOL_VERSION, OFFICIAL_SERVER_URL, OFFICIAL_SERVER_TOKEN, EPISODE_LOBBY_TIMEOUT, FORCE_SYNC_TIMEOUT } from './shared/constants.js';
 import { generateUsername } from './shared/names.js';
 import { loadLocale, getMessage, SUPPORTED_LANGUAGES } from './i18n.js';
 
@@ -457,7 +457,7 @@ async function connect() {
             url.pathname = '/socket.io/';
             url.searchParams.set('EIO', '4');
             url.searchParams.set('transport', 'websocket');
-            url.searchParams.set('version', APP_VERSION);
+            url.searchParams.set('version', chrome.runtime.getManifest().version);
             url.searchParams.set('token', OFFICIAL_SERVER_TOKEN);
 
             socket = new WebSocket(url.toString());
@@ -1353,7 +1353,7 @@ async function handleAsyncMessage(message, sender, sendResponse) {
             reconnectSlowMode: reconnectFailed,
             roomId: currentRoom ? currentRoom.roomId : null,
             serverUrl: currentServerUrl,
-            version: APP_VERSION,
+            version: chrome.runtime.getManifest().version,
             protocolVersion: PROTOCOL_VERSION,
             roomPassword: currentRoom ? currentRoom.password : null
         });

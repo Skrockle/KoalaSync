@@ -4,6 +4,14 @@ All notable changes to the KoalaSync browser extension and relay server.
 
 ---
 
+## [v2.0.8] — 2026-06-03
+
+### Fixed
+- Fixed a bug where switching language inside the extension popup overwrote dynamic fields (such as active room ID, connection status, active server details, and video debug info) with default localized placeholder texts.
+- Fixed a version reporting mismatch where the copied logs (debug reports) and connection handshake parameters incorrectly reported the hardcoded `1.9.0` version instead of the actual installed manifest version.
+
+---
+
 ## [v2.0.7] — 2026-06-03
 
 ### Added
