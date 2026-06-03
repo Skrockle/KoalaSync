@@ -4,6 +4,28 @@ All notable changes to the KoalaSync browser extension and relay server.
 
 ---
 
+## [v2.0.4] — 2026-06-03
+
+### Security & Hardening
+- Hardened relay health endpoints against simple flood traffic: `GET /` and `GET /health` are now limited to 10 requests per minute per client IP.
+- Added lazy 60-second server-side caching for `GET /`, basic `/health`, and admin `/health` JSON responses to reduce repeated health-check work under noisy polling.
+- Added stricter brute-force throttling for invalid admin metrics bearer attempts.
+- Added startup warning for short `ADMIN_METRICS_TOKEN` values and documented that production Node ports must stay private behind Caddy or another trusted reverse proxy.
+- Lowered the default maximum peers per room to 25.
+
+### Added
+- Optional privacy-preserving admin metrics on `/health` when `ADMIN_METRICS_TOKEN` is configured and a valid bearer token is supplied. Metrics are aggregate-only and exclude room IDs, peer IDs, usernames, IP addresses, media titles, passwords, and other user-level data.
+
+### Changed
+- Removed `bcryptjs`; temporary room passwords continue to use keyed SHA-256/HMAC hashing as documented.
+- Public room discovery is now rate-limited server-side to one refresh every 10 seconds per socket, with the extension refresh button locked for 11 seconds.
+
+### Fixed
+- Improved Shadow DOM video detection so real embedded players are not hidden by smaller light-DOM preview or placeholder videos.
+- Fixed join-button timeout cleanup after join status responses.
+
+---
+
 ## [v2.0.2] — 2026-06-02
 
 ### Fixed
