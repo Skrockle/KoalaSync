@@ -36,7 +36,8 @@ export default [
         URL: "readonly",
         URLSearchParams: "readonly",
         WebSocket: "readonly",
-        self: "readonly"
+        self: "readonly",
+        process: "readonly"
       }
     },
     rules: {

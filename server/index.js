@@ -1,5 +1,6 @@
 import express from 'express';
 import { createServer } from 'http';
+import { fileURLToPath } from 'url';
 import { Server } from 'socket.io';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
@@ -26,18 +27,18 @@ const MAX_PEERS_PER_ROOM = parseInt(process.env.MAX_PEERS_PER_ROOM) || 25;
 const MIN_VERSION = process.env.MIN_VERSION || '1.0.0';
 const ADMIN_METRICS_TOKEN = process.env.ADMIN_METRICS_TOKEN || '';
 const ROOM_LIST_COOLDOWN_MS = 10000;
-const HEALTH_RATE_LIMIT_PER_MINUTE = 10;
-const ADMIN_METRICS_AUTH_RATE_LIMIT_PER_MINUTE = 5;
+export const HEALTH_RATE_LIMIT_PER_MINUTE = 10;
+export const ADMIN_METRICS_AUTH_RATE_LIMIT_PER_MINUTE = 5;
 const HEALTH_RESPONSE_CACHE_TTL_MS = 60000;
 
 if (!isAdminMetricsTokenStrong(ADMIN_METRICS_TOKEN)) {
     console.warn('[SECURITY] ADMIN_METRICS_TOKEN is set but shorter than 32 characters. Use a long random token.');
 }
 
-const app = express();
+export const app = express();
 app.set('trust proxy', 1); // For real client IP through reverse proxy
 
-const healthResponseCache = new Map();
+export const healthResponseCache = new Map();
 
 // Health Check with Rate Limiting
 app.get('/', (req, res) => {
@@ -86,10 +87,10 @@ app.get('/health', (req, res) => {
     ));
 });
 
-const httpServer = createServer(app);
+export const httpServer = createServer(app);
 
 // Socket.IO setup with security constraints
-const io = new Server(httpServer, {
+export const io = new Server(httpServer, {
     cors: {
         origin: (origin, callback) => {
             if (!origin || origin === 'https://sync.koalastuff.net' || origin.startsWith('chrome-extension://') || origin.startsWith('moz-extension://')) {
@@ -109,7 +110,7 @@ const io = new Server(httpServer, {
 /**
  * In-memory storage
  */
-const rooms = new Map();
+export const rooms = new Map();
 const socketToRoom = new Map();
 const peerToSocket = new Map(); // peerId -> socketId (Global lookup)
 const roomCreationLocks = new Map(); // roomId -> Promise (prevents race on room creation)
@@ -120,7 +121,7 @@ function log(type, message, details = '') {
 }
 
 // Rate Limiting & Security
-const connectionCounts = new Map(); // ip -> { count, resetTime }
+export const connectionCounts = new Map(); // ip -> { count, resetTime }
 const failedAuthAttempts = new Map(); // Map<IP+RoomID, {count, lastAttempt}>
 
 function checkAuthRate(ip, roomId) {
@@ -170,7 +171,7 @@ function recordAuthFailure(ip, roomId) {
 }
 
 // Periodically clean up old auth failure records (every 15 minutes)
-setInterval(() => {
+const authFailureCleanupInterval = setInterval(() => {
     const now = Date.now();
     for (const [key, record] of failedAuthAttempts.entries()) {
         if (now - record.lastAttempt > 15 * 60 * 1000) {
@@ -179,13 +180,13 @@ setInterval(() => {
     }
 }, 15 * 60 * 1000);
 
-const eventCounts = new Map(); // socketId -> { count, resetTime }
-const healthCounts = new Map(); // ip -> { count, resetTime }
-const adminMetricsAuthCounts = new Map(); // ip -> { count, resetTime }
+export const eventCounts = new Map(); // socketId -> { count, resetTime }
+export const healthCounts = new Map(); // ip -> { count, resetTime }
+export const adminMetricsAuthCounts = new Map(); // ip -> { count, resetTime }
 const roomListCooldowns = new Map(); // socketId -> last allowed timestamp
 
 // Clean up connection counts and event counts to prevent memory leak
-setInterval(() => {
+const rateLimitCleanupInterval = setInterval(() => {
     const now = Date.now();
     for (const [ip, entry] of connectionCounts.entries()) {
         if (now > entry.resetTime) {
@@ -663,7 +664,7 @@ io.on('connection', (socket) => {
 });
 
 // Active Room & Dead Peer Cleanup (Every 2m)
-setInterval(() => {
+const roomCleanupInterval = setInterval(() => {
     const now = Date.now();
     const roomCutoff = now - (2 * 60 * 60 * 1000); // 2 hours
     const peerCutoff = now - (5 * 60 * 1000);      // 5 minutes
@@ -700,9 +701,29 @@ setInterval(() => {
     }
 }, 2 * 60 * 1000);
 
-httpServer.listen(PORT, () => {
-    log('SERVER', `KoalaSync Relay running on port ${PORT}`);
-});
+export function startServer(port = PORT, host) {
+    if (httpServer.listening) return Promise.resolve(httpServer);
+    return new Promise((resolve, reject) => {
+        const onError = (err) => {
+            httpServer.off('listening', onListening);
+            reject(err);
+        };
+        const onListening = () => {
+            httpServer.off('error', onError);
+            const address = httpServer.address();
+            const actualPort = address && typeof address === 'object' ? address.port : port;
+            log('SERVER', `KoalaSync Relay running on port ${actualPort}`);
+            resolve(httpServer);
+        };
+        httpServer.once('error', onError);
+        httpServer.once('listening', onListening);
+        if (host) {
+            httpServer.listen(port, host);
+        } else {
+            httpServer.listen(port);
+        }
+    });
+}
 
 // --- M-4: Graceful Shutdown ---
 function gracefulShutdown(signal) {
@@ -721,15 +742,44 @@ function gracefulShutdown(signal) {
     }, 5000);
 }
 
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT',  () => gracefulShutdown('SIGINT'));
+export async function stopServerForTests() {
+    clearInterval(authFailureCleanupInterval);
+    clearInterval(rateLimitCleanupInterval);
+    clearInterval(roomCleanupInterval);
+    rooms.clear();
+    socketToRoom.clear();
+    peerToSocket.clear();
+    roomCreationLocks.clear();
+    connectionCounts.clear();
+    failedAuthAttempts.clear();
+    eventCounts.clear();
+    healthCounts.clear();
+    adminMetricsAuthCounts.clear();
+    roomListCooldowns.clear();
+    healthResponseCache.clear();
+    io.removeAllListeners();
+    io.disconnectSockets(true);
+    if (!httpServer.listening) return;
+    await new Promise((resolve, reject) => {
+        httpServer.close((err) => err ? reject(err) : resolve());
+    });
+}
 
-process.on('uncaughtException', (err) => {
-    log('ERROR', `Uncaught exception: ${err.message}`, err.stack);
-    process.exit(1);
-});
+const isMainModule = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 
-process.on('unhandledRejection', (reason) => {
-    log('ERROR', `Unhandled rejection: ${reason}`);
-    process.exit(1);
-});
+if (isMainModule) {
+    startServer(PORT);
+
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT',  () => gracefulShutdown('SIGINT'));
+
+    process.on('uncaughtException', (err) => {
+        log('ERROR', `Uncaught exception: ${err.message}`, err.stack);
+        process.exit(1);
+    });
+
+    process.on('unhandledRejection', (reason) => {
+        log('ERROR', `Unhandled rejection: ${reason}`);
+        process.exit(1);
+    });
+}

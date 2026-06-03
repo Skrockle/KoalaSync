@@ -56,7 +56,7 @@ function ensureState() {
                 'logs', 'history', 'currentRoom', 'lastActionState', 
                 'eventQueue', 'isForceSyncInitiator', 'forceSyncAcks', 
                 'forceSyncDeadline', 'reconnectFailed', 'reconnectStartTime', 'reconnectAttempts', 'currentTabId', 'currentTabTitle',
-                'episodeLobby', 'localSeq', 'lastSeqBySender', 'expectedAcksCount'
+                'episodeLobby', 'localSeq', 'lastSeqBySender', 'expectedAcksCount', 'roomIdleSince', 'lastContentHeartbeatAt'
             ], (data) => {
                 clearTimeout(storageTimeout);
                 if (data.expectedAcksCount !== undefined) expectedAcksCount = data.expectedAcksCount;
@@ -80,6 +80,8 @@ function ensureState() {
                 if (data.reconnectFailed !== undefined) reconnectFailed = data.reconnectFailed;
                 if (data.reconnectStartTime) reconnectStartTime = data.reconnectStartTime;
                 if (data.reconnectAttempts !== undefined) reconnectAttempts = data.reconnectAttempts;
+                if (data.roomIdleSince !== undefined) roomIdleSince = data.roomIdleSince;
+                if (data.lastContentHeartbeatAt !== undefined) lastContentHeartbeatAt = data.lastContentHeartbeatAt;
 
                 // Recover Force Sync Timeout
                 if (data.forceSyncDeadline) {
@@ -139,9 +141,12 @@ let reconnectStartTime = null;
 let reconnectFailed = false;
 let reconnectAttempts = 0;
 let currentServerUrl = null;
+let roomIdleSince = null;
+let lastContentHeartbeatAt = null;
 const MAX_RECONNECT_ATTEMPTS = 20;
 const _RECONNECT_BASE_DELAY = 500;
 const _RECONNECT_MAX_DELAY = 5000;
+const ROOM_IDLE_AUTO_LEAVE_MS = 2 * 60 * 60 * 1000;
 
 // Force Sync Coordination
 let isForceSyncInitiator = false;
@@ -304,6 +309,8 @@ function forceDisconnect() {
     isNamespaceJoined = false;
     isForceSyncInitiator = false;
     expectedAcksCount = 0;
+    roomIdleSince = null;
+    lastContentHeartbeatAt = null;
     forceSyncAcks.clear();
     eventQueue = [];
     chrome.storage.session.set({
@@ -312,7 +319,9 @@ function forceDisconnect() {
         forceSyncDeadline: null,
         expectedAcksCount: 0,
         eventQueue: [],
-        episodeLobby: null
+        episodeLobby: null,
+        roomIdleSince: null,
+        lastContentHeartbeatAt: null
     }).catch(() => {});
     if (currentRoom) {
         currentRoom.peers = [];
@@ -320,6 +329,63 @@ function forceDisconnect() {
         chrome.runtime.sendMessage({ type: 'PEER_UPDATE', peers: [] }).catch(() => {});
     }
     broadcastConnectionStatus('disconnected');
+}
+
+function persistRoomIdleState() {
+    chrome.storage.session.set({ roomIdleSince, lastContentHeartbeatAt }).catch(() => {});
+}
+
+function markRoomUseful() {
+    roomIdleSince = null;
+    lastContentHeartbeatAt = Date.now();
+    persistRoomIdleState();
+}
+
+function markRoomPotentiallyIdle() {
+    if (!currentRoom) {
+        roomIdleSince = null;
+        lastContentHeartbeatAt = null;
+        persistRoomIdleState();
+        return;
+    }
+    if (!roomIdleSince) {
+        roomIdleSince = Date.now();
+        persistRoomIdleState();
+    }
+}
+
+function clearTargetTabForIdle() {
+    currentTabId = null;
+    currentTabTitle = null;
+    lastContentHeartbeatAt = null;
+    if (currentRoom) {
+        roomIdleSince = Date.now();
+    }
+    chrome.storage.session.set({ currentTabId, currentTabTitle, roomIdleSince, lastContentHeartbeatAt }).catch(() => {});
+    updateBadgeStatus();
+}
+
+async function leaveRoomAfterIdleGrace(reason) {
+    if (!currentRoom) return;
+    emit(EVENTS.LEAVE_ROOM, { peerId });
+    currentRoom = null;
+    currentTabId = null;
+    currentTabTitle = null;
+    roomIdleSince = null;
+    lastContentHeartbeatAt = null;
+    clearEpisodeLobbyState();
+    await chrome.storage.session.set({
+        currentRoom: null,
+        currentTabId: null,
+        currentTabTitle: null,
+        roomIdleSince: null,
+        lastContentHeartbeatAt: null,
+        episodeLobby: null
+    }).catch(() => {});
+    await chrome.storage.sync.set({ roomId: '', password: '' }).catch(() => {});
+    addLog(reason, 'info');
+    chrome.runtime.sendMessage({ type: 'PEER_UPDATE', peers: [] }).catch(() => {});
+    updateBadgeStatus();
 }
 
 async function connect() {
@@ -631,6 +697,7 @@ function handleServerEvent(event, data) {
     switch (event) {
         case EVENTS.ROOM_DATA:
             currentRoom = data;
+            markRoomPotentiallyIdle();
             if (currentRoom && Array.isArray(currentRoom.peers)) {
                 currentRoom.peers = currentRoom.peers.map(p => typeof p === 'object' ? createPeerData(p) : { peerId: p, username: null, tabTitle: null, mediaTitle: null, playbackState: null, currentTime: null, volume: null, muted: null, lastHeartbeat: Date.now() });
                 
@@ -1152,8 +1219,7 @@ function _routeToContentInternal(tabId, action, payload, actionTimestamp, comman
     }).catch(err => {
         if (retries >= 3) {
             addLog(`Content Script not responding in tab ${tabId} after ${retries} retries`, 'warn');
-            currentTabId = null;
-            updateBadgeStatus();
+            clearTargetTabForIdle();
             return;
         }
         if (err.message.includes('Receiving end does not exist') || err.message.includes('Extension context invalidated')) {
@@ -1167,8 +1233,7 @@ function _routeToContentInternal(tabId, action, payload, actionTimestamp, comman
             });
         } else {
             addLog(`Content Script not responding in tab ${tabId}`, 'warn');
-            currentTabId = null;
-            updateBadgeStatus();
+            clearTargetTabForIdle();
         }
     });
 }
@@ -1184,6 +1249,15 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
                 connect();
             }
         } else if (currentRoom) {
+            const now = Date.now();
+            const heartbeatAge = lastContentHeartbeatAt ? (now - lastContentHeartbeatAt) : Infinity;
+            if (!currentTabId || heartbeatAge > 45000) {
+                markRoomPotentiallyIdle();
+            }
+            if (roomIdleSince && Date.now() - roomIdleSince >= ROOM_IDLE_AUTO_LEAVE_MS) {
+                await leaveRoomAfterIdleGrace('Left room after 2 hours without a selected video heartbeat.');
+                return;
+            }
             // Heartbeat Logic: Always include identity metadata
             const settings = await getSettings();
             emit(EVENTS.PEER_STATUS, { 
@@ -1287,6 +1361,9 @@ async function handleAsyncMessage(message, sender, sendResponse) {
         emit(EVENTS.LEAVE_ROOM, { peerId });
         currentRoom = null;
         currentTabId = null;
+        currentTabTitle = null;
+        roomIdleSince = null;
+        lastContentHeartbeatAt = null;
 
         updateBadgeStatus();
         
@@ -1300,6 +1377,10 @@ async function handleAsyncMessage(message, sender, sendResponse) {
 
         chrome.storage.session.set({ 
             currentRoom: null,
+            currentTabId: null,
+            currentTabTitle: null,
+            roomIdleSince: null,
+            lastContentHeartbeatAt: null,
             isForceSyncInitiator: false,
             forceSyncAcks: [],
             forceSyncDeadline: null,
@@ -1492,6 +1573,7 @@ async function handleAsyncMessage(message, sender, sendResponse) {
             updateBadgeStatus();
         }
 
+        markRoomUseful();
         getSettings().then(settings => {
             const statusPayload = { ...message.payload, peerId, username: settings.username, tabTitle: currentTabTitle };
             emit(EVENTS.PEER_STATUS, statusPayload);
@@ -1519,7 +1601,11 @@ async function handleAsyncMessage(message, sender, sendResponse) {
     } else if (message.type === 'SET_TARGET_TAB') {
         currentTabId = message.tabId;
         currentTabTitle = message.tabTitle;
-        chrome.storage.session.set({ currentTabId, currentTabTitle });
+        lastContentHeartbeatAt = null;
+        if (currentRoom) {
+            roomIdleSince = Date.now();
+        }
+        chrome.storage.session.set({ currentTabId, currentTabTitle, roomIdleSince, lastContentHeartbeatAt });
         updateBadgeStatus();
         
         if (currentTabId) {
@@ -1645,7 +1731,9 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
         const wasInRoom = !!currentRoom;
         currentTabId = null;
         currentTabTitle = null;
-        chrome.storage.session.set({ currentTabId: null, currentTabTitle: null });
+        lastContentHeartbeatAt = null;
+        roomIdleSince = Date.now();
+        chrome.storage.session.set({ currentTabId: null, currentTabTitle: null, roomIdleSince, lastContentHeartbeatAt });
         updateBadgeStatus();
         addLog('Target tab closed.', 'warn');
 

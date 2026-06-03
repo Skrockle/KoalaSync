@@ -1,12 +1,13 @@
 {
   "name": "koalasync",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "KoalaSync Build Scripts",
   "private": true,
   "scripts": {
     "build:extension": "node scripts/build-extension.js",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "verify": "node scripts/verify-release.mjs"
   },
   "devDependencies": {
     "archiver": "^7.0.1",

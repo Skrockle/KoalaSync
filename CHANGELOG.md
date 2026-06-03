@@ -4,6 +4,18 @@ All notable changes to the KoalaSync browser extension and relay server.
 
 ---
 
+## [v2.0.5] — 2026-06-03
+
+### Security & Hardening
+- Hardened extension room idle auto-leave detection to correctly recognize when the target tab's video heartbeat goes stale (e.g., after tab navigation or media closure).
+- Exported cleaner graceful shutdown and lifecycle methods (`stopServerForTests`) from the relay server to prevent socket leaks and port-binding conflicts during verify checks.
+
+### Added
+- Added a validation step in `test-locales.js` to ensure the supported language list in `extension/i18n.js` is perfectly synchronized with the actual JSON translation files in the locales directory.
+- Added a robust route verification test suite (`scripts/test-server-routes.mjs`) covering rate limit throttling, caching headers, and admin metrics access control.
+
+---
+
 ## [v2.0.4] — 2026-06-03
 
 ### Security & Hardening

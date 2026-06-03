@@ -28,6 +28,20 @@ If `ADMIN_METRICS_TOKEN` is set, requests with `Authorization: Bearer <token>` r
 
 Use a long random `ADMIN_METRICS_TOKEN` of at least 32 characters. Shorter configured tokens still work, but the server logs a startup warning.
 
+Generate a token with one of these commands:
+```bash
+openssl rand -base64 32
+# or
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```
+
+For Docker Compose deployments, set the generated value in `server/.env`:
+```bash
+ADMIN_METRICS_TOKEN=replace-with-a-long-random-token
+```
+
+When polling `/health` from Prometheus, Uptime Kuma, cron, or a load balancer, keep the interval comfortably below the public limit of 10 requests per minute per client IP. A 30-60 second interval is recommended for routine monitoring. Use the admin bearer token only from trusted monitoring hosts, and keep the Node server private behind Caddy or another trusted reverse proxy because IP-based limits depend on the configured proxy boundary.
+
 ### Docker (Recommended)
 The server is available as a pre-built image on GHCR.
 ```bash

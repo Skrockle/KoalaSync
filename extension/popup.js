@@ -69,6 +69,7 @@ let forceSyncDone = false;
 let connectionErrorTimer = null;
 let pendingConnectionErrorMsg = null;
 let roomListRefreshTimer = null;
+let roomListRefreshInterval = null;
 const ROOM_LIST_REFRESH_COOLDOWN_MS = 11000;
 
 // --- Helpers ---
@@ -78,6 +79,31 @@ function clearConnectionErrorTimer() {
         connectionErrorTimer = null;
     }
     pendingConnectionErrorMsg = null;
+}
+
+function setRoomRefreshCooldown() {
+    if (roomListRefreshTimer) clearTimeout(roomListRefreshTimer);
+    if (roomListRefreshInterval) clearInterval(roomListRefreshInterval);
+    const originalLabel = getMessage('BTN_REFRESH');
+    const updateLabel = () => {
+        const secondsLeft = Math.max(1, Math.ceil((cooldownEndsAt - Date.now()) / 1000));
+        elements.refreshRooms.textContent = getMessage('BTN_REFRESH_COOLDOWN', { seconds: secondsLeft });
+        elements.refreshRooms.title = getMessage('BTN_REFRESH_COOLDOWN_TOOLTIP', { seconds: secondsLeft });
+    };
+
+    const cooldownEndsAt = Date.now() + ROOM_LIST_REFRESH_COOLDOWN_MS;
+    elements.refreshRooms.disabled = true;
+    updateLabel();
+
+    roomListRefreshInterval = setInterval(updateLabel, 250);
+    roomListRefreshTimer = setTimeout(() => {
+        elements.refreshRooms.disabled = false;
+        elements.refreshRooms.textContent = originalLabel;
+        elements.refreshRooms.title = getMessage('BTN_REFRESH_TOOLTIP');
+        clearInterval(roomListRefreshInterval);
+        roomListRefreshInterval = null;
+        roomListRefreshTimer = null;
+    }, ROOM_LIST_REFRESH_COOLDOWN_MS);
 }
 
 // --- Initialization ---
@@ -1099,16 +1125,12 @@ if (syncTabCreateRoomBtn) syncTabCreateRoomBtn.addEventListener('click', () => {
 
 elements.refreshRooms.addEventListener('click', () => {
     if (elements.refreshRooms.disabled) return;
-    elements.refreshRooms.disabled = true;
-    roomListRefreshTimer = setTimeout(() => {
-        elements.refreshRooms.disabled = false;
-        roomListRefreshTimer = null;
-    }, ROOM_LIST_REFRESH_COOLDOWN_MS);
+    setRoomRefreshCooldown();
 
     elements.publicRooms.replaceChildren();
     const el = document.createElement('div');
     el.style.cssText = 'text-align:center; color: var(--text-muted); font-size: 11px; padding: 10px;';
-    el.textContent = getMessage('PUBLIC_ROOMS_REFRESHING');
+    el.textContent = getMessage('PUBLIC_ROOMS_REFRESHING_COOLDOWN', { seconds: Math.ceil(ROOM_LIST_REFRESH_COOLDOWN_MS / 1000) });
     elements.publicRooms.appendChild(el);
     chrome.runtime.sendMessage({ type: 'GET_ROOM_LIST' });
 });
@@ -1831,6 +1853,10 @@ window.addEventListener('unload', () => {
     if (roomListRefreshTimer) {
         clearTimeout(roomListRefreshTimer);
         roomListRefreshTimer = null;
+    }
+    if (roomListRefreshInterval) {
+        clearInterval(roomListRefreshInterval);
+        roomListRefreshInterval = null;
     }
 });
 
