@@ -13,3 +13,10 @@ Dieses Dokument erfasst zukünftige technische Pläne und Optimierungen für das
 * **Geplante Lösung**: 
   - Umstellung auf eine echte, $O(1)$-basierte LRU-Cache-Datenstruktur (z. B. doppelt verkettete Liste in Kombination mit einer Map).
   - Alternativ: Ein vereinfachtes zeitbasiertes Ablauf-Verfahren oder ein schrittweises Löschen von Segmenten (Chunk-Eviction), um Blockaden des Main-Threads vollständig auszuschließen.
+
+### 2. Aufteilung großer JavaScript-Dateien (> 800 Zeilen) in kleinere Module
+* **Kategorie**: Wartbarkeit / AI-Kontext-Optimierung
+* **Hintergrund**: Einige Kern-Dateien wie `background.js` und `popup.js` sind stark angewachsen und überschreiten 800 Zeilen. Dies erschwert das manuelle Debugging und verbraucht unnötig viel Kontextfenster bei AI-Modellen.
+* **Geplante Lösung**: 
+  - Strukturierte Aufteilung der Logik in separate, fokussierte Module (z. B. UI-Renderer, Message-Router, Storage-Manager, Socket-Client).
+  - Nutzung von ES-Modulen zur sauberen Strukturierung und besseren Wiederverwendbarkeit.
