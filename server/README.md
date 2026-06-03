@@ -22,7 +22,7 @@ ADMIN_METRICS_TOKEN=
 ```
 
 ### Health & Metrics
-`GET /` and `GET /health` are IP-rate-limited to 20 requests per minute per client IP. By default `/health` returns only basic service status, uptime, room count, connection count, and a timestamp.
+`GET /` and `GET /health` are IP-rate-limited to 10 requests per minute per client IP. These health-style responses are cached server-side for 60 seconds and refreshed lazily on request. By default `/health` returns only basic service status, uptime, room count, connection count, and a timestamp.
 
 If `ADMIN_METRICS_TOKEN` is set, requests with `Authorization: Bearer <token>` receive additional aggregate metrics such as total peers, average peers per room, max room size, active lobby count, rate-limit map sizes, and process memory usage. Wrong admin bearer attempts are separately limited to 5 requests per minute per client IP. The metrics response does not include room IDs, peer IDs, usernames, IP addresses, media titles, or other user-level data.
 
@@ -48,7 +48,7 @@ npm start
 
 ## Security
 - **Rate Limiting**: IP-based connection limits and socket-based event limits.
-- **Health Endpoint Throttle**: `GET /` and `GET /health` are limited to 20 requests per minute per IP, with stricter throttling for wrong admin bearer attempts.
+- **Health Endpoint Throttle**: `GET /` and `GET /health` are limited to 10 requests per minute per IP, with 60-second lazy server-side response caching and stricter throttling for wrong admin bearer attempts.
 - **Room Discovery Throttle**: Room-list refreshes are rate-limited server-side to one request every 10 seconds per socket.
 - **Token Handshake**: Requires a valid token defined in the root `shared/constants.js`.
 - **Single Source of Truth**: The server imports constants directly from the root `shared/` directory.

@@ -9,6 +9,17 @@ export function checkCooldown(cooldowns, key, windowMs, now = Date.now()) {
     return true;
 }
 
+export function getCachedPayload(cache, key, ttlMs, buildPayload, now = Date.now()) {
+    const cached = cache.get(key);
+    if (cached && now - cached.createdAt < ttlMs) {
+        return cached.payload;
+    }
+
+    const payload = buildPayload();
+    cache.set(key, { createdAt: now, payload });
+    return payload;
+}
+
 export function isAdminMetricsAuthorized(authHeader, adminToken) {
     if (!adminToken || typeof adminToken !== 'string') return false;
     if (!authHeader || typeof authHeader !== 'string') return false;

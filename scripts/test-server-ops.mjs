@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {
   buildHealthPayload,
   checkCooldown,
+  getCachedPayload,
   isAdminMetricsAuthorized,
   isAdminMetricsTokenStrong
 } from '../server/ops.js';
@@ -30,6 +31,15 @@ const cooldowns = new Map();
 assert.equal(checkCooldown(cooldowns, 'socket-1', 10_000, 100_000), true, 'first cooldown check passes');
 assert.equal(checkCooldown(cooldowns, 'socket-1', 10_000, 105_000), false, 'second cooldown check inside window fails');
 assert.equal(checkCooldown(cooldowns, 'socket-1', 10_000, 110_000), true, 'cooldown check after window passes');
+
+const cache = new Map();
+let buildCalls = 0;
+const firstCached = getCachedPayload(cache, 'basic-health', 60_000, () => ({ value: ++buildCalls }), 1_000);
+const secondCached = getCachedPayload(cache, 'basic-health', 60_000, () => ({ value: ++buildCalls }), 30_000);
+const expiredCached = getCachedPayload(cache, 'basic-health', 60_000, () => ({ value: ++buildCalls }), 61_001);
+assert.deepEqual(firstCached, { value: 1 }, 'cache should return the builder payload on first request');
+assert.strictEqual(secondCached, firstCached, 'cache should reuse payloads inside the ttl');
+assert.deepEqual(expiredCached, { value: 2 }, 'cache should rebuild payloads after ttl expiry');
 
 const roomA = { peers: new Set(['a', 'b']), activeLobby: null };
 const roomB = { peers: new Set(['c', 'd', 'e']), activeLobby: { expectedTitle: 'Episode 2' } };

@@ -7,6 +7,7 @@ import { EVENTS, OFFICIAL_SERVER_TOKEN, PROTOCOL_VERSION } from '../shared/const
 import {
     buildHealthPayload,
     checkCooldown,
+    getCachedPayload,
     isAdminMetricsAuthorized,
     isAdminMetricsTokenStrong
 } from './ops.js';
@@ -25,8 +26,9 @@ const MAX_PEERS_PER_ROOM = parseInt(process.env.MAX_PEERS_PER_ROOM) || 25;
 const MIN_VERSION = process.env.MIN_VERSION || '1.0.0';
 const ADMIN_METRICS_TOKEN = process.env.ADMIN_METRICS_TOKEN || '';
 const ROOM_LIST_COOLDOWN_MS = 10000;
-const HEALTH_RATE_LIMIT_PER_MINUTE = 20;
+const HEALTH_RATE_LIMIT_PER_MINUTE = 10;
 const ADMIN_METRICS_AUTH_RATE_LIMIT_PER_MINUTE = 5;
+const HEALTH_RESPONSE_CACHE_TTL_MS = 60000;
 
 if (!isAdminMetricsTokenStrong(ADMIN_METRICS_TOKEN)) {
     console.warn('[SECURITY] ADMIN_METRICS_TOKEN is set but shorter than 32 characters. Use a long random token.');
@@ -35,13 +37,21 @@ if (!isAdminMetricsTokenStrong(ADMIN_METRICS_TOKEN)) {
 const app = express();
 app.set('trust proxy', 1); // For real client IP through reverse proxy
 
+const healthResponseCache = new Map();
+
 // Health Check with Rate Limiting
 app.get('/', (req, res) => {
     const clientIp = req.ip;
     if (!checkHealthRate(clientIp)) {
         return res.status(429).json({ error: 'Too many requests. Try again later.' });
     }
-    res.json({ status: 'online', service: 'KoalaSync Relay' });
+    res.set('Cache-Control', 'no-store');
+    res.json(getCachedPayload(
+        healthResponseCache,
+        'root',
+        HEALTH_RESPONSE_CACHE_TTL_MS,
+        () => ({ status: 'online', service: 'KoalaSync Relay' })
+    ));
 });
 
 app.get('/health', (req, res) => {
@@ -54,20 +64,26 @@ app.get('/health', (req, res) => {
     if (ADMIN_METRICS_TOKEN && authHeader && !includeMetrics && !checkAdminMetricsAuthRate(clientIp)) {
         return res.status(429).json({ error: 'Rate limited' });
     }
-    res.json(buildHealthPayload({
-        rooms,
-        connections: io.engine?.clientsCount ?? 0,
-        includeMetrics,
-        uptime: process.uptime(),
-        rateLimitSizes: {
-            connections: connectionCounts.size,
-            events: eventCounts.size,
-            health: healthCounts.size,
-            adminMetricsAuth: adminMetricsAuthCounts.size,
-            authFailures: failedAuthAttempts.size,
-            roomList: roomListCooldowns.size
-        }
-    }));
+    res.set('Cache-Control', 'no-store');
+    res.json(getCachedPayload(
+        healthResponseCache,
+        includeMetrics ? 'health-admin' : 'health-basic',
+        HEALTH_RESPONSE_CACHE_TTL_MS,
+        () => buildHealthPayload({
+            rooms,
+            connections: io.engine?.clientsCount ?? 0,
+            includeMetrics,
+            uptime: process.uptime(),
+            rateLimitSizes: {
+                connections: connectionCounts.size,
+                events: eventCounts.size,
+                health: healthCounts.size,
+                adminMetricsAuth: adminMetricsAuthCounts.size,
+                authFailures: failedAuthAttempts.size,
+                roomList: roomListCooldowns.size
+            }
+        })
+    ));
 });
 
 const httpServer = createServer(app);
