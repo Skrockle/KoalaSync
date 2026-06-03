@@ -31,7 +31,7 @@ The build script performs the following actions:
 The system enforces a strict `protocolVersion` check during the `JOIN_ROOM` handshake. 
 - The version is defined in `shared/constants.js`.
 - If the extension and server versions mismatch, the server will reject the connection with an `Incompatible protocol version` error.
-- **Always run the build script** after bumping the version number to ensure both components are updated.
+- **Never manually bump version numbers**. The CI pipeline automatically injects the version from the git tag into `manifest.base.json`, `shared/constants.js`, and `package.json` during release builds. Run the build script to synchronize other constant updates.
 
 > [!CAUTION]
 > **NEVER** edit the files inside `extension/shared/` directly. They will be overwritten the next time the build script is run. Always edit the files in the root `shared/` directory and then run the build script.
