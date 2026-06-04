@@ -12,7 +12,7 @@
   <a href="https://chromewebstore.google.com/detail/koalasync/obbnmkmlaaddodakcbdljknjpagklifc"><img src="https://img.shields.io/badge/Chrome-Download-blue?logo=googlechrome&logoColor=white" alt="Chrome Extension"></a>
 </p>
 
-<p align="center"><a href="CHANGELOG.md"><b>New v2.0.8 Release!</b> — See what's changed</a></p>
+<p align="center"><a href="CHANGELOG.md"><b>New v2.1.0 Release!</b> — See what's changed</a></p>
 
 <p align="center"><i>KoalaSync is a lightweight Browser Extension and Relay Server for synchronized video playback on almost any website with a video element—YouTube, Twitch, Netflix, Emby, Jellyfin, and beyond. Built with a focus on <b>Data Sovereignty</b> and <b>Performance</b>.</i></p>
 
@@ -97,7 +97,7 @@ To verify your relay is reachable from outside, visit `https://your-domain.com` 
 ### 🌐 Localization & Translations
 
 Both the official KoalaSync website and the **v2.0 Browser Extension** feature full dynamic localization:
-- **Available Languages**: Support is included for 6 languages: English (`en`), German (`de`), French (`fr`), Spanish (`es`), Portuguese (Brazil) (`pt-BR`), and Russian (`ru`).
+- **Available Languages**: Support is included for 13 languages: English (`en`), German (`de`), French (`fr`), Spanish (`es`), Portuguese (Brazil) (`pt-BR`), Russian (`ru`), Italian (`it`), Polish (`pl`), Turkish (`tr`), Dutch (`nl`), Japanese (`ja`), Korean (`ko`), and European Portuguese (`pt`).
 - **Real-Time Extension Localization**: Inside the extension Settings panel, users can swap languages instantly. The entire interface, notifications, Empty States, and onboarding guides re-translate dynamically in real-time.
 - **Contributing**: We welcome community translations for both the website and the extension! Please refer directly to the [TRANSLATION.md](website/TRANSLATION.md) guide for step-by-step instructions on how to audit, refine, or add new languages.
 

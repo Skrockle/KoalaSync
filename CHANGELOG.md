@@ -4,6 +4,16 @@ All notable changes to the KoalaSync browser extension and relay server.
 
 ---
 
+## [v2.1.0] — 2026-06-04
+
+### Added
+- Added full translation support for 7 new languages to both the browser extension popup settings and landing website: Italian (`it`), Polish (`pl`), Turkish (`tr`), Dutch (`nl`), Japanese (`ja`), Korean (`ko`), and European Portuguese (`pt`).
+- Implemented robust, centralized browser system language detection mapping `pt-BR` to Brazilian Portuguese and other `pt` locales (like `pt-PT`) automatically to European Portuguese.
+- Added flag emojis to language selector dropdowns in both the extension popup and landing/utility web pages for quicker visual identification.
+- Added 181 translation keys parity validation suite checks for the new languages.
+
+---
+
 ## [v2.0.8] — 2026-06-03
 
 ### Fixed
