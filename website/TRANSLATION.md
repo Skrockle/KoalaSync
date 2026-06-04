@@ -24,12 +24,19 @@ We divide supported languages into two tiers: **Core Languages** (fully hand-cra
 
 | Language Code | Language Name | Verification Status | Rationale / Context |
 | :--- | :--- | :--- | :--- |
-| `en` | **English** | `100% Manually Verified` | Primary developer language and system default |
-| `de` | **German** | `100% Manually Verified` | Core market and compliance baseline |
-| `fr` | **French** | `Auto-Generated` | Needs manual native review and polishing |
-| `es` | **Spanish** | `Auto-Generated` | Needs manual native review and polishing |
-| `pt-BR` | **Portuguese (Brasil)** | `Auto-Generated` | Needs manual native review and polishing |
-| `ru` | **Russian** | `Auto-Generated` | Needs manual native review and polishing |
+| `en` | 🇬🇧 **English** | `100% Manually Verified` | Primary developer language and system default |
+| `de` | 🇩🇪 **German** | `100% Manually Verified` | Core market and compliance baseline |
+| `fr` | 🇫🇷 **French** | `Auto-Generated` | Needs manual native review and polishing |
+| `es` | 🇪🇸 **Spanish** | `Auto-Generated` | Needs manual native review and polishing |
+| `pt-BR` | 🇧🇷 **Portuguese (Brasil)** | `Auto-Generated` | Needs manual native review and polishing |
+| `ru` | 🇷🇺 **Russian** | `Auto-Generated` | Needs manual native review and polishing |
+| `it` | 🇮🇹 **Italian** | `Auto-Generated` | Needs manual native review and polishing |
+| `pl` | 🇵🇱 **Polish** | `Auto-Generated` | Needs manual native review and polishing |
+| `tr` | 🇹🇷 **Turkish** | `Auto-Generated` | Needs manual native review and polishing |
+| `nl` | 🇳🇱 **Dutch** | `Auto-Generated` | Needs manual native review and polishing |
+| `ja` | 🇯🇵 **Japanese** | `Auto-Generated` | Needs manual native review and polishing |
+| `ko` | 🇰🇷 **Korean** | `Auto-Generated` | Needs manual native review and polishing |
+| `pt` | 🇵🇹 **European Portuguese** | `Auto-Generated` | Needs manual native review and polishing |
 
 > [!WARNING]
 > **Autogeneration Quality Rule**
@@ -155,12 +162,19 @@ In **v2.0**, we extended full internationalization support to the **Browser Exte
 
 *   **Locales Directory:** [`extension/locales/`](file:///Users/koala/Documents/KoalaPlay/extension/locales/)
 *   **Active Dictionaries:**
-    *   [`en.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/en.json) (Baseline English)
-    *   [`de.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/de.json) (German)
-    *   [`fr.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/fr.json) (French)
-    *   [`es.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/es.json) (Spanish)
-    *   [`pt-BR.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/pt-BR.json) (Portuguese (Brasil))
-    *   [`ru.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/ru.json) (Russian)
+    *   [`en.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/en.json) (🇬🇧 Baseline English)
+    *   [`de.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/de.json) (🇩🇪 German)
+    *   [`fr.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/fr.json) (🇫🇷 French)
+    *   [`es.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/es.json) (🇪🇸 Spanish)
+    *   [`pt-BR.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/pt-BR.json) (🇧🇷 Portuguese (Brasil))
+    *   [`ru.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/ru.json) (🇷🇺 Russian)
+    *   [`it.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/it.json) (🇮🇹 Italian)
+    *   [`pl.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/pl.json) (🇵🇱 Polish)
+    *   [`tr.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/tr.json) (🇹🇷 Turkish)
+    *   [`nl.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/nl.json) (🇳🇱 Dutch)
+    *   [`ja.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/ja.json) (🇯🇵 Japanese)
+    *   [`ko.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/ko.json) (🇰🇷 Korean)
+    *   [`pt.json`](file:///Users/koala/Documents/KoalaPlay/extension/locales/pt.json) (🇵🇹 European Portuguese)
 *   **Translation Engine:** [`extension/i18n.js`](file:///Users/koala/Documents/KoalaPlay/extension/i18n.js)
 *   **Validation Script:** [`scripts/test-locales.js`](file:///Users/koala/Documents/KoalaPlay/scripts/test-locales.js)
 
