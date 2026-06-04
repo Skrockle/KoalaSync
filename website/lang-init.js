@@ -7,8 +7,22 @@
         'de': 'de',
         'fr': 'fr',
         'es': 'es',
-        'pt': 'pt-BR',
-        'ru': 'ru'
+        'pt-br': 'pt-BR',
+        'pt': 'pt',
+        'ru': 'ru',
+        'it': 'it',
+        'pl': 'pl',
+        'tr': 'tr',
+        'nl': 'nl',
+        'ja': 'ja',
+        'ko': 'ko'
+    };
+
+    var getBrowserLang = function() {
+        var fullLang = (navigator.language || '').toLowerCase();
+        if (fullLang.indexOf('pt-br') === 0) return 'pt-br';
+        if (fullLang.indexOf('pt') === 0) return 'pt';
+        return fullLang.split('-')[0];
     };
 
     // Check if we are on the root index page (either "/" or "/index.html" at the root)
@@ -16,7 +30,7 @@
 
     if (isRootIndex) {
         var savedLang = localStorage.getItem('koala_lang');
-        var browserLang = navigator.language.split('-')[0];
+        var browserLang = getBrowserLang();
         var preferredLang = savedLang || langMap[browserLang] || 'en';
 
         if (preferredLang !== 'en') {
@@ -41,7 +55,7 @@
         localStorage.setItem('koala_lang', activeLang);
     } else {
         var savedLang = localStorage.getItem('koala_lang');
-        var browserLang = navigator.language.split('-')[0];
+        var browserLang = getBrowserLang();
         activeLang = savedLang || langMap[browserLang] || 'en';
 
         // Dynamic utility pages currently only support English and German markup.

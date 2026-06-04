@@ -1,6 +1,6 @@
 import { EVENTS, PROTOCOL_VERSION, OFFICIAL_SERVER_URL, OFFICIAL_SERVER_TOKEN, EPISODE_LOBBY_TIMEOUT, FORCE_SYNC_TIMEOUT } from './shared/constants.js';
 import { generateUsername } from './shared/names.js';
-import { loadLocale, getMessage, SUPPORTED_LANGUAGES } from './i18n.js';
+import { loadLocale, getMessage, getSystemLanguage } from './i18n.js';
 
 
 // --- State Management ---
@@ -591,11 +591,7 @@ function showNotification(senderName, action) {
     chrome.storage.sync.get(['browserNotifications', 'locale'], async (settings) => {
         if (!settings.browserNotifications) return;
 
-        let lang = settings.locale;
-        if (!lang) {
-            const systemLang = (navigator.language || chrome.i18n.getUILanguage()).split('-')[0];
-            lang = SUPPORTED_LANGUAGES.includes(systemLang) ? systemLang : 'en';
-        }
+        const lang = settings.locale || getSystemLanguage();
         await loadLocale(lang);
 
         let labelKey = '';
@@ -762,11 +758,7 @@ function handleServerEvent(event, data) {
             broadcastConnectionStatus('disconnected');
             addLog(`Server Error: ${data.message}`, 'error');
             chrome.storage.sync.get(['locale'], async (settings) => {
-                let lang = settings.locale;
-                if (!lang) {
-                    const systemLang = (navigator.language || chrome.i18n.getUILanguage()).split('-')[0];
-                    lang = SUPPORTED_LANGUAGES.includes(systemLang) ? systemLang : 'en';
-                }
+                const lang = settings.locale || getSystemLanguage();
                 await loadLocale(lang);
                 chrome.notifications.create(`error_${Date.now()}`, {
                     type: 'basic',
@@ -1100,11 +1092,7 @@ function cancelEpisodeLobby(reason) {
     chrome.storage.sync.get(['browserNotifications', 'locale'], async (settings) => {
         if (!settings.browserNotifications) return;
 
-        let lang = settings.locale;
-        if (!lang) {
-            const systemLang = (navigator.language || chrome.i18n.getUILanguage()).split('-')[0];
-            lang = SUPPORTED_LANGUAGES.includes(systemLang) ? systemLang : 'en';
-        }
+        const lang = settings.locale || getSystemLanguage();
         await loadLocale(lang);
 
         const reasonKey = reasonKeys[reason];

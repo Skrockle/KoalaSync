@@ -1,5 +1,5 @@
 // extension/i18n.js
-export const SUPPORTED_LANGUAGES = ['en', 'de', 'fr', 'es', 'pt-BR', 'ru'];
+export const SUPPORTED_LANGUAGES = ['en', 'de', 'fr', 'es', 'pt-BR', 'ru', 'it', 'pl', 'tr', 'nl', 'ja', 'ko', 'pt'];
 export const DEFAULT_LANGUAGE = 'en';
 
 let activeDictionary = {};
@@ -86,4 +86,20 @@ export function translateDOM() {
         const key = el.getAttribute('data-i18n-placeholder');
         el.setAttribute('placeholder', getMessage(key));
     });
+}
+
+/**
+ * Detects and maps the user's system language to the best supported locale.
+ * @returns {string} Supported language code
+ */
+export function getSystemLanguage() {
+    const uiLang = (typeof chrome !== 'undefined' && chrome.i18n && chrome.i18n.getUILanguage) 
+        ? chrome.i18n.getUILanguage() 
+        : '';
+    const fullLang = (navigator.language || uiLang || '').toLowerCase();
+    if (fullLang.startsWith('pt-br')) {
+        return 'pt-BR';
+    }
+    const baseLang = fullLang.split('-')[0];
+    return SUPPORTED_LANGUAGES.includes(baseLang) ? baseLang : DEFAULT_LANGUAGE;
 }

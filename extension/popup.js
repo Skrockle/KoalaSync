@@ -1,7 +1,7 @@
 import { EVENTS, OFFICIAL_LANDING_PAGE_URL } from './shared/constants.js';
 import { BLACKLIST_DOMAINS } from './shared/blacklist.js';
 import { getAvatarForName, generateUsername, USERNAME_ADJECTIVES, USERNAME_NOUNS } from './shared/names.js';
-import { loadLocale, translateDOM, getMessage } from './i18n.js';
+import { loadLocale, translateDOM, getMessage, getSystemLanguage } from './i18n.js';
 
 
 const elements = {
@@ -113,8 +113,7 @@ async function init() {
 
     let activeLang = data.locale;
     if (!activeLang) {
-        const systemLang = (navigator.language || chrome.i18n.getUILanguage()).split('-')[0];
-        activeLang = ['en', 'de', 'fr', 'es', 'pt', 'ru'].includes(systemLang) ? (systemLang === 'pt' ? 'pt-BR' : systemLang) : 'en';
+        activeLang = getSystemLanguage();
         chrome.storage.sync.set({ locale: activeLang });
     }
 
