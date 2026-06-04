@@ -161,5 +161,7 @@
   "MOCK_29": "Historial completo",
   "MOCK_30": "Registros (últimos 50)",
   "MOCK_31": "BORRAR",
-  "MOCK_32": "CLEAR"
+  "MOCK_32": "CLEAR",
+  "FOOTER_LEGAL_LINK": "imprint",
+  "FOOTER_PRIVACY_LINK": "privacy"
 }

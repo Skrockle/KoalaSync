@@ -161,5 +161,7 @@
   "MOCK_29": "Video-Debug-Info",
   "MOCK_30": "Aktivitätsverlauf",
   "MOCK_31": "Protokoll (Letzte 50)",
-  "MOCK_32": "LÖSCHEN"
+  "MOCK_32": "LÖSCHEN",
+  "FOOTER_LEGAL_LINK": "de/impressum",
+  "FOOTER_PRIVACY_LINK": "de/datenschutz"
 }

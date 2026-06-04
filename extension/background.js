@@ -690,6 +690,10 @@ function addToHistory(action, senderId) {
 
 // --- Event Handlers ---
 function handleServerEvent(event, data) {
+    if (!data) {
+        addLog(`Ignored server event ${event} due to empty payload`, 'warn');
+        return;
+    }
     switch (event) {
         case EVENTS.ROOM_DATA:
             currentRoom = data;
@@ -1292,6 +1296,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 async function handleAsyncMessage(message, sender, sendResponse) {
+    if (!message) return;
     await ensureState();
 
     if (message.type === 'CONNECT') {
@@ -1448,15 +1453,19 @@ async function handleAsyncMessage(message, sender, sendResponse) {
             localSeq++;
             chrome.storage.session.set({ localSeq });
             updateLastAction(message.action, 'You', timestamp);
-            lastActionState.targetTime = message.payload?.targetTime !== undefined ? message.payload.targetTime : message.payload?.currentTime;
+            
+            const payload = message.payload || {};
+            lastActionState.targetTime = payload.targetTime !== undefined ? payload.targetTime : payload.currentTime;
             if (storageInitialized) chrome.storage.session.set({ lastActionState });
-            message.payload.actionTimestamp = timestamp;
-            message.payload.seq = localSeq;
+            
+            payload.actionTimestamp = timestamp;
+            payload.seq = localSeq;
+            message.payload = payload;
             
             // Local Reactive Update
             updateLocalPeerState(peerId, {
                 playbackState: message.action === EVENTS.PLAY ? 'playing' : (message.action === EVENTS.PAUSE ? 'paused' : undefined),
-                currentTime: message.payload.currentTime !== undefined ? message.payload.currentTime : (message.payload.targetTime !== undefined ? message.payload.targetTime : undefined)
+                currentTime: payload.currentTime !== undefined ? payload.currentTime : (payload.targetTime !== undefined ? payload.targetTime : undefined)
             });
 
             if (message.action === EVENTS.FORCE_SYNC_PREPARE) {

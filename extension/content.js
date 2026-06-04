@@ -344,6 +344,7 @@
 
     // Listen for commands from background.js
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        if (!message) return;
         if (message.action === 'get_current_time') {
             const video = findVideo();
             sendResponse({ currentTime: video ? video.currentTime : null });
@@ -366,7 +367,7 @@
                 if (isDifferentEpisode(senderTitle, myTitle)) {
                     reportLog(`Episode mismatch: sender="${senderTitle || '?'}" vs mine="${myTitle || '?'}" — skipping ${action}. Disable "Auto-Sync next Episode" in settings if this causes issues.`, 'warn');
                     if (action !== EVENTS.FORCE_SYNC_PREPARE && action !== EVENTS.FORCE_SYNC_EXECUTE) {
-                        chrome.runtime.sendMessage({ type: 'CMD_ACK', actionTimestamp: message.actionTimestamp, commandSenderId: message.commandSenderId });
+                        chrome.runtime.sendMessage({ type: 'CMD_ACK', actionTimestamp: message.actionTimestamp, commandSenderId: message.commandSenderId }).catch(() => {});
                     }
                     return;
                 }
@@ -395,7 +396,11 @@
                     _setSuppress('paused');
                     _setSuppress('seek');
                     video.pause();
-                    video.currentTime = payload.targetTime;
+                    try {
+                        video.currentTime = payload.targetTime;
+                    } catch (e) {
+                        reportLog(`Force Sync Seek Error: ${e.message}`, 'error');
+                    }
                     pollSeekReady(payload.targetTime).then((ready) => {
                         chrome.runtime.sendMessage({ type: 'FORCE_SYNC_ACK' }).catch(() => {});
                         if (ready) {
@@ -622,7 +627,7 @@
                 mediaTitle: mediaTitle,
                 timestamp: Date.now()
             }
-        });
+        }).catch(() => {});
 
         // Trigger proactive heartbeat to push stabilized state
         scheduleProactiveHeartbeat();

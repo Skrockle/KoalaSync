@@ -161,5 +161,7 @@
   "MOCK_29": "Historique complet d'actions",
   "MOCK_30": "Logs (50 derniers)",
   "MOCK_31": "EFFACER",
-  "MOCK_32": "CLEAR"
+  "MOCK_32": "CLEAR",
+  "FOOTER_LEGAL_LINK": "imprint",
+  "FOOTER_PRIVACY_LINK": "privacy"
 }

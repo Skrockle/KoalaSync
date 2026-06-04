@@ -161,5 +161,7 @@
   "MOCK_29": "Info Debug Video",
   "MOCK_30": "Cronologia Azioni Completa",
   "MOCK_31": "Log (Ultimi 50)",
-  "MOCK_32": "PULISCI"
+  "MOCK_32": "PULISCI",
+  "FOOTER_LEGAL_LINK": "imprint",
+  "FOOTER_PRIVACY_LINK": "privacy"
 }

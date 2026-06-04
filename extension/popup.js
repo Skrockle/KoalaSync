@@ -1380,6 +1380,7 @@ async function refreshLogs() {
 }
 
 chrome.runtime.onMessage.addListener((msg) => {
+    if (!msg) return;
     if (msg.type === 'LOG_UPDATE') {
         refreshLogs();
         if (msg.log && msg.log.type === 'error') {

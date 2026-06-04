@@ -161,5 +161,7 @@
   "MOCK_29": "Video Hata Ayıklama Bilgisi",
   "MOCK_30": "Tam İşlem Geçmişi",
   "MOCK_31": "Günlükler (Son 50)",
-  "MOCK_32": "TEMİZLE"
+  "MOCK_32": "TEMİZLE",
+  "FOOTER_LEGAL_LINK": "imprint",
+  "FOOTER_PRIVACY_LINK": "privacy"
 }

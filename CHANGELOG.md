@@ -12,6 +12,18 @@ All notable changes to the KoalaSync browser extension and relay server.
 - Added flag emojis to language selector dropdowns in both the extension popup and landing/utility web pages for quicker visual identification.
 - Added 181 translation keys parity validation suite checks for the new languages.
 
+### Fixed & Hardened (Extension Audit)
+- Guarded all website `localStorage` interactions to prevent initialization/join flow script failures on privacy-hardened or cookie-blocked browser configurations.
+- Added robust validation null-guards to `chrome.runtime.onMessage` listeners across all extension scripts (`bridge.js`, `content.js`, `background.js`, `popup.js`) to reject unexpected runtime messages.
+- Guarded CustomEvent payload destructuring in `bridge.js` to ensure stability when receiving third-party page events.
+- Wrapped `video.currentTime` seeking adjustments during forced sync in content scripts with exception handling to absorb uninitialized video state DOMExceptions.
+- Added payload validation guards on incoming Socket.IO events within the background script's event handlers to secure against malformed server updates.
+- Prevented noisy browser console exceptions from context invalidation in target tabs by catching promise rejections on extension message dispatches.
+
+### Performance
+- Implemented in-memory language dictionary caching in the background script to completely avoid redundant extension package filesystem reads during translations.
+
+
 ---
 
 ## [v2.0.8] — 2026-06-03

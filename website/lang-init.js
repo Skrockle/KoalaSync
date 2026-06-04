@@ -2,6 +2,22 @@
     var html = document.documentElement;
     var path = window.location.pathname;
 
+    var safeGetLocalStorage = function(key) {
+        try {
+            return localStorage.getItem(key);
+        } catch (_) {
+            return null;
+        }
+    };
+
+    var safeSetLocalStorage = function(key, val) {
+        try {
+            localStorage.setItem(key, val);
+        } catch (_) {
+            return;
+        }
+    };
+
     // Mapping of browser language codes to KoalaSync locale directories
     var langMap = {
         'de': 'de',
@@ -29,7 +45,7 @@
     var isRootIndex = path === '/' || path === '/index.html' || path === '';
 
     if (isRootIndex) {
-        var savedLang = localStorage.getItem('koala_lang');
+        var savedLang = safeGetLocalStorage('koala_lang');
         var browserLang = getBrowserLang();
         var preferredLang = savedLang || langMap[browserLang] || 'en';
 
@@ -52,9 +68,12 @@
     }
 
     if (hasStaticLang) {
-        localStorage.setItem('koala_lang', activeLang);
+        var isLegal = path.indexOf('impressum') !== -1 || path.indexOf('datenschutz') !== -1 || path.indexOf('imprint') !== -1 || path.indexOf('privacy') !== -1;
+        if (!isLegal) {
+            safeSetLocalStorage('koala_lang', activeLang);
+        }
     } else {
-        var savedLang = localStorage.getItem('koala_lang');
+        var savedLang = safeGetLocalStorage('koala_lang');
         var browserLang = getBrowserLang();
         activeLang = savedLang || langMap[browserLang] || 'en';
 

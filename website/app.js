@@ -1,6 +1,22 @@
 // KoalaSync Landing Page Logic
 
 document.addEventListener('DOMContentLoaded', () => {
+    const safeGetLocalStorage = (key) => {
+        try {
+            return localStorage.getItem(key);
+        } catch (_) {
+            return null;
+        }
+    };
+
+    const safeSetLocalStorage = (key, val) => {
+        try {
+            localStorage.setItem(key, val);
+        } catch (_) {
+            return;
+        }
+    };
+
     // Scroll Reveal Logic (IntersectionObserver for performance)
     const revealElements = document.querySelectorAll('[data-reveal]');
     
@@ -456,7 +472,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Dynamically localize home links on root dynamic pages (impressum, datenschutz, join)
     const localizeHomeLinks = () => {
-        const activeLang = localStorage.getItem('koala_lang') || (navigator.language.startsWith('de') ? 'de' : 'en');
+        const activeLang = safeGetLocalStorage('koala_lang') || (navigator.language.startsWith('de') ? 'de' : 'en');
         const path = window.location.pathname;
         const pathSegments = path.split('/');
         const isSubdir = pathSegments.some(seg => ['de', 'fr', 'es', 'pt-BR', 'ru', 'it', 'pl', 'tr', 'nl', 'ja', 'ko', 'pt'].includes(seg));
@@ -477,11 +493,39 @@ document.addEventListener('DOMContentLoaded', () => {
         const path = window.location.pathname;
         
         // Save the user's preference
-        localStorage.setItem('koala_lang', newLang);
+        safeSetLocalStorage('koala_lang', newLang);
+        
+        const isLegalImprint = path.includes('impressum') || path.includes('imprint');
+        const isLegalPrivacy = path.includes('datenschutz') || path.includes('privacy');
+        
+        if (isLegalImprint) {
+            let target;
+            const hasHtml = path.endsWith('.html');
+            if (newLang === 'de') {
+                target = hasHtml ? 'de/impressum.html' : 'de/impressum';
+                if (path.includes('/de/')) target = hasHtml ? 'impressum.html' : 'impressum';
+            } else {
+                target = hasHtml ? 'imprint.html' : 'imprint';
+                if (path.includes('/de/')) target = hasHtml ? '../imprint.html' : '../imprint';
+            }
+            window.location.href = target;
+            return;
+        } else if (isLegalPrivacy) {
+            let target;
+            const hasHtml = path.endsWith('.html');
+            if (newLang === 'de') {
+                target = hasHtml ? 'de/datenschutz.html' : 'de/datenschutz';
+                if (path.includes('/de/')) target = hasHtml ? 'datenschutz.html' : 'datenschutz';
+            } else {
+                target = hasHtml ? 'privacy.html' : 'privacy';
+                if (path.includes('/de/')) target = hasHtml ? '../privacy.html' : '../privacy';
+            }
+            window.location.href = target;
+            return;
+        }
         
         // Determine if we are on a static landing page versus a dynamic utility page
-        const isLegalOrJoin = path.includes('impressum') || path.includes('datenschutz') || path.includes('join');
-        const isIndex = !isLegalOrJoin;
+        const isIndex = !path.includes('join');
         
         if (isIndex) {
             // Static navigation: Route to correct subdirectory
@@ -533,20 +577,47 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
+    // Dynamically adjust language select width to fit the selected option's text length
+    const adjustDropdownWidth = () => {
+        document.querySelectorAll('.lang-dropdown').forEach(select => {
+            const tempSpan = document.createElement('span');
+            const style = window.getComputedStyle(select);
+            tempSpan.style.fontFamily = style.fontFamily;
+            tempSpan.style.fontSize = style.fontSize;
+            tempSpan.style.fontWeight = style.fontWeight;
+            tempSpan.style.visibility = 'hidden';
+            tempSpan.style.position = 'absolute';
+            tempSpan.style.whiteSpace = 'nowrap';
+            
+            const activeOption = select.options[select.selectedIndex];
+            if (activeOption) {
+                tempSpan.textContent = activeOption.textContent;
+                document.body.appendChild(tempSpan);
+                const textWidth = tempSpan.getBoundingClientRect().width;
+                select.style.width = (textWidth + 18) + 'px';
+                document.body.removeChild(tempSpan);
+            }
+        });
+    };
+
     // Register change event listener for the dropdowns
     document.querySelectorAll('.lang-dropdown').forEach(select => {
-        select.addEventListener('change', handleLanguageChange);
+        select.addEventListener('change', (e) => {
+            handleLanguageChange(e);
+            adjustDropdownWidth();
+        });
     });
 
     // Initialize language select elements to show the current preferred language
     const initLanguageSelectorValue = () => {
-        const savedLang = localStorage.getItem('koala_lang');
+        const savedLang = safeGetLocalStorage('koala_lang');
         const browserLang = navigator.language.startsWith('de') ? 'de' : 'en';
         const activePref = savedLang || browserLang;
         
         document.querySelectorAll('.lang-dropdown').forEach(select => {
             select.value = activePref;
         });
+        adjustDropdownWidth();
     };
 
     // Impressum Email Obfuscation Click Reveal

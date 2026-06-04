@@ -203,13 +203,25 @@ async function compile() {
         }
     }
 
-    // ── 4. Copy static HTML files (join, impressum, datenschutz) ──
+    // ── 4. Copy static HTML files ──
     console.log('Copying static pages...');
-    const staticHtml = ['join.html', 'impressum.html', 'datenschutz.html'];
-    for (const file of staticHtml) {
-        const src = path.join(websiteDir, file);
-        const dest = path.join(wwwDir, file);
-        if (fs.existsSync(src)) { fs.copyFileSync(src, dest); console.log(`  Copied: ${file}`); }
+    fs.mkdirSync(path.join(wwwDir, 'de'), { recursive: true });
+    const staticMappings = [
+        { src: 'join.html', dest: 'join.html' },
+        { src: 'imprint.html', dest: 'imprint.html' },
+        { src: 'privacy.html', dest: 'privacy.html' },
+        { src: 'impressum-de.html', dest: 'de/impressum.html' },
+        { src: 'datenschutz-de.html', dest: 'de/datenschutz.html' },
+        { src: 'impressum.html', dest: 'impressum.html' },
+        { src: 'datenschutz.html', dest: 'datenschutz.html' }
+    ];
+    for (const mapping of staticMappings) {
+        const src = path.join(websiteDir, mapping.src);
+        const dest = path.join(wwwDir, mapping.dest);
+        if (fs.existsSync(src)) {
+            fs.copyFileSync(src, dest);
+            console.log(`  Copied: ${mapping.src} → ${mapping.dest}`);
+        }
     }
 
     // ── 5. Copy generic static files ──

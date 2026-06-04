@@ -3,6 +3,8 @@ export const SUPPORTED_LANGUAGES = ['en', 'de', 'fr', 'es', 'pt-BR', 'ru', 'it',
 export const DEFAULT_LANGUAGE = 'en';
 
 let activeDictionary = {};
+const dictionaryCache = {};
+let currentLanguage = null;
 
 /**
  * Resolves, loads, and merges the target language with the English baseline fallback.
@@ -11,13 +13,30 @@ let activeDictionary = {};
 export async function loadLocale(langCode) {
     const resolvedLang = SUPPORTED_LANGUAGES.includes(langCode) ? langCode : DEFAULT_LANGUAGE;
     
+    if (currentLanguage === resolvedLang && Object.keys(activeDictionary).length > 0) {
+        return;
+    }
+
+    if (dictionaryCache[resolvedLang]) {
+        activeDictionary = dictionaryCache[resolvedLang];
+        currentLanguage = resolvedLang;
+        return;
+    }
+    
     try {
         // Load Baseline English
-        const enResponse = await fetch(chrome.runtime.getURL(`locales/${DEFAULT_LANGUAGE}.json`));
-        const enDict = await enResponse.json();
+        let enDict;
+        if (dictionaryCache[DEFAULT_LANGUAGE]) {
+            enDict = dictionaryCache[DEFAULT_LANGUAGE];
+        } else {
+            const enResponse = await fetch(chrome.runtime.getURL(`locales/${DEFAULT_LANGUAGE}.json`));
+            enDict = await enResponse.json();
+            dictionaryCache[DEFAULT_LANGUAGE] = enDict;
+        }
         
         if (resolvedLang === DEFAULT_LANGUAGE) {
             activeDictionary = enDict;
+            currentLanguage = resolvedLang;
             return;
         }
         
@@ -26,15 +45,27 @@ export async function loadLocale(langCode) {
         const targetDict = await targetResponse.json();
         
         // Airtight Fallback Merge: target overrides en, missing elements fallback to en
-        activeDictionary = Object.assign({}, enDict, targetDict);
+        const mergedDict = Object.assign({}, enDict, targetDict);
+        dictionaryCache[resolvedLang] = mergedDict;
+        activeDictionary = mergedDict;
+        currentLanguage = resolvedLang;
     } catch (err) {
         console.error('[i18n] Failed to load locale. Defaulting to English:', err);
         // Fallback directly to static English if fetching fails
         try {
-            const enResponse = await fetch(chrome.runtime.getURL(`locales/${DEFAULT_LANGUAGE}.json`));
-            activeDictionary = await enResponse.json();
+            let enDict;
+            if (dictionaryCache[DEFAULT_LANGUAGE]) {
+                enDict = dictionaryCache[DEFAULT_LANGUAGE];
+            } else {
+                const enResponse = await fetch(chrome.runtime.getURL(`locales/${DEFAULT_LANGUAGE}.json`));
+                enDict = await enResponse.json();
+                dictionaryCache[DEFAULT_LANGUAGE] = enDict;
+            }
+            activeDictionary = enDict;
+            currentLanguage = DEFAULT_LANGUAGE;
         } catch (_) {
             activeDictionary = {};
+            currentLanguage = null;
         }
     }
 }
@@ -46,7 +77,7 @@ export async function loadLocale(langCode) {
  * @returns {string} Translated string or the key itself
  */
 export function getMessage(key, placeholders = null) {
-    let msg = activeDictionary[key] || key;
+    let msg = activeDictionary[key] !== undefined ? String(activeDictionary[key]) : key;
     if (placeholders && typeof placeholders === 'object') {
         for (const [k, v] of Object.entries(placeholders)) {
             msg = msg.replace(new RegExp(`{${k}}`, 'g'), v);

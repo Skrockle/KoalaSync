@@ -10,6 +10,7 @@ document.documentElement.dataset.koalasyncInstalled = 'true';
 
 // 2. Listen for Join Requests from the Website
 window.addEventListener('KOALASYNC_JOIN_REQUEST', (e) => {
+    if (!e || !e.detail) return;
     const { roomId, password, useCustomServer, serverUrl } = e.detail;
     chrome.runtime.sendMessage({ 
         type: 'WEB_JOIN_REQUEST', 
@@ -17,11 +18,12 @@ window.addEventListener('KOALASYNC_JOIN_REQUEST', (e) => {
         password,
         useCustomServer,
         serverUrl
-    });
+    }).catch(() => {});
 });
 
 // 3. Listen for Status Updates from the Extension and relay to Website
 chrome.runtime.onMessage.addListener((msg) => {
+    if (!msg) return;
     if (msg.type === 'JOIN_STATUS') {
         const detail = { success: msg.success, message: msg.message };
         // Firefox MV3 content scripts run in an isolated world. When dispatching
