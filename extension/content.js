@@ -126,8 +126,8 @@
     // Returns null if no episode pattern found.
     function extractEpisodeId(title) {
         if (!title || typeof title !== 'string') return null;
-        // S01E01 patterns (with optional spaces, dashes, dots between S and E)
-        const se = title.match(/S(?:eason\s*)?(\d+)[\s\-\.]*E(?:pisode\s*)?(\d+)/i);
+        // S01E01 patterns (with any non-alphanumeric separator between season and E)
+        const se = title.match(/S(?:eason\s*)?(\d+)[^a-zA-Z0-9]*E(?:pisode\s*)?(\d+)/i);
         if (se) return `S${String(se[1]).padStart(2, '0')}E${String(se[2]).padStart(2, '0')}`;
         // "Episode X", "Folge X", "Ep. X", "#X"
         const ep = title.match(/(?:Episode|Folge|Ep\.?|#)\s*(\d+)/i);

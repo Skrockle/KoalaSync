@@ -4,10 +4,14 @@ All notable changes to the KoalaSync browser extension and relay server.
 
 ---
 
-## [v2.1.1] — 2026-06-04
+## [v2.1.2] — 2026-06-06
+
+### Fixed
+- **Episode guard regex**: Fixed `isDifferentEpisode()` not detecting episode changes when the MediaSession title uses `Sxx:Exx` format (colon separator, as used by Jellyfin/Emby). The regex character class `[\s\-\.]` was replaced with `[^a-zA-Z0-9]` to match **any** non-alphanumeric separator between season and episode numbers, preventing play/pause/seek commands from a different episode leaking through and incorrectly manipulating a peer's playback.
+- **Per-device storage isolation**: Migrated `username`, `roomId`, `password`, `serverUrl`, and `useCustomServer` from `chrome.storage.sync` (synced across Google account) to `chrome.storage.local` (per-device). This prevents the extension from automatically joining the same room with the same name on multiple devices. Existing user data is migrated silently on first run; all preferences (`filterNoise`, `autoSyncNextEpisode`, etc.) remain synced.
 
 ### Changed
-- Added progressive enhancement using `appearance: base-select` to support styling of country flag emojis in expanded language selectors on newer Chromium browsers.
+- Added one-time migration fallback in `getSettings()` and popup `init()` to copy existing user settings from `storage.sync` to `storage.local` on first launch after the update.
 
 ---
 

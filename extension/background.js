@@ -230,35 +230,38 @@ async function getPeerId() {
 }
 
 async function getSettings() {
-    return new Promise((resolve, reject) => {
-        chrome.storage.sync.get(['serverUrl', 'useCustomServer', 'roomId', 'password', 'username'], (data) => {
-            if (chrome.runtime.lastError) {
-                reject(new Error(chrome.runtime.lastError.message));
-                return;
-            }
-            let username = data.username;
-            if (!username) {
-                username = generateUsername();
-                chrome.storage.sync.set({ username }, () => {
-                    resolve({
-                        serverUrl: data.serverUrl || '',
-                        useCustomServer: data.useCustomServer || false,
-                        roomId: data.roomId || '',
-                        password: data.password || '',
-                        username: username
-                    });
-                });
-            } else {
-                resolve({
-                    serverUrl: data.serverUrl || '',
-                    useCustomServer: data.useCustomServer || false,
-                    roomId: data.roomId || '',
-                    password: data.password || '',
-                    username: username
-                });
-            }
+    // Try local (per-device) first, fall back to sync for migration
+    let data = await chrome.storage.local.get(['serverUrl', 'useCustomServer', 'roomId', 'password', 'username']);
+    let migrated = false;
+    if (!data.username) {
+        const syncData = await chrome.storage.sync.get(['serverUrl', 'useCustomServer', 'roomId', 'password', 'username']);
+        if (syncData.username || syncData.roomId) {
+            data = syncData;
+            migrated = true;
+        }
+    }
+    let username = data.username;
+    if (!username) {
+        username = generateUsername();
+    }
+    if (migrated) {
+        await chrome.storage.local.set({ 
+            serverUrl: data.serverUrl || '',
+            useCustomServer: data.useCustomServer || false,
+            roomId: data.roomId || '',
+            password: data.password || '',
+            username
         });
-    });
+    } else if (!data.username) {
+        await chrome.storage.local.set({ username });
+    }
+    return {
+        serverUrl: data.serverUrl || '',
+        useCustomServer: data.useCustomServer || false,
+        roomId: data.roomId || '',
+        password: data.password || '',
+        username
+    };
 }
 
 function addLog(message, type = 'info') {
@@ -382,7 +385,7 @@ async function leaveRoomAfterIdleGrace(reason) {
         lastContentHeartbeatAt: null,
         episodeLobby: null
     }).catch(() => {});
-    await chrome.storage.sync.set({ roomId: '', password: '' }).catch(() => {});
+    await chrome.storage.local.set({ roomId: '', password: '' }).catch(() => {});
     addLog(reason, 'info');
     chrome.runtime.sendMessage({ type: 'PEER_UPDATE', peers: [] }).catch(() => {});
     updateBadgeStatus();
@@ -1396,7 +1399,7 @@ async function handleAsyncMessage(message, sender, sendResponse) {
     } else if (message.type === 'WEB_JOIN_REQUEST') {
         const { roomId: rawRoomId, password, useCustomServer, serverUrl } = message;
         const roomId = typeof rawRoomId === 'string' ? rawRoomId.replace(/[^a-zA-Z0-9\-]/g, '') : '';
-        chrome.storage.sync.set({ 
+        chrome.storage.local.set({ 
             roomId, 
             password,
             useCustomServer: !!useCustomServer,

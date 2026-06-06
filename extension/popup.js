@@ -108,10 +108,28 @@ function setRoomRefreshCooldown() {
 
 // --- Initialization ---
 async function init() {
-    // Load Settings
-    const data = await chrome.storage.sync.get(['serverUrl', 'useCustomServer', 'roomId', 'password', 'filterNoise', 'username', 'autoSyncNextEpisode', 'forceSyncMode', 'browserNotifications', 'autoCopyInvite', 'locale']);
+    // Load per-device settings (local) + synced preferences (sync)
+    const [localData, syncData] = await Promise.all([
+        chrome.storage.local.get(['serverUrl', 'useCustomServer', 'roomId', 'password', 'username']),
+        chrome.storage.sync.get(['filterNoise', 'autoSyncNextEpisode', 'forceSyncMode', 'browserNotifications', 'autoCopyInvite', 'locale'])
+    ]);
 
-    let activeLang = data.locale;
+    // Migrate from sync → local for existing users
+    const hadLocalData = !!(localData.username || localData.roomId);
+    let syncHadData = false;
+    if (!hadLocalData) {
+        const oldSync = await chrome.storage.sync.get(['serverUrl', 'useCustomServer', 'roomId', 'password', 'username']);
+        syncHadData = !!(oldSync.username || oldSync.roomId);
+        if (syncHadData) {
+            localData.serverUrl = oldSync.serverUrl;
+            localData.useCustomServer = oldSync.useCustomServer;
+            localData.roomId = oldSync.roomId;
+            localData.password = oldSync.password;
+            localData.username = oldSync.username;
+        }
+    }
+
+    let activeLang = syncData.locale;
     if (!activeLang) {
         activeLang = getSystemLanguage();
         chrome.storage.sync.set({ locale: activeLang });
@@ -122,21 +140,31 @@ async function init() {
     
     if (elements.langSelector) elements.langSelector.value = activeLang;
     
-    let username = data.username;
+    let username = localData.username;
     if (!username) {
         username = generateUsername();
-        chrome.storage.sync.set({ username });
+        await chrome.storage.local.set({ username });
+    }
+    if (syncHadData) {
+        // Persist migrated room data to local (one-time migration)
+        await chrome.storage.local.set({
+            serverUrl: localData.serverUrl || '',
+            useCustomServer: localData.useCustomServer || false,
+            roomId: localData.roomId || '',
+            password: localData.password || '',
+            username
+        });
     }
     
-    elements.serverUrl.value = data.serverUrl || '';
-    elements.roomId.value = data.roomId || '';
-    elements.password.value = data.password || '';
+    elements.serverUrl.value = localData.serverUrl || '';
+    elements.roomId.value = localData.roomId || '';
+    elements.password.value = localData.password || '';
     elements.username.value = username;
-    if (elements.filterNoise) elements.filterNoise.checked = data.filterNoise !== false;
-    if (elements.autoSyncNextEpisode) elements.autoSyncNextEpisode.checked = data.autoSyncNextEpisode !== false;
-    if (elements.forceSyncMode) elements.forceSyncMode.value = data.forceSyncMode || 'jump-to-others';
-    if (elements.browserNotifications) elements.browserNotifications.checked = data.browserNotifications === true;
-    if (elements.autoCopyInvite) elements.autoCopyInvite.checked = data.autoCopyInvite !== false;
+    if (elements.filterNoise) elements.filterNoise.checked = syncData.filterNoise !== false;
+    if (elements.autoSyncNextEpisode) elements.autoSyncNextEpisode.checked = syncData.autoSyncNextEpisode !== false;
+    if (elements.forceSyncMode) elements.forceSyncMode.value = syncData.forceSyncMode || 'jump-to-others';
+    if (elements.browserNotifications) elements.browserNotifications.checked = syncData.browserNotifications === true;
+    if (elements.autoCopyInvite) elements.autoCopyInvite.checked = syncData.autoCopyInvite !== false;
     
     // Set Version Info
     const versionTxt = `v${chrome.runtime.getManifest().version}`;
@@ -145,14 +173,14 @@ async function init() {
     const popupVerEl = document.getElementById('popupVersion');
     if (popupVerEl) popupVerEl.textContent = versionTxt;
 
-    if (data.useCustomServer) {
+    if (localData.useCustomServer) {
         setServerMode(true);
     } else {
         setServerMode(false);
     }
 
-    toggleUIState(!!data.roomId);
-    updateUI(data.roomId, data.password, data.useCustomServer, data.serverUrl);
+    toggleUIState(!!localData.roomId);
+    updateUI(localData.roomId, localData.password, localData.useCustomServer, localData.serverUrl);
     refreshLogs();
     refreshHistory();
 
@@ -881,7 +909,7 @@ function checkInviteLink() {
                     if (serverUrl || useCustomServer) {
                         elements.serverUrl.value = serverUrl;
                         setServerMode(useCustomServer);
-                        chrome.storage.sync.set({ serverUrl, useCustomServer });
+                        chrome.storage.local.set({ serverUrl, useCustomServer });
                     }
 
                     elements.joinBtn.style.boxShadow = '0 0 15px var(--accent)';
@@ -898,9 +926,9 @@ function setServerMode(custom) {
     elements.serverOfficial.classList.toggle('active', !custom);
     elements.serverCustom.classList.toggle('active', custom);
     elements.serverUrl.style.display = custom ? 'block' : 'none';
-    chrome.storage.sync.get(['useCustomServer', 'serverUrl'], (data) => {
+    chrome.storage.local.get(['useCustomServer', 'serverUrl'], (data) => {
         if (data.useCustomServer !== custom) {
-            chrome.storage.sync.set({ useCustomServer: custom });
+            chrome.storage.local.set({ useCustomServer: custom });
             if (!custom || data.serverUrl) {
                 chrome.runtime.sendMessage({ type: 'RETRY_CONNECT' });
             }
@@ -936,11 +964,11 @@ elements.forceSyncMode.addEventListener('change', () => {
 });
 
 elements.serverUrl.addEventListener('input', () => {
-    chrome.storage.sync.set({ serverUrl: elements.serverUrl.value });
+    chrome.storage.local.set({ serverUrl: elements.serverUrl.value });
 });
 
 elements.username.addEventListener('change', () => {
-    chrome.storage.sync.set({ username: elements.username.value });
+    chrome.storage.local.set({ username: elements.username.value });
 });
 
 if (elements.langSelector) {
@@ -961,14 +989,14 @@ if (elements.langSelector) {
                 lastKnownPeers = res.peers || [];
                 if (res.lastActionState) updateLastActionUI(res.lastActionState, res.peers);
                 
-                const data = await chrome.storage.sync.get(['roomId', 'password', 'useCustomServer', 'serverUrl']);
+                const data = await chrome.storage.local.get(['roomId', 'password', 'useCustomServer', 'serverUrl']);
                 updateUI(data.roomId, data.password, data.useCustomServer, data.serverUrl);
                 
                 await populateTabs(res.peers, res.targetTabId);
                 if (res.episodeLobby) updateLobbyUI(res.episodeLobby, res.peers);
             } else {
                 applyConnectionStatus('disconnected');
-                const data = await chrome.storage.sync.get(['roomId', 'password', 'useCustomServer', 'serverUrl']);
+                const data = await chrome.storage.local.get(['roomId', 'password', 'useCustomServer', 'serverUrl']);
                 updateUI(data.roomId, data.password, data.useCustomServer, data.serverUrl);
                 await populateTabs();
             }
@@ -984,7 +1012,7 @@ elements.serverUrl.addEventListener('change', () => {
     if (url && !url.includes('://')) {
         url = 'ws://' + url;
         elements.serverUrl.value = url;
-        chrome.storage.sync.set({ serverUrl: url });
+        chrome.storage.local.set({ serverUrl: url });
     }
     if (elements.serverCustom.classList.contains('active') && url) {
         chrome.runtime.sendMessage({ type: 'RETRY_CONNECT' });
@@ -1098,7 +1126,7 @@ elements.joinBtn.addEventListener('click', async () => {
         window.justCreatedRoom = true;
     }
 
-    await chrome.storage.sync.set({ serverUrl, roomId, password, useCustomServer: useCustom });
+    await chrome.storage.local.set({ serverUrl, roomId, password, useCustomServer: useCustom });
     elements.roomId.value = roomId;
 
     // Tell background to connect
@@ -1111,7 +1139,7 @@ elements.joinBtn.addEventListener('click', async () => {
 elements.leaveBtn.addEventListener('click', async () => {
     clearConnectionErrorTimer();
     chrome.runtime.sendMessage({ type: 'LEAVE_ROOM' });
-    await chrome.storage.sync.set({ roomId: '', password: '' });
+    await chrome.storage.local.set({ roomId: '', password: '' });
     elements.roomId.value = '';
     elements.password.value = '';
     lastKnownPeers = [];
@@ -1501,7 +1529,7 @@ chrome.runtime.onMessage.addListener((msg) => {
 
         if (msg.success) {
             // Final confirmation of join from background
-            chrome.storage.sync.get(['roomId', 'password', 'useCustomServer', 'serverUrl'], (data) => {
+            chrome.storage.local.get(['roomId', 'password', 'useCustomServer', 'serverUrl'], (data) => {
                 updateUI(data.roomId, data.password, data.useCustomServer, data.serverUrl);
             });
         } else {
