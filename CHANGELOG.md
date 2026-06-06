@@ -4,6 +4,13 @@ All notable changes to the KoalaSync browser extension and relay server.
 
 ---
 
+## [v2.1.3] — 2026-06-06
+
+### Fixed
+- **Debug report showing wrong logs**: Fixed `logs.slice(-50)` and `history.slice(-20)` in the "Copy Debug Report" feature. Since `addLog()` and `addToHistory()` use `unshift` (inserting entries at index 0), the arrays are ordered newest-first. `slice(-N)` took the N **oldest** entries instead of the N **newest**. Changed to `slice(0, N).reverse()` to correctly include the most recent logs and display them chronologically.
+
+---
+
 ## [v2.1.2] — 2026-06-06
 
 ### Fixed

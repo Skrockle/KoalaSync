@@ -1684,7 +1684,7 @@ elements.copyLogs.addEventListener('click', () => {
         // ── Action History (last 20) ──
         lines.push('## Action History (last 20)');
         if (history && history.length > 0) {
-            const recent = history.slice(-20);
+            const recent = history.slice(0, 20).reverse();
             lines.push('```');
             for (const h of recent) {
                 if (!h) continue;
@@ -1703,7 +1703,7 @@ elements.copyLogs.addEventListener('click', () => {
         // ── Logs (last 50) ──
         lines.push('## Logs (last 50)');
         if (logs && logs.length > 0) {
-            const recent = logs.slice(-50);
+            const recent = logs.slice(0, 50).reverse();
             lines.push('```');
             for (const l of recent) {
                 if (!l) continue;
