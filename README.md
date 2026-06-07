@@ -12,7 +12,7 @@
   <a href="https://chromewebstore.google.com/detail/koalasync/obbnmkmlaaddodakcbdljknjpagklifc"><img src="https://img.shields.io/badge/Chrome-Download-blue?logo=googlechrome&logoColor=white" alt="Chrome Extension"></a>
 </p>
 
-<p align="center"><a href="CHANGELOG.md"><b>New v2.1.3 Release!</b> — See what's changed</a></p>
+<p align="center"><a href="docs/CHANGELOG.md"><b>New v2.1.3 Release!</b> — See what's changed</a></p>
 
 <p align="center"><i>KoalaSync is a lightweight Browser Extension and Relay Server for synchronized video playback on almost any website with a video element—YouTube, Twitch, Netflix, Emby, Jellyfin, and beyond. Built with a focus on <b>Data Sovereignty</b> and <b>Performance</b>.</i></p>
 
@@ -106,10 +106,10 @@ Both the official KoalaSync website and the **v2.0 Browser Extension** feature f
 
 ### 📖 Documentation & Links
 
-- **[CHANGELOG.md](CHANGELOG.md)**: Full version history for the extension and relay server.
-- **[TESTED_SERVICES.md](TESTED_SERVICES.md)**: Detailed compatibility matrix of tested streaming platforms and known limitations.
+- **[CHANGELOG.md](docs/CHANGELOG.md)**: Full version history for the extension and relay server.
+- **[TESTED_SERVICES.md](docs/TESTED_SERVICES.md)**: Detailed compatibility matrix of tested streaming platforms and known limitations.
 - **[TRANSLATION.md](website/TRANSLATION.md)**: Translation and localization guide for contributors.
-- **[PRIVACY.md](PRIVACY.md)**: Data Handling and Privacy Policy.
+- **[PRIVACY.md](docs/PRIVACY.md)**: Data Handling and Privacy Policy.
 - **[CONTRIBUTING.md](CONTRIBUTING.md)**: How to help make KoalaSync better.
 - **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)**: Our community standards and expectations.
 - **[HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md)**: Step-by-step walkthrough of the complete user flow.

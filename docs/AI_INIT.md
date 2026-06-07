@@ -34,14 +34,14 @@ KoalaSync is a specialized tool for **synchronized video playback** across multi
 
 ## 3. Mandatory Reading
 Before touching any code, you MUST read the following documents in order:
-1. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) – Detailed communication flows, Dual Heartbeat, and two-phase sync protocol.
-2. [extension/README.md](extension/README.md) – Extension components, tab structure, and loading process.
-3. [docs/SYNC_GUIDE.md](docs/SYNC_GUIDE.md) – Protocol constants and synchronization requirements.
+1. [ARCHITECTURE.md](ARCHITECTURE.md) – Detailed communication flows, Dual Heartbeat, and two-phase sync protocol.
+2. [extension/README.md](../extension/README.md) – Extension components, tab structure, and loading process.
+3. [SYNC_GUIDE.md](SYNC_GUIDE.md) – Protocol constants and synchronization requirements.
 
 ## 4. The "Vanilla JS Mirror" Pattern
 To avoid boot-time race conditions in Manifest V3 without a bundler, the following architectural trade-off is enforced:
 - **Synchronous Execution**: `content.js` MUST execute synchronously to catch early media events. 
-- **Automated Injection**: The build script (`node scripts/build-extension.js`) automatically injects `EVENTS` and `HEARTBEAT_INTERVAL` into `content.js` using marker-based replacement (see `scripts/README.md` for marker details).
+- **Automated Injection**: The build script (`node scripts/build-extension.js`) automatically injects `EVENTS` and `HEARTBEAT_INTERVAL` into `content.js` using marker-based replacement (see `../scripts/README.md` for marker details).
 - **Maintenance**: After modifying `shared/constants.js`, simply run the build script. No manual mirroring is required.
 
 ## 5. File Responsibility Map
