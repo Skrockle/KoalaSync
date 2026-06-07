@@ -1,5 +1,5 @@
 # Prometheus Community JSON Exporter Configuration Example
-# File: json_exporter.example.yml
+# File: examples/json_exporter.example.yml
 #
 # Use this configuration to map KoalaSync admin health metrics (JSON)
 # to native Prometheus metrics.

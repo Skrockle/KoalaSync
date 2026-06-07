@@ -28,7 +28,7 @@ Caddy is the recommended web server. It provides automatic HTTPS and high-perfor
 
 ### Recommended Caddyfile
 
-For a more comprehensive configuration that includes the Relay Server reverse proxy, see the root [Caddyfile.example](../Caddyfile.example).
+For a more comprehensive configuration that includes the Relay Server reverse proxy, see the root [Caddyfile.example](../examples/Caddyfile.example).
 
 ```caddy
 sync.koalastuff.net {
